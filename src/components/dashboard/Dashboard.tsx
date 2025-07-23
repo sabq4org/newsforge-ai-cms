@@ -1,8 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
 import { mockAnalytics } from '@/lib/mockData';
+import { RealTimeAnalytics, AnalyticsSummary } from '@/components/analytics';
 import { 
   Eye, 
   Heart, 
@@ -11,10 +13,16 @@ import {
   TrendUp, 
   TrendDown, 
   Calendar,
-  Users
+  Users,
+  ChartLine,
+  Activity
 } from '@phosphor-icons/react';
 
-export function Dashboard() {
+interface DashboardProps {
+  onNavigate?: (view: string) => void;
+}
+
+export function Dashboard({ onNavigate }: DashboardProps) {
   const { language, hasPermission } = useAuth();
   const analytics = mockAnalytics;
 
@@ -23,25 +31,33 @@ export function Dashboard() {
       title: language.code === 'ar' ? 'إجمالي المشاهدات' : 'Total Views',
       value: analytics.totalViews.toLocaleString(),
       icon: Eye,
-      color: 'text-blue-600'
+      color: 'text-blue-600',
+      change: '+12.5%',
+      trend: 'up' as const
     },
     {
       title: language.code === 'ar' ? 'إجمالي المقالات' : 'Total Articles',
       value: analytics.totalArticles.toLocaleString(),
       icon: FileText,
-      color: 'text-green-600'
+      color: 'text-green-600',
+      change: '+3.2%',
+      trend: 'up' as const
     },
     {
       title: language.code === 'ar' ? 'نُشر اليوم' : 'Published Today',
       value: analytics.publishedToday.toString(),
       icon: Calendar,
-      color: 'text-orange-600'
+      color: 'text-orange-600',
+      change: '+1',
+      trend: 'up' as const
     },
     {
       title: language.code === 'ar' ? 'الإعجابات' : 'Total Likes',
       value: analytics.engagement.likes.toLocaleString(),
       icon: Heart,
-      color: 'text-red-600'
+      color: 'text-red-600',
+      change: '+8.7%',
+      trend: 'up' as const
     }
   ];
 
@@ -58,10 +74,15 @@ export function Dashboard() {
         </p>
       </div>
 
-      {/* Stats Grid */}
+      {/* Analytics Overview */}
+      {hasPermission('view-analytics') && (
+        <AnalyticsSummary compact />
+      )}
+
+      {/* Enhanced Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat, index) => (
-          <Card key={index}>
+          <Card key={index} className="relative overflow-hidden">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -71,13 +92,64 @@ export function Dashboard() {
                   <p className="text-2xl font-bold">
                     {stat.value}
                   </p>
+                  <div className="flex items-center gap-1 mt-1">
+                    {stat.trend === 'up' ? (
+                      <TrendUp size={14} className="text-green-600" />
+                    ) : (
+                      <TrendDown size={14} className="text-red-600" />
+                    )}
+                    <span className={`text-xs font-medium ${stat.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
+                      {stat.change}
+                    </span>
+                  </div>
                 </div>
-                <stat.icon size={24} className={stat.color} />
+                <div className={`p-3 rounded-full bg-muted ${stat.color}`}>
+                  <stat.icon size={24} />
+                </div>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
+
+      {/* Quick Actions */}
+      <div className="flex flex-wrap gap-3">
+        <Button 
+          variant="default" 
+          className="flex items-center gap-2"
+          onClick={() => onNavigate?.('analytics')}
+        >
+          <ChartLine size={16} />
+          {language.code === 'ar' ? 'عرض التحليلات المتقدمة' : 'View Advanced Analytics'}
+        </Button>
+        <Button 
+          variant="outline" 
+          className="flex items-center gap-2"
+          onClick={() => onNavigate?.('realtime')}
+        >
+          <Activity size={16} />
+          {language.code === 'ar' ? 'المراقبة المباشرة' : 'Real-time Monitor'}
+        </Button>
+        <Button variant="outline" className="flex items-center gap-2">
+          <FileText size={16} />
+          {language.code === 'ar' ? 'تقرير شهري' : 'Monthly Report'}
+        </Button>
+      </div>
+
+      {/* Real-Time Analytics Section */}
+      {hasPermission('view-analytics') && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Activity size={20} />
+              {language.code === 'ar' ? 'النشاط المباشر' : 'Live Activity'}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <RealTimeAnalytics />
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Top Articles */}

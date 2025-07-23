@@ -5,6 +5,7 @@ import { LoginForm } from '@/components/auth/LoginForm';
 import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Dashboard } from '@/components/dashboard/Dashboard';
+import { AdvancedAnalytics, RealTimeAnalytics, PerformanceInsights } from '@/components/analytics';
 import { ArticleList } from '@/components/articles/ArticleList';
 import { ArticleEditor } from '@/components/editor/ArticleEditor';
 import { Article } from '@/types';
@@ -56,7 +57,7 @@ function AppContent() {
   const renderContent = () => {
     switch (activeView) {
       case 'dashboard':
-        return <Dashboard />;
+        return <Dashboard onNavigate={handleViewChange} />;
       case 'articles':
         return (
           <ArticleList 
@@ -73,7 +74,11 @@ function AppContent() {
           />
         );
       case 'analytics':
-        return <Dashboard />; // Reuse dashboard for now
+        return <AdvancedAnalytics onNavigate={handleViewChange} />;
+      case 'realtime':
+        return <RealTimeAnalytics />;
+      case 'insights':
+        return <PerformanceInsights />;
       case 'categories':
         return (
           <div className="text-center py-12">

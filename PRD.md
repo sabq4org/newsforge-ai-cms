@@ -40,6 +40,21 @@ A comprehensive content management system empowering journalists to create, mana
 - **Progression**: Review content → Set publish date/time → Submit for approval → Automatic publication
 - **Success criteria**: Articles publish at scheduled times with proper approvals
 
+### Advanced Analytics Dashboard
+- **Functionality**: Comprehensive analytics with multiple visualization types, real-time monitoring, and performance insights
+- **Purpose**: Provides deep insights into content performance, audience behavior, and engagement patterns
+- **Trigger**: User accesses analytics section or requests performance reports
+- **Progression**: Select analytics view → Choose time range → Analyze charts and metrics → Generate insights → Export data
+- **Success criteria**: Detailed analytics with actionable insights, real-time updates, and comparative analysis
+
+#### Analytics Features:
+- **Traffic Analytics**: Views over time, unique visitors, traffic sources, device breakdown
+- **Engagement Metrics**: Likes, shares, comments trends with engagement rate calculations
+- **Content Performance**: Category performance, author analytics, top performing articles
+- **Audience Insights**: Device usage patterns, reading behavior, bounce rates
+- **Real-time Monitoring**: Live user activity, current page views, active user tracking
+- **Performance Insights**: AI-powered recommendations, optimal posting times, content optimization suggestions
+
 ### Analytics Dashboard
 - **Functionality**: Real-time metrics showing views, engagement, and performance trends
 - **Purpose**: Data-driven decision making for content strategy

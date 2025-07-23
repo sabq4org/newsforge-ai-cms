@@ -152,5 +152,54 @@ export const mockAnalytics: Analytics = {
       user: 'محمد عبدالله',
       timestamp: new Date('2024-01-15T08:45:00Z')
     }
-  ]
+  ],
+  viewsOverTime: [
+    { date: '2024-01-08', views: 3245, uniqueVisitors: 2156 },
+    { date: '2024-01-09', views: 3890, uniqueVisitors: 2567 },
+    { date: '2024-01-10', views: 4123, uniqueVisitors: 2789 },
+    { date: '2024-01-11', views: 4567, uniqueVisitors: 3012 },
+    { date: '2024-01-12', views: 5234, uniqueVisitors: 3456 },
+    { date: '2024-01-13', views: 4789, uniqueVisitors: 3234 },
+    { date: '2024-01-14', views: 5678, uniqueVisitors: 3678 },
+    { date: '2024-01-15', views: 6234, uniqueVisitors: 4123 }
+  ],
+  engagementOverTime: [
+    { date: '2024-01-08', likes: 245, shares: 89, comments: 156 },
+    { date: '2024-01-09', likes: 312, shares: 123, comments: 198 },
+    { date: '2024-01-10', likes: 289, shares: 98, comments: 167 },
+    { date: '2024-01-11', likes: 356, shares: 145, comments: 234 },
+    { date: '2024-01-12', likes: 423, shares: 178, comments: 289 },
+    { date: '2024-01-13', likes: 367, shares: 134, comments: 212 },
+    { date: '2024-01-14', likes: 445, shares: 198, comments: 267 },
+    { date: '2024-01-15', likes: 389, shares: 156, comments: 234 }
+  ],
+  categoryPerformance: [
+    { category: 'Technology', views: 15234, articles: 89, engagementRate: 7.8 },
+    { category: 'Politics', views: 12456, articles: 67, engagementRate: 6.2 },
+    { category: 'Sports', views: 9876, articles: 45, engagementRate: 8.9 },
+    { category: 'Business', views: 8765, articles: 56, engagementRate: 5.4 },
+    { category: 'Culture', views: 6543, articles: 34, engagementRate: 9.1 }
+  ],
+  deviceBreakdown: [
+    { device: 'Mobile', percentage: 65, users: 29667 },
+    { device: 'Desktop', percentage: 28, users: 12779 },
+    { device: 'Tablet', percentage: 7, users: 3198 }
+  ],
+  trafficSources: [
+    { source: 'Direct', percentage: 42, visitors: 19228 },
+    { source: 'Social Media', percentage: 28, visitors: 12819 },
+    { source: 'Search', percentage: 18, visitors: 8241 },
+    { source: 'Referral', percentage: 8, visitors: 3661 },
+    { source: 'Email', percentage: 4, visitors: 1833 }
+  ],
+  authorPerformance: [
+    { authorId: '1', authorName: 'Sarah Ahmed', totalViews: 18750, totalArticles: 34, avgEngagement: 8.2 },
+    { authorId: '2', authorName: 'محمد عبدالله', totalViews: 14620, totalArticles: 28, avgEngagement: 7.5 },
+    { authorId: '3', authorName: 'Lisa Chen', totalViews: 12412, totalArticles: 25, avgEngagement: 6.9 }
+  ],
+  readingTime: {
+    averageTime: 142, // seconds
+    bounceRate: 23.4, // percentage
+    completionRate: 68.7 // percentage
+  }
 };

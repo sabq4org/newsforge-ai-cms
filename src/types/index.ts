@@ -65,6 +65,45 @@ export interface Analytics {
     user: string;
     timestamp: Date;
   }>;
+  viewsOverTime: Array<{
+    date: string;
+    views: number;
+    uniqueVisitors: number;
+  }>;
+  engagementOverTime: Array<{
+    date: string;
+    likes: number;
+    shares: number;
+    comments: number;
+  }>;
+  categoryPerformance: Array<{
+    category: string;
+    views: number;
+    articles: number;
+    engagementRate: number;
+  }>;
+  deviceBreakdown: Array<{
+    device: string;
+    percentage: number;
+    users: number;
+  }>;
+  trafficSources: Array<{
+    source: string;
+    percentage: number;
+    visitors: number;
+  }>;
+  authorPerformance: Array<{
+    authorId: string;
+    authorName: string;
+    totalViews: number;
+    totalArticles: number;
+    avgEngagement: number;
+  }>;
+  readingTime: {
+    averageTime: number;
+    bounceRate: number;
+    completionRate: number;
+  };
 }
 
 export interface Language {
