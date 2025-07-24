@@ -14,7 +14,7 @@ import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { RoleBasedDashboard } from '@/components/dashboard/RoleBasedDashboard';
 import { PublicInterface } from '@/components/public';
-import { AdvancedAnalytics, AnalyticsDashboard, InteractiveAnalytics, RealTimeAnalytics, PerformanceInsights, CategoryAnalytics } from '@/components/analytics';
+import { AdvancedAnalytics, AnalyticsDashboard, InteractiveAnalytics, RealTimeAnalytics, PerformanceInsights, CategoryAnalytics, UserBehaviorAnalytics, ReadingPatternAnalyzer, PredictiveUserAnalytics } from '@/components/analytics';
 import { ComprehensiveArticleModule } from '@/components/articles';
 import { ComprehensiveDeepAnalysisModule } from '@/components/analysis';
 import { ComprehensiveArticleEditor } from '@/components/editor/ComprehensiveArticleEditor';
@@ -609,6 +609,15 @@ function AppContent() {
             </Button>
           </div>
         );
+      
+      case 'user-behavior-analytics':
+        return <UserBehaviorAnalytics />;
+      
+      case 'reading-pattern-analyzer':
+        return <ReadingPatternAnalyzer />;
+      
+      case 'predictive-user-analytics':
+        return <PredictiveUserAnalytics />;
       
       case 'smart-recommendations':
         return memberUser ? (

@@ -186,6 +186,27 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       show: hasPermission('read', 'analytics')
     },
     {
+      id: 'user-behavior-analytics',
+      label: isArabic ? 'تحليل سلوك المستخدمين' : 'User Behavior Analytics',
+      icon: Users,
+      show: hasPermission('read', 'analytics'),
+      badge: isArabic ? 'متقدم' : 'Advanced'
+    },
+    {
+      id: 'reading-pattern-analyzer',
+      label: isArabic ? 'محلل أنماط القراءة' : 'Reading Pattern Analyzer',
+      icon: Eye,
+      show: hasPermission('read', 'analytics'),
+      badge: isArabic ? 'ذكي' : 'AI'
+    },
+    {
+      id: 'predictive-user-analytics',
+      label: isArabic ? 'التحليلات التنبئية' : 'Predictive Analytics',
+      icon: Brain,
+      show: hasPermission('read', 'analytics'),
+      badge: isArabic ? 'تنبؤ' : 'Predict'
+    },
+    {
       id: 'recommendation-system-overview',
       label: isArabic ? 'نظام التوصيات' : 'Recommendation System',
       icon: Medal, // Using Medal instead of Award to fix runtime error
