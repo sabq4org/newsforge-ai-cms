@@ -1,4 +1,5 @@
 export { PersonalizedRecommendations } from './PersonalizedRecommendations';
+export { PersonalizedFeedEngine } from './PersonalizedFeedEngine';
 export { AIRecommendationEngine } from './AIRecommendationEngine';
 export { RecommendationEvaluation } from './RecommendationEvaluation';
 export { RecommendationInsights } from './RecommendationInsights';

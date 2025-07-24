@@ -1,22 +1,27 @@
 export interface UserProfile {
   id: string;
-  email: string;
+  email?: string;
   name: string;
   avatar?: string;
-  joinedAt: Date;
-  lastLoginAt: Date;
+  joinedAt?: Date;
+  lastLoginAt?: Date;
   preferences: UserPreferences;
-  activities: UserActivity[];
-  recommendations: PersonalizedRecommendation[];
+  readingStats: ReadingStats;
+  engagementScore: number;
+  loyaltyTier: 'bronze' | 'silver' | 'gold' | 'platinum';
+  badges: Badge[];
+  dailyMeal: DailyMeal;
+  activities?: UserActivity[];
+  recommendations?: PersonalizedRecommendation[];
 }
 
 export interface UserPreferences {
   categories: string[];
-  readingTimes: ('morning' | 'afternoon' | 'evening' | 'night')[];
+  timeSlots: ('morning' | 'afternoon' | 'evening' | 'night')[];
   contentTypes: ('news' | 'analysis' | 'opinion' | 'sports' | 'tech' | 'business')[];
-  language: 'ar' | 'en';
-  notificationSettings: NotificationSettings;
-  privacySettings: PrivacySettings;
+  language?: 'ar' | 'en';
+  notificationSettings?: NotificationSettings;
+  privacySettings?: PrivacySettings;
 }
 
 export interface NotificationSettings {
@@ -130,4 +135,100 @@ export interface UserBehaviorAnalysis {
     socialEngagement: 'low' | 'medium' | 'high';
     newsConsumption: 'casual' | 'regular' | 'heavy';
   };
+}
+
+// New interfaces for enhanced reading behavior tracking
+export interface ReadingStats {
+  totalArticles: number;
+  totalReadTime: number; // in minutes
+  avgSessionTime: number; // in minutes
+  favoriteCategory: string;
+  readingStreak: number; // consecutive days
+  lastActiveDate: Date;
+}
+
+export interface Badge {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  category: 'reading' | 'engagement' | 'streak' | 'social';
+  rarity: 'common' | 'rare' | 'epic' | 'legendary';
+  unlockedAt: Date;
+}
+
+export interface DailyMeal {
+  articles: any[]; // Array of recommended articles
+  generatedAt: Date;
+  consumed: boolean;
+}
+
+export interface ReadingSession {
+  id: string;
+  userId: string;
+  article: any; // Article interface
+  startTime: Date;
+  endTime?: Date;
+  duration?: number; // in minutes
+  completion?: number; // percentage 0-100
+  engagement?: number; // score 0-100
+  deviceInfo?: {
+    type: 'mobile' | 'desktop' | 'tablet';
+    screenSize: string;
+    userAgent: string;
+  };
+  behaviorData?: {
+    scrollEvents: ScrollEvent[];
+    clickEvents: ClickEvent[];
+    pauseEvents: PauseEvent[];
+    interactionTimeline: InteractionEvent[];
+  };
+}
+
+export interface ScrollEvent {
+  timestamp: Date;
+  scrollTop: number;
+  scrollPercentage: number;
+  direction: 'up' | 'down';
+}
+
+export interface ClickEvent {
+  timestamp: Date;
+  elementType: string;
+  elementId?: string;
+  coordinates: { x: number; y: number };
+}
+
+export interface PauseEvent {
+  timestamp: Date;
+  duration: number; // in seconds
+  scrollPosition: number;
+}
+
+export interface InteractionEvent {
+  timestamp: Date;
+  type: 'scroll' | 'click' | 'pause' | 'resume' | 'blur' | 'focus';
+  data?: any;
+}
+
+export interface PersonalizationData {
+  readingPattern: {
+    preferredTimes: {
+      hour: number;
+      dayOfWeek: number;
+      frequency: number;
+    }[];
+    sessionDuration: number;
+    contentPreferences: {
+      category: string;
+      engagement: number;
+      completion: number;
+    }[];
+    deviceUsage: {
+      mobile: number;
+      desktop: number;
+    };
+  };
+  behaviorScore: number;
+  lastAnalysis: Date;
 }

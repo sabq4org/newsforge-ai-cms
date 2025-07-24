@@ -26,7 +26,9 @@ import { SystemAnalysis, ComprehensiveAnalysisEngine } from '@/components/analys
 import { AISearch, ComprehensiveSearch } from '@/components/search';
 import { AIRecommendationEngine } from '@/components/recommendations/AIRecommendationEngine';
 import { PersonalizedRecommendations } from '@/components/recommendations/PersonalizedRecommendations';
+import { PersonalizedFeedEngine } from '@/components/recommendations/PersonalizedFeedEngine';
 import { RecommendationEvaluation, RecommendationInsights, RecommendationDashboard, RecommendationSystemOverview } from '@/components/recommendations';
+import { ReadingBehaviorTracker } from '@/components/analytics/ReadingBehaviorTracker';
 import { ContentModeration } from '@/components/moderation/ContentModeration';
 import { SchedulingCalendar } from '@/components/scheduling';
 import { CategoryManager, CategoryStatistics, ComprehensiveCategoryManager } from '@/components/categories';
@@ -37,7 +39,7 @@ import { ErrorChecker } from '@/components/debug/ErrorChecker';
 import { ErrorBoundary } from '@/components/debug/ErrorBoundary';
 import { RuntimeChecker } from '@/components/debug/RuntimeChecker';
 import { ExternalDataManager, NewsAggregator } from '@/components/external';
-import { BreakingNewsNotifications, NotificationCenter, LiveNotificationBanner, NotificationPreferences, NotificationAnalytics } from '@/components/notifications';
+import { BreakingNewsNotifications, NotificationCenter, LiveNotificationBanner, NotificationPreferences, NotificationAnalytics, SmartNotificationSystem } from '@/components/notifications';
 import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
 import { mockArticles, mockCategories, mockMediaFiles } from '@/lib/mockData';
@@ -473,6 +475,23 @@ function AppContent() {
       case 'notification-preferences':
         return <NotificationPreferences />;
       
+      case 'smart-notifications':
+        return memberUser ? (
+          <SmartNotificationSystem
+            userId={memberUser.id}
+            articles={articles}
+            userProfile={memberUser}
+          />
+        ) : (
+          <div className="text-center py-12">
+            <h2 className="text-xl font-semibold">الإشعارات الذكية</h2>
+            <p className="text-muted-foreground mt-2">يرجى تسجيل الدخول لإعداد الإشعارات الذكية</p>
+            <Button className="mt-4" onClick={() => setShowAuthModal(true)}>
+              تسجيل الدخول
+            </Button>
+          </div>
+        );
+      
       case 'notification-analytics':
         return <NotificationAnalytics />;
       
@@ -487,6 +506,42 @@ function AppContent() {
           <div className="text-center py-12">
             <h2 className="text-xl font-semibold">الملف الشخصي</h2>
             <p className="text-muted-foreground mt-2">يرجى تسجيل الدخول أولاً</p>
+          </div>
+        );
+      
+      case 'personalized-feed':
+        return memberUser ? (
+          <PersonalizedFeedEngine
+            userId={memberUser.id}
+            articles={articles}
+            onArticleSelect={handleEditArticle}
+          />
+        ) : (
+          <div className="text-center py-12">
+            <h2 className="text-xl font-semibold">الخلاصة المخصصة</h2>
+            <p className="text-muted-foreground mt-2">يرجى تسجيل الدخول للحصول على خلاصة مخصصة</p>
+            <Button className="mt-4" onClick={() => setShowAuthModal(true)}>
+              تسجيل الدخول
+            </Button>
+          </div>
+        );
+      
+      case 'reading-behavior':
+        return memberUser ? (
+          <ReadingBehaviorTracker
+            userId={memberUser.id}
+            article={editingArticle}
+            onBehaviorUpdate={(behavior) => {
+              console.log('Behavior updated:', behavior);
+            }}
+          />
+        ) : (
+          <div className="text-center py-12">
+            <h2 className="text-xl font-semibold">تتبع سلوك القراءة</h2>
+            <p className="text-muted-foreground mt-2">يرجى تسجيل الدخول لتتبع سلوك القراءة</p>
+            <Button className="mt-4" onClick={() => setShowAuthModal(true)}>
+              تسجيل الدخول
+            </Button>
           </div>
         );
       

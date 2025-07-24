@@ -198,6 +198,13 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       show: true
     },
     {
+      id: 'smart-notifications',
+      label: isArabic ? 'الإشعارات الذكية' : 'Smart Notifications',
+      icon: Brain,
+      show: true,
+      badge: isArabic ? 'ذكي' : 'Smart'
+    },
+    {
       id: 'notification-analytics',
       label: isArabic ? 'إحصائيات الإشعارات' : 'Notification Analytics',
       icon: BarChart3,
@@ -231,6 +238,20 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       icon: Brain,
       show: true,
       badge: isArabic ? 'ذكي' : 'AI'
+    },
+    {
+      id: 'personalized-feed',
+      label: isArabic ? 'الخلاصة المخصصة' : 'Personalized Feed',
+      icon: Sparkles,
+      show: true,
+      badge: isArabic ? 'مخصص' : 'Custom'
+    },
+    {
+      id: 'reading-behavior',
+      label: isArabic ? 'تحليل سلوك القراءة' : 'Reading Behavior',
+      icon: TrendUp,
+      show: true,
+      badge: isArabic ? 'تحليل' : 'Analytics'
     },
     {
       id: 'member-profile',
