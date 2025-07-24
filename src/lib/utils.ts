@@ -205,27 +205,41 @@ export function normalizeActivityTimestamps(activities: any[]): any[] {
       };
     }
     
-    // Handle different timestamp formats
+    // Handle different timestamp formats with extra safety checks
     let timestamp = activity.timestamp;
     
-    if (typeof timestamp === 'string') {
-      timestamp = new Date(timestamp);
-    } else if (typeof timestamp === 'number') {
-      timestamp = new Date(timestamp);
-    } else if (!timestamp || !(timestamp instanceof Date)) {
-      console.warn(`normalizeActivityTimestamps: Invalid timestamp at index ${index}:`, timestamp);
-      timestamp = new Date(); // fallback to current date
-    }
-    
-    // Ensure the Date object is valid
-    if (isNaN(timestamp.getTime())) {
-      console.warn(`normalizeActivityTimestamps: Invalid date at index ${index}, using current date`);
-      timestamp = new Date(); // fallback to current date for invalid dates
+    try {
+      if (typeof timestamp === 'string') {
+        timestamp = new Date(timestamp);
+      } else if (typeof timestamp === 'number') {
+        timestamp = new Date(timestamp);
+      } else if (timestamp instanceof Date) {
+        // Already a Date object, but check if it's valid
+        if (isNaN(timestamp.getTime())) {
+          timestamp = new Date();
+        }
+      } else {
+        console.warn(`normalizeActivityTimestamps: Invalid timestamp at index ${index}:`, timestamp);
+        timestamp = new Date(); // fallback to current date
+      }
+      
+      // Double-check the Date object is valid
+      if (!timestamp || !(timestamp instanceof Date) || isNaN(timestamp.getTime())) {
+        console.warn(`normalizeActivityTimestamps: Invalid date after processing at index ${index}, using current date`);
+        timestamp = new Date(); // fallback to current date for invalid dates
+      }
+    } catch (error) {
+      console.error(`normalizeActivityTimestamps: Error processing timestamp at index ${index}:`, error);
+      timestamp = new Date();
     }
     
     return {
       ...activity,
-      timestamp
+      timestamp,
+      id: activity.id || `activity-${index}`,
+      type: activity.type || 'unknown',
+      article: activity.article || 'Unknown Article',
+      user: activity.user || 'Unknown User'
     };
   });
 }

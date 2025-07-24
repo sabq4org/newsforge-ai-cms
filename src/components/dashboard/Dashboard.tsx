@@ -14,7 +14,7 @@ import {
   TrendDown, 
   Calendar,
   Users,
-  ChartLineUp,
+  TrendUp,
   Activity
 } from '@phosphor-icons/react';
 
@@ -119,7 +119,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
           className="flex items-center gap-2"
           onClick={() => onNavigate?.('analytics')}
         >
-          <ChartLineUp size={16} />
+          <TrendUp size={16} />
           {language.code === 'ar' ? 'عرض التحليلات المتقدمة' : 'View Advanced Analytics'}
         </Button>
         <Button 

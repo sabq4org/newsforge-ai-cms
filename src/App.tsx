@@ -18,7 +18,7 @@ import { TypographySettings } from '@/components/settings/TypographySettings';
 import { TypographyShowcase } from '@/components/showcase/TypographyShowcase';
 import { MediaUpload, MediaGenerator, ComprehensiveMediaManager } from '@/components/media';
 import { AudioEditor, AudioLibrary, AudioAnalytics } from '@/components/audio';
-import { SystemAnalysis } from '@/components/analysis/SystemAnalysis';
+import { SystemAnalysis, ComprehensiveAnalysisEngine } from '@/components/analysis';
 import { AISearch, ComprehensiveSearch } from '@/components/search';
 import { AIRecommendationEngine } from '@/components/recommendations/AIRecommendationEngine';
 import { ContentModeration } from '@/components/moderation/ContentModeration';
@@ -348,6 +348,17 @@ function AppContent() {
       
       case 'news-aggregator':
         return <NewsAggregator />;
+      
+      case 'deep-analysis':
+        return (
+          <ComprehensiveAnalysisEngine 
+            article={editingArticle}
+            onAnalysisComplete={(analysis) => {
+              console.log('Analysis completed:', analysis);
+              toast.success('تم إكمال التحليل العميق');
+            }}
+          />
+        );
       
       default:
         return <RoleBasedDashboard onNavigate={handleViewChange} />;

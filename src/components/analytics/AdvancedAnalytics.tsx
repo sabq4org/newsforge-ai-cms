@@ -42,7 +42,7 @@ import {
   Desktop,
   DeviceTablet,
   Clock,
-  ChartLineUp,
+  TrendUp,
   Target,
   Globe
 } from '@phosphor-icons/react';
@@ -233,7 +233,7 @@ export function AdvancedAnalytics({ onNavigate }: AdvancedAnalyticsProps) {
             <Card className="lg:col-span-2">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <ChartLineUp size={20} />
+                  <TrendUp size={20} />
                   {language.code === 'ar' ? 'المشاهدات عبر الزمن' : 'Views Over Time'}
                 </CardTitle>
               </CardHeader>

@@ -28,7 +28,7 @@ import {
   Wrench,
   Microphone,
   FileAudio,
-  ChartLineUp,
+  TrendUp,
   Coffee,
   Drop
 } from '@phosphor-icons/react';
@@ -99,7 +99,7 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
     {
       id: 'category-statistics',
       label: isArabic ? 'إحصائيات التصنيفات' : 'Category Statistics',
-      icon: ChartLineUp,
+      icon: TrendUp,
       show: hasPermission('view', 'analytics')
     },
     {
@@ -216,6 +216,13 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       label: isArabic ? 'اختبار A/B' : 'A/B Testing',
       icon: TestTube,
       show: canAccess('ab-testing')
+    },
+    {
+      id: 'deep-analysis',
+      label: isArabic ? 'التحليل العميق' : 'Deep Analysis',
+      icon: Brain,
+      show: canAccess('ai-tools'),
+      badge: isArabic ? 'ذكي' : 'AI'
     },
     {
       id: 'collaborative',

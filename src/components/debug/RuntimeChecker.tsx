@@ -23,13 +23,13 @@ export function RuntimeChecker() {
 
       // Check for missing imports
       try {
-        // Check if ChartLineUp is available from phosphor icons
+        // Check if TrendUp is available from phosphor icons
         import('@phosphor-icons/react').then((icons) => {
-          if (!icons.ChartLineUp) {
+          if (!icons.TrendUp) {
             setErrors(prev => [...prev, {
               type: 'import',
               severity: 'high',
-              message: 'ChartLineUp icon not found in @phosphor-icons/react',
+              message: 'TrendUp icon not found in @phosphor-icons/react',
               source: 'PhosphorIcons',
               timestamp: new Date()
             }]);
