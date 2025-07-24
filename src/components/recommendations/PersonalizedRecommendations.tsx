@@ -348,7 +348,15 @@ export function PersonalizedRecommendations({
                 <BookOpen size={14} className="ml-1" />
                 قراءة
               </Button>
-              <Button size="sm" variant="outline">
+              <Button 
+                size="sm" 
+                variant="outline"
+                onClick={() => {
+                  // Would trigger recommendation feedback modal
+                  toast.info('سيتم فتح نموذج تقييم التوصية');
+                }}
+                title="تقييم التوصية"
+              >
                 <Sparkles size={14} />
               </Button>
             </div>

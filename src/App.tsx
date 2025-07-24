@@ -22,6 +22,7 @@ import { SystemAnalysis, ComprehensiveAnalysisEngine } from '@/components/analys
 import { AISearch, ComprehensiveSearch } from '@/components/search';
 import { AIRecommendationEngine } from '@/components/recommendations/AIRecommendationEngine';
 import { PersonalizedRecommendations } from '@/components/recommendations/PersonalizedRecommendations';
+import { RecommendationEvaluation, RecommendationInsights, RecommendationDashboard, RecommendationSystemOverview } from '@/components/recommendations';
 import { ContentModeration } from '@/components/moderation/ContentModeration';
 import { SchedulingCalendar } from '@/components/scheduling';
 import { CategoryManager, CategoryStatistics, ComprehensiveCategoryManager } from '@/components/categories';
@@ -156,6 +157,17 @@ function AppContent() {
       case 'realtime':
         return <RealTimeAnalytics />;
       
+      case 'recommendation-system-overview':
+        return <RecommendationSystemOverview />;
+      
+      case 'recommendation-dashboard':
+        return (
+          <RecommendationDashboard
+            onNavigate={handleViewChange}
+            onArticleSelect={handleEditArticle}
+          />
+        );
+      
       case 'personalized-recommendations':
         return (
           <PersonalizedRecommendations
@@ -171,6 +183,27 @@ function AppContent() {
             currentArticleId={editingArticle?.id}
             userId={user?.id}
             onArticleSelect={handleEditArticle}
+          />
+        );
+      
+      case 'recommendation-insights':
+        return (
+          <RecommendationInsights
+            onInsightAction={(insight, action) => {
+              console.log('Insight action:', insight, action);
+              toast.success(`تم ${action === 'implement' ? 'تطبيق' : 'عرض تفاصيل'} الرؤية`);
+            }}
+          />
+        );
+      
+      case 'recommendation-evaluation':
+        return (
+          <RecommendationEvaluation
+            articleId={editingArticle?.id}
+            onFeedbackSubmitted={(feedback) => {
+              console.log('Feedback submitted:', feedback);
+              toast.success('تم إرسال تقييمك بنجاح');
+            }}
           />
         );
       

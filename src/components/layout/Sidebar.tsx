@@ -196,6 +196,20 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       badge: isArabic ? 'جديد' : 'New'
     },
     {
+      id: 'recommendation-system-overview',
+      label: isArabic ? 'نظرة على نظام التوصيات' : 'Recommendation System Overview',
+      icon: Award,
+      show: canAccess('ai-tools'),
+      badge: isArabic ? 'عرض' : 'Demo'
+    },
+    {
+      id: 'recommendation-dashboard',
+      label: isArabic ? 'لوحة التوصيات' : 'Recommendation Dashboard',
+      icon: Brain,
+      show: canAccess('ai-tools'),
+      badge: isArabic ? 'متكامل' : 'Full'
+    },
+    {
       id: 'category-analytics',
       label: isArabic ? 'إحصائيات التصنيفات' : 'Category Analytics',
       icon: TrendingUp,
@@ -218,6 +232,20 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       label: isArabic ? 'التوصيات الذكية' : 'AI Recommendations',
       icon: Brain,
       show: canAccess('ai-tools')
+    },
+    {
+      id: 'recommendation-evaluation',
+      label: isArabic ? 'تقييم التوصيات' : 'Recommendation Evaluation',
+      icon: Sparkles,
+      show: canAccess('ai-tools'),
+      badge: isArabic ? 'جديد' : 'New'
+    },
+    {
+      id: 'recommendation-insights',
+      label: isArabic ? 'رؤى التوصيات' : 'Recommendation Insights',
+      icon: TrendingUp,
+      show: canAccess('advanced-analytics'),
+      badge: isArabic ? 'ذكي' : 'AI'
     },
     {
       id: 'ai-optimization',
