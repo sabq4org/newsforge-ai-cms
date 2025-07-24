@@ -33,7 +33,7 @@ import {
   ShareNetwork, 
   Clock,
   Target,
-  Award,
+  Trophy,
   Lightbulb,
   ChartBar
 } from '@phosphor-icons/react';
@@ -115,7 +115,7 @@ const performanceInsights = {
       description: 'Your tech articles get 2.3x more shares on average',
       descriptionAr: 'مقالاتك التقنية تحصل على مشاركات أكثر بـ 2.3 مرة في المتوسط',
       impact: 'medium',
-      icon: Award
+      icon: Trophy
     },
     {
       title: 'Image impact',

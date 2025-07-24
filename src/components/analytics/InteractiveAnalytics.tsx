@@ -31,6 +31,7 @@ import {
 } from 'recharts';
 import { useAuth } from '@/contexts/AuthContext';
 import { useKV } from '@github/spark/hooks';
+import { safeDateFormat } from '@/lib/utils';
 import { 
   TrendingUp, 
   Users,
@@ -104,6 +105,12 @@ export function InteractiveAnalytics({ timeRange = '7d', onExport }: Interactive
   const [filter, setFilter] = useState('all');
   const [performanceData, setPerformanceData] = useKV<PerformanceData[]>('performance-analytics', []);
   const [contentPerformance, setContentPerformance] = useKV<ContentPerformance[]>('content-performance', []);
+
+  // Normalize performance data to ensure timestamps are Date objects
+  const normalizedPerformanceData = (performanceData || []).map(item => ({
+    ...item,
+    timestamp: new Date(item.timestamp)
+  }));
 
   // Generate sample performance data
   useEffect(() => {
@@ -199,8 +206,8 @@ export function InteractiveAnalytics({ timeRange = '7d', onExport }: Interactive
   };
 
   // Format data for charts
-  const chartData = performanceData.map(item => ({
-    date: item.timestamp.toLocaleDateString(language.code === 'ar' ? 'ar-SA' : 'en-US', {
+  const chartData = normalizedPerformanceData.map(item => ({
+    date: safeDateFormat(item.timestamp, language.code === 'ar' ? 'ar-SA' : 'en-US', {
       month: 'short',
       day: 'numeric'
     }),

@@ -24,7 +24,7 @@ export function normalizeArticles(articles: Article[]): Article[] {
     }
 
     // Ensure category exists and has proper structure
-    if (!article.category || typeof article.category !== 'object' || !article.category.color) {
+    if (!article.category || typeof article.category !== 'object') {
       // Find category by ID if it's a string, or use default
       const categoryId = typeof article.category === 'string' ? article.category : article.category?.id;
       let foundCategory = null;
@@ -56,6 +56,17 @@ export function normalizeArticles(articles: Article[]): Article[] {
           keywords: ['عام']
         }
       };
+    }
+    
+    // Additional check to ensure the category has required properties
+    if (!article.category.color) {
+      article.category.color = '#6b7280'; // Default color
+    }
+    if (!article.category.name) {
+      article.category.name = 'عام';
+    }
+    if (!article.category.nameAr) {
+      article.category.nameAr = 'عام';
     }
 
     // Ensure tags is always an array

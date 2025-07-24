@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckCircle, XCircle, Warning, Info } from '@phosphor-icons/react';
+import { safeDateFormat } from '@/lib/utils';
 
 interface RuntimeError {
   type: 'import' | 'runtime' | 'component' | 'data';
@@ -230,7 +231,13 @@ export function RuntimeChecker() {
                       </div>
                       <p className="text-sm font-medium mb-1">{error.message}</p>
                       <p className="text-xs text-muted-foreground">
-                        {error.timestamp ? error.timestamp.toLocaleString('ar-SA') : 'وقت غير محدد'}
+                        {error.timestamp ? safeDateFormat(error.timestamp, 'ar-SA', { 
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        }) : 'وقت غير محدد'}
                       </p>
                     </div>
                   </div>

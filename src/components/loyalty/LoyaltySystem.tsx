@@ -25,7 +25,6 @@ import {
   Eye,
   MessageCircle,
   ThumbsUp,
-  Award,
   Calendar,
   CheckCircle
 } from '@phosphor-icons/react';

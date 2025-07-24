@@ -48,7 +48,7 @@ function AppContent() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState<Article | undefined>();
   const [rawArticles, setRawArticles] = useKV<Article[]>('sabq-articles', mockArticles);
-  const articles = normalizeArticles(rawArticles);
+  const articles = normalizeArticles(rawArticles || []);
   const [isPublicView, setIsPublicView] = useState(false);
   
   // Initialize media files
@@ -56,7 +56,7 @@ function AppContent() {
   
   const setArticles = (updater: (currentArticles: Article[]) => Article[]) => {
     setRawArticles(currentArticles => {
-      const normalized = normalizeArticles(currentArticles);
+      const normalized = normalizeArticles(currentArticles || []);
       return updater(normalized);
     });
   };
@@ -76,7 +76,7 @@ function AppContent() {
             لوحة التحكم
           </Button>
         </div>
-        <PublicInterface />
+        <PublicInterface articles={articles} />
       </div>
     );
   }

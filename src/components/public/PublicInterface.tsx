@@ -39,11 +39,12 @@ import { toast } from 'sonner';
 
 interface PublicInterfaceProps {
   className?: string;
+  articles?: Article[];
 }
 
 type ViewMode = 'home' | 'article' | 'news' | 'analysis' | 'doses' | 'category' | 'search' | 'about' | 'contact';
 
-export function PublicInterface({ className }: PublicInterfaceProps) {
+export function PublicInterface({ className, articles }: PublicInterfaceProps) {
   const [currentLanguage, setCurrentLanguage] = useKV<'ar' | 'en'>('public-language', 'ar');
   const [currentView, setCurrentView] = useState<ViewMode>('home');
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
@@ -127,6 +128,7 @@ export function PublicInterface({ className }: PublicInterfaceProps) {
             currentLanguage={currentLanguage}
             onArticleClick={handleArticleClick}
             onSectionClick={handleSectionClick}
+            articles={articles}
           />
         );
 
@@ -219,6 +221,7 @@ export function PublicInterface({ className }: PublicInterfaceProps) {
             currentLanguage={currentLanguage}
             onArticleClick={handleArticleClick}
             onSectionClick={handleSectionClick}
+            articles={articles}
           />
         );
     }
@@ -514,7 +517,7 @@ function CategoryPage({
         
         <div 
           className="w-12 h-12 rounded-lg flex items-center justify-center text-white text-xl"
-          style={{ backgroundColor: category.color }}
+          style={{ backgroundColor: category?.color || '#6b7280' }}
         >
           {category.icon}
         </div>

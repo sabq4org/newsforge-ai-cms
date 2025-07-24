@@ -30,16 +30,21 @@ interface PublicHomePageProps {
   onArticleClick: (article: Article) => void;
   onSectionClick: (section: string) => void;
   className?: string;
+  articles?: Article[];
 }
 
 export function PublicHomePage({ 
   currentLanguage, 
   onArticleClick, 
   onSectionClick,
-  className 
+  className,
+  articles
 }: PublicHomePageProps) {
   const isRTL = currentLanguage === 'ar';
   const locale = isRTL ? ar : enUS;
+
+  // Use provided articles or fallback to mock articles  
+  const availableArticles = articles || mockArticles;
 
   // Get current time period for smart doses
   const getCurrentPeriod = () => {
@@ -85,16 +90,36 @@ export function PublicHomePage({
   };
 
   // Filter articles by status and recency
-  const publishedArticles = mockArticles.filter(article => article.status === 'published');
+  const publishedArticles = availableArticles.filter(article => article.status === 'published');
   const trendingArticles = publishedArticles
     .sort((a, b) => (b.analytics?.views || 0) - (a.analytics?.views || 0))
     .slice(0, 5);
   
   const recentArticles = publishedArticles
-    .sort((a, b) => new Date(b.publishedAt || b.createdAt).getTime() - new Date(a.publishedAt || a.createdAt).getTime())
+    .sort((a, b) => {
+      const dateA = new Date(a.publishedAt || a.createdAt || 0);
+      const dateB = new Date(b.publishedAt || b.createdAt || 0);
+      return dateB.getTime() - dateA.getTime();
+    })
     .slice(0, 6);
 
   const featuredArticle = publishedArticles.find(article => article.priority === 'high') || publishedArticles[0];
+  
+  // Safety check for featured article
+  if (!featuredArticle) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <Card>
+            <CardContent className="p-8 text-center">
+              <h2 className="text-xl font-semibold mb-2">لا توجد مقالات متاحة</h2>
+              <p className="text-muted-foreground">يرجى المحاولة مرة أخرى لاحقاً</p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   // Get articles by category for category showcase
   const categorizedArticles = mockCategories.slice(0, 6).map(category => ({
@@ -104,12 +129,24 @@ export function PublicHomePage({
       .slice(0, 3)
   })).filter(item => item.articles.length > 0);
 
-  const formatRelativeTime = (date: Date) => {
-    return formatDistanceToNow(date, { 
-      addSuffix: true, 
-      locale,
-      includeSeconds: false 
-    });
+  const formatRelativeTime = (date: Date | string | number | undefined) => {
+    if (!date) return 'منذ وقت غير محدد';
+    
+    try {
+      const dateObj = date instanceof Date ? date : new Date(date);
+      if (isNaN(dateObj.getTime())) {
+        return 'منذ وقت غير محدد';
+      }
+      
+      return formatDistanceToNow(dateObj, { 
+        addSuffix: true, 
+        locale,
+        includeSeconds: false 
+      });
+    } catch (error) {
+      console.warn('formatRelativeTime error:', error);
+      return 'منذ وقت غير محدد';
+    }
   };
 
   const formatViews = (views: number) => {
@@ -524,7 +561,7 @@ export function PublicHomePage({
                   <div className="flex items-center gap-3">
                     <div 
                       className="w-10 h-10 rounded-lg flex items-center justify-center text-white"
-                      style={{ backgroundColor: category.color }}
+                      style={{ backgroundColor: category?.color || '#6b7280' }}
                     >
                       <span className="text-lg">{category.icon}</span>
                     </div>

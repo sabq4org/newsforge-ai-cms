@@ -29,13 +29,14 @@ import {
   Sparkles,
   Filter,
   Calendar,
-  Award,
+  Trophy,
   TrendUp // Using TrendUp as fallback for ChartLine
 } from '@phosphor-icons/react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useKV } from '@github/spark/hooks';
 import { Article, User } from '@/types';
 import { toast } from 'sonner';
+import { safeDateFormat } from '@/lib/utils';
 
 interface RecommendationFeedback {
   id: string;
@@ -578,7 +579,7 @@ export function RecommendationEvaluation({
                     </Badge>
                   </div>
                   <span className="text-xs text-muted-foreground">
-                    {new Date(feedback.timestamp).toLocaleDateString('ar-SA')}
+                    {safeDateFormat(feedback.timestamp, 'ar-SA')}
                   </span>
                 </div>
                 {feedback.feedback && (
