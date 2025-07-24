@@ -27,6 +27,8 @@ import { CategoryManager, CategoryStatistics, ComprehensiveCategoryManager } fro
 import { LoyaltySystem } from '@/components/loyalty';
 import { PodcastDemo } from '@/components/demo/PodcastDemo';
 import { ErrorChecker } from '@/components/debug/ErrorChecker';
+import { ErrorBoundary } from '@/components/debug/ErrorBoundary';
+import { RuntimeChecker } from '@/components/debug/RuntimeChecker';
 import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
 import { mockArticles, mockCategories, mockMediaFiles } from '@/lib/mockData';
@@ -330,19 +332,11 @@ function AppContent() {
           />
         );
       
-      case 'moderation':
-        if (!canAccess('moderation')) {
-          return (
-            <div className="text-center py-12">
-              <h2 className="text-xl font-semibold">غير مصرح</h2>
-              <p className="text-muted-foreground mt-2">ليس لديك صلاحية للوصول لهذه الصفحة</p>
-            </div>
-          );
-        }
-        return <ContentModeration onArticleSelect={handleEditArticle} />;
-      
       case 'error-check':
         return <ErrorChecker />;
+      
+      case 'runtime-check':
+        return <RuntimeChecker />;
       
       default:
         return <RoleBasedDashboard onNavigate={handleViewChange} />;
@@ -376,19 +370,21 @@ function AppContent() {
 
 function App() {
   return (
-    <AuthProvider>
-      <TypographyProvider>
-        <CollaborativeProvider>
-          <AppContent />
-          <Toaster 
-            position="top-right"
-            toastOptions={{
-              duration: 3000,
-            }}
-          />
-        </CollaborativeProvider>
-      </TypographyProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <TypographyProvider>
+          <CollaborativeProvider>
+            <AppContent />
+            <Toaster 
+              position="top-right"
+              toastOptions={{
+                duration: 3000,
+              }}
+            />
+          </CollaborativeProvider>
+        </TypographyProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 

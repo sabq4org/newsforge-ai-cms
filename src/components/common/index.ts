@@ -1,0 +1,1 @@
+export { SafeIcon } from './SafeIcon';

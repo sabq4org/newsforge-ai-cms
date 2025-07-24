@@ -2,6 +2,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { SafeIcon } from '@/components/common';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
   House, 
@@ -26,7 +27,8 @@ import {
   GitMerge,
   Wrench,
   Microphone,
-  FileAudio
+  FileAudio,
+  ChartLine
 } from '@phosphor-icons/react';
 
 interface SidebarProps {
@@ -115,6 +117,13 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       icon: Sparkles,
       show: true,
       badge: isArabic ? 'تجريبي' : 'Demo'
+    },
+    {
+      id: 'runtime-check',
+      label: isArabic ? '🔍 فحص النظام' : '🔍 Runtime Check',
+      icon: Code,
+      show: true,
+      badge: isArabic ? 'تشخيص' : 'Debug'
     },
     {
       id: 'audio-editor',
@@ -265,7 +274,7 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
             onClose();
           }}
         >
-          <item.icon size={16} />
+          <SafeIcon icon={item.icon} className="h-4 w-4" />
           <span className={cn(
             "flex-1 font-arabic",
             isRTL ? "text-right mr-2" : "text-left ml-2"

@@ -27,9 +27,16 @@ export function normalizeArticles(articles: Article[]): Article[] {
     if (!article.category || typeof article.category !== 'object' || !article.category.color) {
       // Find category by ID if it's a string, or use default
       const categoryId = typeof article.category === 'string' ? article.category : article.category?.id;
-      const foundCategory = mockCategories.find(cat => cat.id === categoryId);
+      let foundCategory = null;
       
-      // If no category found, assign the first available category
+      // Safe import check for mockCategories
+      try {
+        foundCategory = mockCategories.find(cat => cat.id === categoryId);
+      } catch (e) {
+        console.warn('normalizeArticles: Could not access mockCategories:', e);
+      }
+      
+      // If no category found, assign the first available category or create a default
       article.category = foundCategory || {
         id: 'default',
         name: 'عام',
