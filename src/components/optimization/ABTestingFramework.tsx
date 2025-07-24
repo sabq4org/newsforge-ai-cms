@@ -375,7 +375,9 @@ export function ABTestingFramework({
                     <CardDescription>
                       {isRTL ? 'اختبار' : 'Testing'} {test.variants[0].type} • 
                       {test.variants.length} {isRTL ? 'متغيرات' : 'variants'} •
-                      {isRTL ? 'أنشئ في' : 'Created'} {new Date(test.createdAt).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US')}
+                      {isRTL ? 'أنشئ في' : 'Created'} {test.createdAt instanceof Date 
+                        ? test.createdAt.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US')
+                        : new Date(test.createdAt).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US')}
                     </CardDescription>
                   </div>
                   <div className="flex items-center gap-2">

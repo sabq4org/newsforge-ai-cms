@@ -42,7 +42,7 @@ export function ArticleList({ onEditArticle, onCreateNew }: ArticleListProps) {
     const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          article.author.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || article.status === statusFilter;
-    const matchesCategory = categoryFilter === 'all' || article.category.id === categoryFilter;
+    const matchesCategory = categoryFilter === 'all' || (article.category && article.category.id === categoryFilter);
     
     return matchesSearch && matchesStatus && matchesCategory;
   });
@@ -203,16 +203,16 @@ export function ArticleList({ onEditArticle, onCreateNew }: ArticleListProps) {
                   {article.status === 'scheduled' ? <Clock size={12} /> : <Calendar size={12} />}
                   <span>
                     {article.publishedAt 
-                      ? new Date(article.publishedAt).toLocaleDateString(
-                          language.code === 'ar' ? 'ar-SA' : 'en-US'
-                        )
+                      ? (article.publishedAt instanceof Date 
+                          ? article.publishedAt.toLocaleDateString(language.code === 'ar' ? 'ar-SA' : 'en-US')
+                          : new Date(article.publishedAt).toLocaleDateString(language.code === 'ar' ? 'ar-SA' : 'en-US'))
                       : article.scheduledAt
-                      ? new Date(article.scheduledAt).toLocaleDateString(
-                          language.code === 'ar' ? 'ar-SA' : 'en-US'
-                        )
-                      : new Date(article.createdAt).toLocaleDateString(
-                          language.code === 'ar' ? 'ar-SA' : 'en-US'
-                        )
+                      ? (article.scheduledAt instanceof Date
+                          ? article.scheduledAt.toLocaleDateString(language.code === 'ar' ? 'ar-SA' : 'en-US')
+                          : new Date(article.scheduledAt).toLocaleDateString(language.code === 'ar' ? 'ar-SA' : 'en-US'))
+                      : (article.createdAt instanceof Date
+                          ? article.createdAt.toLocaleDateString(language.code === 'ar' ? 'ar-SA' : 'en-US')
+                          : new Date(article.createdAt).toLocaleDateString(language.code === 'ar' ? 'ar-SA' : 'en-US'))
                     }
                   </span>
                 </div>
@@ -220,13 +220,15 @@ export function ArticleList({ onEditArticle, onCreateNew }: ArticleListProps) {
 
               {/* Category & Tags */}
               <div className="flex items-center gap-2 flex-wrap">
-                <Badge 
-                  variant="outline" 
-                  style={{ borderColor: article.category.color, color: article.category.color }}
-                  className="text-xs"
-                >
-                  {language.code === 'ar' ? article.category.nameAr : article.category.name}
-                </Badge>
+                {article.category && (
+                  <Badge 
+                    variant="outline" 
+                    style={{ borderColor: article.category.color, color: article.category.color }}
+                    className="text-xs"
+                  >
+                    {language.code === 'ar' ? article.category.nameAr : article.category.name}
+                  </Badge>
+                )}
                 {article.tags.slice(0, 2).map((tag) => (
                   <Badge key={tag.id} variant="secondary" className="text-xs">
                     {language.code === 'ar' ? tag.nameAr : tag.name}

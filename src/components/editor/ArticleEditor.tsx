@@ -47,9 +47,9 @@ export function ArticleEditor({ article, onSave }: ArticleEditorProps) {
   const [title, setTitle] = useState(article?.title || '');
   const [content, setContent] = useState(article?.content || '');
   const [excerpt, setExcerpt] = useState(article?.excerpt || '');
-  const [categoryId, setCategoryId] = useState(article?.category.id || '');
+  const [categoryId, setCategoryId] = useState(article?.category?.id || '');
   const [selectedTags, setSelectedTags] = useState<string[]>(
-    article?.tags.map(tag => tag.id) || []
+    article?.tags?.map(tag => tag.id) || []
   );
   const [featuredImage, setFeaturedImage] = useState(article?.featuredImage || '');
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);

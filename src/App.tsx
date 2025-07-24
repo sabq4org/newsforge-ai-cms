@@ -16,7 +16,7 @@ import { TypographySettings } from '@/components/settings/TypographySettings';
 import { TypographyShowcase } from '@/components/showcase/TypographyShowcase';
 import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
-import { mockArticles } from '@/lib/mockData';
+import { mockArticles, mockCategories } from '@/lib/mockData';
 
 function AppContent() {
   const { isAuthenticated, user, canAccess } = useAuth();
@@ -53,9 +53,15 @@ function AppContent() {
         return updated;
       } else {
         // Create new article
+        const defaultCategory = mockCategories[0]; // Use first category as default
         const newArticle: Article = {
           id: `article_${Date.now()}`,
+          title: articleData.title || 'Untitled Article',
+          content: articleData.content || '',
+          excerpt: articleData.excerpt || '',
           author: user!,
+          category: defaultCategory,
+          tags: [],
           createdAt: new Date(),
           updatedAt: new Date(),
           status: 'draft',
@@ -114,7 +120,7 @@ function AppContent() {
         return <PerformanceInsights />;
       
       case 'ai-optimization':
-        if (editingArticle) {
+        if (editingArticle && editingArticle.category) {
           return (
             <AIOptimizationEngine
               articleId={editingArticle.id}
@@ -136,7 +142,7 @@ function AppContent() {
         );
       
       case 'ab-testing':
-        if (editingArticle) {
+        if (editingArticle && editingArticle.category) {
           return (
             <ABTestingFramework
               articleId={editingArticle.id}

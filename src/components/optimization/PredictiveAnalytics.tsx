@@ -142,11 +142,12 @@ export function PredictiveAnalytics({ article, onAnalyticsUpdate }: PredictiveAn
                 <div>
                   <p className="font-medium">Optimal Publish Time</p>
                   <p className="text-sm text-muted-foreground">
-                    {new Date(analytics.optimalPublishTime).toLocaleDateString()} at{' '}
-                    {new Date(analytics.optimalPublishTime).toLocaleTimeString([], { 
-                      hour: '2-digit', 
-                      minute: '2-digit' 
-                    })}
+                    {analytics.optimalPublishTime instanceof Date 
+                      ? analytics.optimalPublishTime.toLocaleDateString()
+                      : new Date(analytics.optimalPublishTime).toLocaleDateString()} at{' '}
+                    {analytics.optimalPublishTime instanceof Date
+                      ? analytics.optimalPublishTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                      : new Date(analytics.optimalPublishTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>
               </div>
