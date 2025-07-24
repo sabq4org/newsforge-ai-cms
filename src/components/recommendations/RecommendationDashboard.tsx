@@ -16,7 +16,7 @@ import {
   Target,
   Zap,
   MessageCircle,
-  Trophy,
+  Medal,
   Calendar,
   TrendUp
 } from '@phosphor-icons/react';
@@ -210,7 +210,7 @@ export function RecommendationDashboard({ onNavigate, onArticleSelect }: Recomme
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Trophy size={20} />
+              <Medal size={20} />
               إنجازات النظام
             </CardTitle>
           </CardHeader>

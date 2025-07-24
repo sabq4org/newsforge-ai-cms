@@ -23,7 +23,7 @@ import {
   Globe,
   Images,
   Code,
-  Trophy,
+  Medal,
   GitMerge,
   Wrench,
   Microphone,
@@ -32,8 +32,7 @@ import {
   Coffee,
   Drop,
   Bell,
-  BellRinging,
-  Medal
+  BellRinging
 } from '@phosphor-icons/react';
 
 interface SidebarProps {
@@ -356,7 +355,7 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
     {
       id: 'loyalty',
       label: isArabic ? 'نظام الولاء' : 'Loyalty System',
-      icon: Trophy,
+      icon: Medal,
       show: true
     },
     {

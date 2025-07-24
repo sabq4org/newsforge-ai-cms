@@ -15,7 +15,7 @@ import {
   Play, 
   Pause, 
   BarChart3,
-  Trophy,
+  Medal,
   Users,
   Eye,
   MousePointer,
@@ -434,7 +434,7 @@ export function ABTestingFramework({
                             {index === 0 ? (isRTL ? 'الأصلي' : 'Control') : `${isRTL ? 'متغير' : 'Variant'} ${index}`}
                           </Badge>
                           {test.winnerVariantId === variant.id && (
-                            <Trophy className="w-4 h-4 text-yellow-600" />
+                            <Medal className="w-4 h-4 text-yellow-600" />
                           )}
                         </div>
                         {test.status !== 'draft' && (
@@ -462,7 +462,7 @@ export function ABTestingFramework({
                 {test.status === 'completed' && test.winnerVariantId && (
                   <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
                     <div className="flex items-center gap-2 text-green-800 font-medium mb-2">
-                      <Trophy className="w-4 h-4" />
+                      <Medal className="w-4 h-4" />
                       {isRTL ? 'النتيجة النهائية' : 'Test Results'}
                     </div>
                     <p className="text-sm text-green-700">

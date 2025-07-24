@@ -53,7 +53,8 @@ import {
   Clock,
   Star,
   Activity,
-  FileText
+  FileText,
+  Medal
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 
@@ -596,7 +597,7 @@ export function ComprehensiveCategoryManager() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Trophy className="w-5 h-5" />
+                <Medal className="w-5 h-5" />
                 {isArabic ? 'أفضل التصنيفات أداءً' : 'Top Performing Categories'}
               </CardTitle>
             </CardHeader>
@@ -797,5 +798,3 @@ export function ComprehensiveCategoryManager() {
   );
 }
 
-// Missing import
-import { Trophy } from '@phosphor-icons/react';

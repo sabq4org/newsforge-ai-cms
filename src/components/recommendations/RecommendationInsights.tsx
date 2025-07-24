@@ -20,7 +20,7 @@ import {
   ThumbsUp,
   ThumbsDown,
   Star,
-  Trophy,
+  Medal,
   AlertCircle,
   CheckCircle,
   Calendar,

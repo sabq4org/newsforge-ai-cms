@@ -33,7 +33,8 @@ import {
   MapPin,
   Calendar,
   Activity,
-  Shield
+  Shield,
+  Medal
 } from '@phosphor-icons/react';
 import { UserProfile } from '@/types/user-management';
 import { formatDistanceToNow } from 'date-fns';
@@ -323,7 +324,7 @@ export function UserTable({
                       <div>❤️ {user.stats.likesCount} إعجاب</div>
                       {user.loyaltyInfo && (
                         <div className="flex items-center gap-1">
-                          <Trophy className="w-3 h-3" />
+                          <Medal className="w-3 h-3" />
                           {user.loyaltyInfo.points} نقطة
                         </div>
                       )}

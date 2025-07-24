@@ -22,7 +22,7 @@ import {
   Settings,
   Bell,
   Shield,
-  Trophy,
+  Medal,
   Target,
   TrendingUp,
   Camera,
@@ -220,7 +220,7 @@ export function UserProfilePage({ user, onUpdateProfile, articles = [] }: UserPr
               <p className="text-xs text-muted-foreground">مستوى التفاعل</p>
             </div>
             <div className="text-center">
-              <Trophy className="w-6 h-6 text-yellow-500 mx-auto mb-1" />
+              <Medal className="w-6 h-6 text-yellow-500 mx-auto mb-1" />
               <p className="text-sm font-medium">15</p>
               <p className="text-xs text-muted-foreground">الشارات</p>
             </div>

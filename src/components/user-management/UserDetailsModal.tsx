@@ -20,7 +20,7 @@ import {
   Calendar,
   Activity,
   BarChart3,
-  Trophy,
+  Medal,
   Crown,
   Shield,
   UserCheck,
@@ -338,7 +338,7 @@ export function UserDetailsModal({ user, onClose, onUserUpdate }: UserDetailsMod
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Trophy className="w-5 h-5" />
+                    <Medal className="w-5 h-5" />
                     برنامج الولاء
                   </CardTitle>
                 </CardHeader>

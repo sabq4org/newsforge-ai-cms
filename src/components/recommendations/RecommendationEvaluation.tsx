@@ -29,7 +29,7 @@ import {
   Sparkles,
   Filter,
   Calendar,
-  Trophy,
+  Medal,
   TrendUp
 } from '@phosphor-icons/react';
 import { useAuth } from '@/contexts/AuthContext';

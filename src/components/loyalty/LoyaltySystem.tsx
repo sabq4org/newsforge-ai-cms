@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
-  Trophy,
+  Medal,
   Star,
   Gift,
   Target,
@@ -16,7 +16,6 @@ import {
   Share,
   BookOpen,
   Crown,
-  Medal,
   Flame,
   Lightning,
   Coffee,
@@ -352,7 +351,7 @@ Return article IDs in this format:
       'message-circle': MessageCircle,
       'book-open': BookOpen
     };
-    const IconComponent = icons[iconName] || Trophy;
+    const IconComponent = icons[iconName] || Medal;
     return <IconComponent size={16} />;
   };
 
