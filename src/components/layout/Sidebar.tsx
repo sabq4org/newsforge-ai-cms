@@ -62,6 +62,12 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
   // Content management items
   const contentItems = [
     {
+      id: 'search',
+      label: isArabic ? 'البحث الذكي' : 'AI Search',
+      icon: Sparkles,
+      show: true
+    },
+    {
       id: 'scheduled',
       label: isArabic ? 'الجدولة' : 'Scheduled',
       icon: Calendar,

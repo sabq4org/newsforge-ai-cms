@@ -16,6 +16,8 @@ import { TypographySettings } from '@/components/settings/TypographySettings';
 import { TypographyShowcase } from '@/components/showcase/TypographyShowcase';
 import { MediaUpload } from '@/components/media/MediaUpload';
 import { SystemAnalysis } from '@/components/analysis/SystemAnalysis';
+import { AISearch } from '@/components/search/AISearch';
+import { ContentModeration } from '@/components/moderation/ContentModeration';
 import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
 import { mockArticles, mockCategories, mockMediaFiles } from '@/lib/mockData';
@@ -217,6 +219,20 @@ function AppContent() {
       case 'system-analysis':
         return <SystemAnalysis />;
       
+      case 'search':
+        return <AISearch onArticleEdit={handleEditArticle} />;
+      
+      case 'moderation':
+        if (!canAccess('moderation')) {
+          return (
+            <div className="text-center py-12">
+              <h2 className="text-xl font-semibold">غير مصرح</h2>
+              <p className="text-muted-foreground mt-2">ليس لديك صلاحية للوصول لهذه الصفحة</p>
+            </div>
+          );
+        }
+        return <ContentModeration onArticleSelect={handleEditArticle} />;
+      
       case 'scheduled':
         return (
           <ArticleList 
@@ -235,12 +251,7 @@ function AppContent() {
             </div>
           );
         }
-        return (
-          <div className="text-center py-12">
-            <h2 className="text-xl font-semibold">إدارة المراجعة</h2>
-            <p className="text-muted-foreground mt-2">قريباً...</p>
-          </div>
-        );
+        return <ContentModeration onArticleSelect={handleEditArticle} />;
       
       default:
         return <RoleBasedDashboard onNavigate={handleViewChange} />;

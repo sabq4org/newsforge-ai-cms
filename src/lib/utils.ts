@@ -14,10 +14,11 @@ export function cn(...inputs: ClassValue[]) {
 export function normalizeArticles(articles: Article[]): Article[] {
   return articles.map(article => {
     // Ensure category exists and has proper structure
-    if (!article.category || typeof article.category !== 'object') {
+    if (!article.category || typeof article.category !== 'object' || !article.category.color) {
       // Find category by ID if it's a string, or use default
-      const categoryId = typeof article.category === 'string' ? article.category : null;
-      article.category = mockCategories.find(cat => cat.id === categoryId) || mockCategories[0];
+      const categoryId = typeof article.category === 'string' ? article.category : article.category?.id;
+      const foundCategory = mockCategories.find(cat => cat.id === categoryId);
+      article.category = foundCategory || mockCategories[0];
     }
 
     // Ensure tags is always an array
@@ -27,8 +28,11 @@ export function normalizeArticles(articles: Article[]): Article[] {
 
     // Ensure dates are Date objects
     ['createdAt', 'updatedAt', 'publishedAt', 'scheduledAt'].forEach(dateField => {
-      if (article[dateField as keyof Article] && typeof article[dateField as keyof Article] === 'string') {
-        (article as any)[dateField] = new Date(article[dateField as keyof Article] as string);
+      const dateValue = article[dateField as keyof Article];
+      if (dateValue && typeof dateValue === 'string') {
+        (article as any)[dateField] = new Date(dateValue);
+      } else if (dateValue && typeof dateValue === 'number') {
+        (article as any)[dateField] = new Date(dateValue);
       }
     });
 
@@ -55,10 +59,26 @@ export function normalizeArticles(articles: Article[]): Article[] {
  * Normalize activity timestamps to ensure they're Date objects
  */
 export function normalizeActivityTimestamps(activities: any[]): any[] {
-  return activities.map(activity => ({
-    ...activity,
-    timestamp: activity.timestamp instanceof Date 
-      ? activity.timestamp 
-      : new Date(activity.timestamp)
-  }));
+  return activities.map(activity => {
+    // Handle different timestamp formats
+    let timestamp = activity.timestamp;
+    
+    if (typeof timestamp === 'string') {
+      timestamp = new Date(timestamp);
+    } else if (typeof timestamp === 'number') {
+      timestamp = new Date(timestamp);
+    } else if (!timestamp || !(timestamp instanceof Date)) {
+      timestamp = new Date(); // fallback to current date
+    }
+    
+    // Ensure the Date object is valid
+    if (isNaN(timestamp.getTime())) {
+      timestamp = new Date(); // fallback to current date for invalid dates
+    }
+    
+    return {
+      ...activity,
+      timestamp
+    };
+  });
 }
