@@ -177,7 +177,7 @@ export function safeTimeFormat(
     return new Date().toLocaleTimeString(locale, options);
   }
 }
- */
+
 export function normalizeActivityTimestamps(activities: any[]): any[] {
   if (!Array.isArray(activities)) {
     console.warn('normalizeActivityTimestamps: Expected array, got:', typeof activities);
