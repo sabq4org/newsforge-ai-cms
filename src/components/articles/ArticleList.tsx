@@ -10,6 +10,7 @@ import { useOptimizedTypography } from '@/hooks/useOptimizedTypography';
 import { mockArticles, mockCategories } from '@/lib/mockData';
 import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
+import { normalizeArticles } from '@/lib/utils';
 import { 
   Search, 
   Filter, 
@@ -31,7 +32,15 @@ interface ArticleListProps {
 export function ArticleList({ onEditArticle, onCreateNew }: ArticleListProps) {
   const { language, hasPermission } = useAuth();
   const typography = useOptimizedTypography();
-  const [articles, setArticles] = useKV<Article[]>('newsflow-articles', mockArticles);
+  const [rawArticles, setRawArticles] = useKV<Article[]>('sabq-articles', mockArticles);
+  const articles = normalizeArticles(rawArticles);
+  
+  const setArticles = (updater: (currentArticles: Article[]) => Article[]) => {
+    setRawArticles(currentArticles => {
+      const normalized = normalizeArticles(currentArticles);
+      return updater(normalized);
+    });
+  };
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
@@ -220,21 +229,21 @@ export function ArticleList({ onEditArticle, onCreateNew }: ArticleListProps) {
 
               {/* Category & Tags */}
               <div className="flex items-center gap-2 flex-wrap">
-                {article.category && (
+                {article.category && article.category.color && (
                   <Badge 
                     variant="outline" 
                     style={{ borderColor: article.category.color, color: article.category.color }}
                     className="text-xs"
                   >
-                    {language.code === 'ar' ? article.category.nameAr : article.category.name}
+                    {language.code === 'ar' ? article.category.nameAr || article.category.name : article.category.name}
                   </Badge>
                 )}
-                {article.tags.slice(0, 2).map((tag) => (
+                {article.tags && article.tags.length > 0 && article.tags.slice(0, 2).map((tag) => (
                   <Badge key={tag.id} variant="secondary" className="text-xs">
-                    {language.code === 'ar' ? tag.nameAr : tag.name}
+                    {language.code === 'ar' ? tag.nameAr || tag.name : tag.name}
                   </Badge>
                 ))}
-                {article.tags.length > 2 && (
+                {article.tags && article.tags.length > 2 && (
                   <Badge variant="secondary" className="text-xs">
                     +{article.tags.length - 2}
                   </Badge>

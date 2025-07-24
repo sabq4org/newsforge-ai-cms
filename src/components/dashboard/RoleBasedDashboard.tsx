@@ -27,6 +27,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useOptimizedTypography } from '@/hooks/useOptimizedTypography';
 import { useKV } from '@github/spark/hooks';
 import { mockAnalytics, mockArticles } from '@/lib/mockData';
+import { normalizeActivityTimestamps } from '@/lib/utils';
 import { Analytics, Article } from '@/types';
 
 interface RoleBasedDashboardProps {
@@ -235,10 +236,10 @@ export function RoleBasedDashboard({ onNavigate }: RoleBasedDashboardProps) {
 
   const getRecentActivity = () => {
     // Filter activity based on user role
-    let filteredActivity = analytics.recentActivity;
+    let filteredActivity = normalizeActivityTimestamps(analytics.recentActivity);
 
     if (user?.role === 'journalist' || user?.role === 'opinion-writer') {
-      filteredActivity = analytics.recentActivity.filter(activity => 
+      filteredActivity = filteredActivity.filter(activity => 
         activity.user === user.name || activity.user === user.nameAr
       );
     }
@@ -370,11 +371,18 @@ export function RoleBasedDashboard({ onNavigate }: RoleBasedDashboardProps) {
                       {activity.article}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {activity.user} • {activity.timestamp && activity.timestamp instanceof Date 
-                        ? activity.timestamp.toLocaleDateString(isArabic ? 'ar-SA' : 'en-US') 
-                        : activity.timestamp 
-                        ? new Date(activity.timestamp).toLocaleDateString(isArabic ? 'ar-SA' : 'en-US')
-                        : ''}
+                      {activity.user} • {(() => {
+                        try {
+                          if (!activity.timestamp) return '';
+                          const date = activity.timestamp instanceof Date 
+                            ? activity.timestamp 
+                            : new Date(activity.timestamp);
+                          return isNaN(date.getTime()) ? '' : date.toLocaleDateString(isArabic ? 'ar-SA' : 'en-US');
+                        } catch (error) {
+                          console.warn('Invalid timestamp:', activity.timestamp);
+                          return '';
+                        }
+                      })()}
                     </p>
                   </div>
                   <Badge variant="outline" className="text-xs">

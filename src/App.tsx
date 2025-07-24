@@ -17,13 +17,22 @@ import { TypographyShowcase } from '@/components/showcase/TypographyShowcase';
 import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
 import { mockArticles, mockCategories } from '@/lib/mockData';
+import { normalizeArticles } from '@/lib/utils';
 
 function AppContent() {
   const { isAuthenticated, user, canAccess } = useAuth();
   const [activeView, setActiveView] = useState('dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState<Article | undefined>();
-  const [articles, setArticles] = useKV<Article[]>('sabq-articles', mockArticles);
+  const [rawArticles, setRawArticles] = useKV<Article[]>('sabq-articles', mockArticles);
+  const articles = normalizeArticles(rawArticles);
+  
+  const setArticles = (updater: (currentArticles: Article[]) => Article[]) => {
+    setRawArticles(currentArticles => {
+      const normalized = normalizeArticles(currentArticles);
+      return updater(normalized);
+    });
+  };
 
   if (!isAuthenticated) {
     return <LoginForm />;
