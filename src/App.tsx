@@ -9,6 +9,7 @@ import { CollaborativeManager } from '@/components/collaborative';
 import { TypographyProvider } from '@/contexts/TypographyContext';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { RegisterForm, UserProfilePage, SmartRecommendationDashboard } from '@/components/membership';
+import { UserManagementDashboard } from '@/components/user-management';
 import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { RoleBasedDashboard } from '@/components/dashboard/RoleBasedDashboard';
@@ -415,12 +416,7 @@ function AppContent() {
             </div>
           );
         }
-        return (
-          <div className="text-center py-12">
-            <h2 className="text-xl font-semibold">إدارة المستخدمين</h2>
-            <p className="text-muted-foreground mt-2">قريباً...</p>
-          </div>
-        );
+        return <UserManagementDashboard />;
       
       case 'settings':
         return <TypographySettings />;
