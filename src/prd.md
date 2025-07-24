@@ -48,7 +48,12 @@
 - **Purpose**: Data-driven content decisions and performance optimization
 - **Success Criteria**: Clear correlation between AI predictions and actual performance
 
-### 4. Real-Time Collaborative Editing
+### 4. Advanced Typography & Reading Experience
+- **Functionality**: IBM Plex Sans Arabic font optimization, customizable reading preferences, enhanced Arabic text rendering
+- **Purpose**: Provide superior reading experience with user-customizable typography settings for improved accessibility
+- **Success Criteria**: Reduced eye strain, improved reading engagement, WCAG AA compliance
+
+### 5. Real-Time Collaborative Editing
 - **Functionality**: Multiple journalists can simultaneously edit articles with live cursor tracking, conflict resolution, and commenting system
 - **Purpose**: Enable seamless teamwork and reduce coordination overhead in newsroom workflows
 - **Success Criteria**: Teams can collaborate without conflicts, 90% reduction in version control issues
@@ -85,11 +90,33 @@
 **Color Accessibility**: All combinations exceed WCAG AA standards (4.5:1 contrast minimum)
 
 ### Typography System
-**Font Pairing Strategy**: IBM Plex Sans Arabic as the primary font for all interface elements and content
-**Typographic Hierarchy**: Clear 6-level hierarchy from large headlines to small metadata
-**Font Personality**: IBM Plex Sans Arabic provides professional, modern aesthetics with excellent Arabic language support and optimal readability
-**Readability Focus**: Optimized line heights (1.6x) and spacing for Arabic text flow with superior character rendering
-**Which fonts**: IBM Plex Sans Arabic (300, 400, 500, 600, 700) from Google Fonts as the unified typeface
+**Font Pairing Strategy**: IBM Plex Sans Arabic as primary typeface for all UI elements and content, with Inter as fallback for Latin text
+
+**Enhanced Arabic Typography Features**:
+- Optimized preloading with `font-display: swap` strategy
+- Advanced Arabic font features: ligatures, contextual alternates, kerning
+- RTL-specific letter spacing and line height optimizations
+- Arabic numeral support with proper directionality
+
+**Customizable Reading Experience**:
+- User-configurable font size (4 levels: small to extra-large)
+- Adjustable line height (4 settings: compact to loose)  
+- Letter spacing control (3 options: tight, normal, wide)
+- Font weight preference (4 weights: light to semibold)
+
+**Content-Specific Typography**:
+- Headlines: Tighter line-height (1.2), optimized for impact
+- Body text: Relaxed line-height (1.75-1.8), optimized for reading comfort
+- Summaries: Medium spacing (1.6), optimized for scanning
+- Captions: Compact spacing (1.4), space-efficient
+
+**Accessibility & Performance**:
+- WCAG AA contrast compliance across all text elements
+- High contrast mode support for improved visibility
+- Reduced motion preferences respected
+- Print-optimized styling with proper font rendering
+
+**Which fonts**: IBM Plex Sans Arabic (300, 400, 500, 600, 700) from Google Fonts with optimized loading
 **Legibility Check**: IBM Plex Sans Arabic tested extensively for Arabic newsroom content with excellent RTL support
 
 ### Visual Hierarchy & Layout

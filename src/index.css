@@ -8,6 +8,10 @@
   
   html {
     font-family: 'IBM Plex Sans Arabic', 'Inter', sans-serif;
+    /* Enable font optimization for better rendering */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
   
   html[dir="rtl"] {
@@ -17,6 +21,9 @@
   body {
     @apply bg-background text-foreground;
     font-family: 'IBM Plex Sans Arabic', 'Inter', sans-serif;
+    /* Improve text readability */
+    font-variant-ligatures: common-ligatures;
+    font-kerning: normal;
   }
   
   .rtl {
@@ -29,10 +36,13 @@
     text-align: left;
   }
 
-  /* Arabic typography improvements with IBM Plex Sans Arabic */
+  /* Enhanced Arabic typography with IBM Plex Sans Arabic */
   html[dir="rtl"] * {
-    font-feature-settings: 'liga' 1, 'calt' 1, 'kern' 1;
+    font-feature-settings: 'liga' 1, 'calt' 1, 'kern' 1, 'mark' 1, 'mkmk' 1;
     font-family: 'IBM Plex Sans Arabic', sans-serif;
+    /* Better Arabic text shaping */
+    text-rendering: optimizeLegibility;
+    -webkit-font-feature-settings: 'liga', 'kern';
   }
 
   /* RTL-specific adjustments */
@@ -40,14 +50,15 @@
     transform: scaleX(-1);
   }
 
-  /* Arabic number support */
+  /* Enhanced Arabic number support */
   .arabic-numerals {
     font-variant-numeric: normal;
     direction: ltr;
     unicode-bidi: embed;
+    font-feature-settings: 'tnum' 1;
   }
 
-  /* Ensure IBM Plex Sans Arabic is used for all UI elements */
+  /* Comprehensive font assignment for UI elements */
   h1, h2, h3, h4, h5, h6,
   .font-sans,
   .font-arabic,
@@ -63,21 +74,124 @@
   p, span, div, label, 
   [role="button"],
   [role="option"],
-  [role="menuitem"] {
+  [role="menuitem"],
+  .prose {
     font-family: 'IBM Plex Sans Arabic', 'Inter', sans-serif;
   }
 
-  /* Specific class for Arabic font */
+  /* Specific class for Arabic font with enhanced features */
   .font-arabic {
     font-family: 'IBM Plex Sans Arabic', sans-serif !important;
+    font-feature-settings: 'liga' 1, 'calt' 1, 'kern' 1, 'mark' 1, 'mkmk' 1;
   }
 
-  /* Ensure proper font weight mapping for IBM Plex Sans Arabic */
+  /* Enhanced font weight mapping for IBM Plex Sans Arabic */
   .font-light { font-weight: 300; }
   .font-normal { font-weight: 400; }
   .font-medium { font-weight: 500; }
   .font-semibold { font-weight: 600; }
   .font-bold { font-weight: 700; }
+
+  /* Typography optimization for different content types */
+  
+  /* Headings - Tighter line height for better visual hierarchy */
+  h1, h2, h3, h4, h5, h6,
+  .heading {
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+    font-weight: 600;
+  }
+  
+  html[dir="rtl"] h1, html[dir="rtl"] h2, html[dir="rtl"] h3, 
+  html[dir="rtl"] h4, html[dir="rtl"] h5, html[dir="rtl"] h6,
+  html[dir="rtl"] .heading {
+    letter-spacing: 0; /* Remove negative spacing for Arabic */
+  }
+
+  /* Body text - Optimized for reading comfort */
+  .body-text, 
+  .prose p,
+  article p {
+    line-height: 1.75;
+    letter-spacing: 0.01em;
+  }
+  
+  html[dir="rtl"] .body-text,
+  html[dir="rtl"] .prose p,
+  html[dir="rtl"] article p {
+    line-height: 1.8; /* Slightly more for Arabic */
+    letter-spacing: 0.015em;
+  }
+
+  /* Summary/excerpt text - Slightly tighter for scan-ability */
+  .summary-text,
+  .excerpt {
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+  }
+  
+  html[dir="rtl"] .summary-text,
+  html[dir="rtl"] .excerpt {
+    letter-spacing: 0.025em;
+  }
+
+  /* Caption/meta text - Compact but readable */
+  .caption-text,
+  .meta-text,
+  small {
+    line-height: 1.4;
+    letter-spacing: 0.025em;
+  }
+
+  /* Dynamic typography classes based on user preferences */
+  .typography-small { font-size: calc(1rem * var(--user-font-scale, 1) * 0.875); }
+  .typography-medium { font-size: calc(1rem * var(--user-font-scale, 1)); }
+  .typography-large { font-size: calc(1rem * var(--user-font-scale, 1) * 1.125); }
+  .typography-extra-large { font-size: calc(1rem * var(--user-font-scale, 1) * 1.25); }
+
+  .line-compact * { line-height: calc(1.25 * var(--user-line-height-scale, 1.5)); }
+  .line-normal * { line-height: calc(1.5 * var(--user-line-height-scale, 1.5)); }
+  .line-relaxed * { line-height: calc(1.75 * var(--user-line-height-scale, 1.5)); }
+  .line-loose * { line-height: calc(2 * var(--user-line-height-scale, 1.5)); }
+
+  .spacing-tight * { letter-spacing: var(--user-letter-spacing, -0.025em); }
+  .spacing-normal * { letter-spacing: var(--user-letter-spacing, 0); }
+  .spacing-wide * { letter-spacing: var(--user-letter-spacing, 0.025em); }
+
+  /* Font loading optimization */
+  @font-face {
+    font-family: 'IBM Plex Sans Arabic';
+    font-display: swap; /* Improved loading experience */
+  }
+
+  /* Print styles - Ensure proper font rendering */
+  @media print {
+    * {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    
+    body {
+      font-family: 'IBM Plex Sans Arabic', sans-serif;
+      line-height: 1.6;
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    body {
+      font-weight: 500; /* Slightly bolder for better contrast */
+    }
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }
 
 :root {

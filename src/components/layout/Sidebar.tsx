@@ -134,6 +134,12 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       label: isArabic ? 'الإعدادات' : 'Settings',
       icon: Settings,
       show: canAccess('settings')
+    },
+    {
+      id: 'typography-demo',
+      label: isArabic ? 'عرض الطباعة' : 'Typography Demo',
+      icon: Sparkles,
+      show: true
     }
   ];
 

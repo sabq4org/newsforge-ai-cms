@@ -24,6 +24,7 @@ import {
   Star
 } from '@phosphor-icons/react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useOptimizedTypography } from '@/hooks/useOptimizedTypography';
 import { useKV } from '@github/spark/hooks';
 import { mockAnalytics, mockArticles } from '@/lib/mockData';
 import { Analytics, Article } from '@/types';
@@ -34,12 +35,12 @@ interface RoleBasedDashboardProps {
 
 export function RoleBasedDashboard({ onNavigate }: RoleBasedDashboardProps) {
   const { user, language } = useAuth();
+  const typography = useOptimizedTypography();
   const [analytics] = useKV<Analytics>('sabq-analytics', mockAnalytics);
   const [articles] = useKV<Article[]>('sabq-articles', mockArticles);
   const [personalStats, setPersonalStats] = useState<any>(null);
 
-  const isRTL = language.direction === 'rtl';
-  const isArabic = language.code === 'ar';
+  const { isRTL, isArabic } = typography;
 
   useEffect(() => {
     if (user) {
@@ -246,26 +247,26 @@ export function RoleBasedDashboard({ onNavigate }: RoleBasedDashboardProps) {
   };
 
   return (
-    <div className={`space-y-6 font-arabic ${isRTL ? 'text-right' : 'text-left'}`}>
+    <div className={`space-y-6 ${typography.rtlText}`}>
       {/* Welcome Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground font-arabic">
+          <h1 className={typography.heading}>
             {getRoleBasedGreeting()}
             {user && (
-              <span className="text-accent mr-2 font-arabic">
+              <span className="text-accent mr-2">
                 {isArabic ? user.nameAr : user.name}
               </span>
             )}
           </h1>
-          <p className="text-muted-foreground font-arabic">
+          <p className={typography.summary}>
             {isArabic 
               ? `مرحباً بك في منصة سبق الذكية - ${new Date().toLocaleDateString('ar-SA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`
               : `Welcome to Sabq Althakiyah - ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`
             }
           </p>
         </div>
-        <Badge variant="outline" className="flex items-center gap-1 font-arabic">
+        <Badge variant="outline" className={`flex items-center gap-1 ${typography.caption}`}>
           <Crown className="w-3 h-3" />
           {user?.role === 'admin' ? (isArabic ? 'مدير' : 'Administrator') :
            user?.role === 'editor-in-chief' ? (isArabic ? 'رئيس تحرير' : 'Editor-in-Chief') :
@@ -369,7 +370,7 @@ export function RoleBasedDashboard({ onNavigate }: RoleBasedDashboardProps) {
                       {activity.article}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {activity.user} • {new Date(activity.timestamp).toLocaleDateString(isArabic ? 'ar-SA' : 'en-US')}
+                      {activity.user} • {activity.timestamp ? new Date(activity.timestamp).toLocaleDateString(isArabic ? 'ar-SA' : 'en-US') : ''}
                     </p>
                   </div>
                   <Badge variant="outline" className="text-xs">

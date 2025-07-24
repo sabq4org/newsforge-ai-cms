@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Toaster } from '@/components/ui/sonner';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { CollaborativeProvider } from '@/contexts/CollaborativeContext';
+import { TypographyProvider } from '@/contexts/TypographyContext';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
@@ -11,6 +12,8 @@ import { ArticleList } from '@/components/articles/ArticleList';
 import { ArticleEditor } from '@/components/editor/ArticleEditor';
 import { AIOptimizationEngine } from '@/components/optimization/AIOptimizationEngine';
 import { ABTestingFramework } from '@/components/optimization/ABTestingFramework';
+import { TypographySettings } from '@/components/settings/TypographySettings';
+import { TypographyShowcase } from '@/components/showcase/TypographyShowcase';
 import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
 import { mockArticles } from '@/lib/mockData';
@@ -183,12 +186,10 @@ function AppContent() {
         );
       
       case 'settings':
-        return (
-          <div className="text-center py-12">
-            <h2 className="text-xl font-semibold">الإعدادات</h2>
-            <p className="text-muted-foreground mt-2">قريباً...</p>
-          </div>
-        );
+        return <TypographySettings />;
+      
+      case 'typography-demo':
+        return <TypographyShowcase />;
       
       case 'scheduled':
         return (
@@ -248,15 +249,17 @@ function AppContent() {
 function App() {
   return (
     <AuthProvider>
-      <CollaborativeProvider>
-        <AppContent />
-        <Toaster 
-          position="top-right"
-          toastOptions={{
-            duration: 3000,
-          }}
-        />
-      </CollaborativeProvider>
+      <TypographyProvider>
+        <CollaborativeProvider>
+          <AppContent />
+          <Toaster 
+            position="top-right"
+            toastOptions={{
+              duration: 3000,
+            }}
+          />
+        </CollaborativeProvider>
+      </TypographyProvider>
     </AuthProvider>
   );
 }

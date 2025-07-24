@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/contexts/AuthContext';
+import { useOptimizedTypography } from '@/hooks/useOptimizedTypography';
 import { mockArticles, mockCategories } from '@/lib/mockData';
 import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
@@ -29,10 +30,13 @@ interface ArticleListProps {
 
 export function ArticleList({ onEditArticle, onCreateNew }: ArticleListProps) {
   const { language, hasPermission } = useAuth();
+  const typography = useOptimizedTypography();
   const [articles, setArticles] = useKV<Article[]>('newsflow-articles', mockArticles);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
+
+  const { isRTL, isArabic } = typography;
 
   const filteredArticles = articles.filter(article => {
     const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -69,20 +73,20 @@ export function ArticleList({ onEditArticle, onCreateNew }: ArticleListProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className={`space-y-6 ${typography.rtlText}`}>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">
-            {language.code === 'ar' ? 'المقالات' : 'Articles'}
+          <h1 className={typography.heading}>
+            {isArabic ? 'المقالات' : 'Articles'}
           </h1>
-          <p className="text-muted-foreground mt-1">
-            {language.code === 'ar' 
+          <p className={`${typography.summary} mt-1`}>
+            {isArabic 
               ? 'إدارة وتنظيم جميع المقالات' 
               : 'Manage and organize all your articles'}
           </p>
         </div>
         {hasPermission('create') && (
-          <Button onClick={onCreateNew}>
+          <Button onClick={onCreateNew} className={typography.button}>
             <Plus size={16} />
             {language.code === 'ar' ? 'مقال جديد' : 'New Article'}
           </Button>
