@@ -18,6 +18,10 @@ const defaultTheme = {
     padding: "2rem",
   },
   extend: {
+    fontFamily: {
+      arabic: ['"IBM Plex Sans Arabic"', 'sans-serif'],
+      sans: ['"IBM Plex Sans Arabic"', 'Inter', 'sans-serif'],
+    },
     screens: {
       coarse: { raw: "(pointer: coarse)" },
       fine: { raw: "(pointer: fine)" },

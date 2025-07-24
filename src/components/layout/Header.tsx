@@ -85,11 +85,11 @@ export function Header({ onMenuClick, isMobileMenuOpen }: HeaderProps) {
           <div className="w-8 h-8 bg-gradient-to-br from-accent to-primary rounded-lg flex items-center justify-center">
             <Sparkles className="w-4 h-4 text-white" />
           </div>
-          <div className={cn("hidden sm:block", isRTL && "text-right")}>
-            <h1 className="text-lg font-bold text-primary">
+          <div className={cn("hidden sm:block font-arabic", isRTL && "text-right")}>
+            <h1 className="text-lg font-bold text-primary font-arabic">
               {isArabic ? 'سبق الذكية' : 'Sabq Althakiyah'}
             </h1>
-            <p className="text-xs text-muted-foreground -mt-1">
+            <p className="text-xs text-muted-foreground -mt-1 font-arabic">
               {isArabic ? 'نظام إدارة محتوى ذكي' : 'AI-Powered Newsroom'}
             </p>
           </div>
@@ -139,13 +139,13 @@ export function Header({ onMenuClick, isMobileMenuOpen }: HeaderProps) {
                   {(isArabic ? user?.nameAr : user?.name)?.charAt(0).toUpperCase() || 'U'}
                 </AvatarFallback>
               </Avatar>
-              <div className={cn("hidden md:block text-left", isRTL && "text-right")}>
-                <p className="text-sm font-medium leading-none">
+              <div className={cn("hidden md:block text-left font-arabic", isRTL && "text-right")}>
+                <p className="text-sm font-medium leading-none font-arabic">
                   {isArabic ? user?.nameAr : user?.name}
                 </p>
                 <div className="flex items-center gap-1 mt-0.5">
                   <RoleIcon size={10} />
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-muted-foreground font-arabic">
                     {getRoleDisplayName()}
                   </span>
                 </div>

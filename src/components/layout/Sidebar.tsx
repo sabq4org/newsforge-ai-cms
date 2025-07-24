@@ -142,7 +142,7 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       {title && (
         <>
           <div className="px-2 py-1">
-            <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider font-arabic">
               {title}
             </h3>
           </div>
@@ -153,7 +153,7 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
           key={item.id}
           variant={activeView === item.id ? "secondary" : "ghost"}
           className={cn(
-            "w-full justify-start h-9 text-sm",
+            "w-full justify-start h-9 text-sm font-arabic",
             isRTL && "justify-end flex-row-reverse"
           )}
           onClick={() => {
@@ -163,13 +163,13 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
         >
           <item.icon size={16} />
           <span className={cn(
-            "flex-1",
+            "flex-1 font-arabic",
             isRTL ? "text-right mr-2" : "text-left ml-2"
           )}>
             {item.label}
           </span>
           {item.badge && (
-            <Badge variant="secondary" className="text-xs h-4 px-1">
+            <Badge variant="secondary" className="text-xs h-4 px-1 font-arabic">
               {item.badge}
             </Badge>
           )}
@@ -200,16 +200,16 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       )}>
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className={cn("p-4 border-b border-border", isRTL && "text-right")}>
+          <div className={cn("p-4 border-b border-border font-arabic", isRTL && "text-right")}>
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-gradient-to-br from-accent to-primary rounded-lg flex items-center justify-center">
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
               <div className="flex-1">
-                <h2 className="text-base font-bold text-foreground">
+                <h2 className="text-base font-bold text-foreground font-arabic">
                   {isArabic ? 'سبق الذكية' : 'Sabq Althakiyah'}
                 </h2>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground font-arabic">
                   {isArabic ? 'نظام إدارة محتوى ذكي' : 'AI-Powered CMS'}
                 </p>
               </div>
@@ -239,17 +239,17 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
 
           {/* User Info */}
           <div className="p-3 border-t border-border">
-            <div className={cn("flex items-center gap-2 p-2 rounded-lg bg-muted/50", isRTL && "flex-row-reverse")}>
+            <div className={cn("flex items-center gap-2 p-2 rounded-lg bg-muted/50 font-arabic", isRTL && "flex-row-reverse")}>
               <div className="w-6 h-6 bg-accent rounded-full flex items-center justify-center">
-                <span className="text-xs font-bold text-accent-foreground">
+                <span className="text-xs font-bold text-accent-foreground font-arabic">
                   {user?.name?.charAt(0) || user?.nameAr?.charAt(0) || 'U'}
                 </span>
               </div>
-              <div className={cn("flex-1 min-w-0", isRTL && "text-right")}>
-                <p className="text-xs font-medium truncate">
+              <div className={cn("flex-1 min-w-0 font-arabic", isRTL && "text-right")}>
+                <p className="text-xs font-medium truncate font-arabic">
                   {isArabic ? user?.nameAr : user?.name}
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground font-arabic">
                   {user?.role === 'admin' ? (isArabic ? 'مدير' : 'Administrator') :
                    user?.role === 'editor-in-chief' ? (isArabic ? 'رئيس تحرير' : 'Editor-in-Chief') :
                    user?.role === 'section-editor' ? (isArabic ? 'محرر قسم' : 'Section Editor') :
@@ -267,7 +267,7 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
 
           {/* Footer */}
           <div className="p-3 border-t border-border">
-            <div className={cn("text-xs text-muted-foreground", isRTL ? "text-right" : "text-center")}>
+            <div className={cn("text-xs text-muted-foreground font-arabic", isRTL ? "text-right" : "text-center")}>
               {isArabic ? 'سبق الذكية v1.0' : 'Sabq Althakiyah v1.0'}
             </div>
           </div>

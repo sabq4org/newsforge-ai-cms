@@ -85,12 +85,12 @@
 **Color Accessibility**: All combinations exceed WCAG AA standards (4.5:1 contrast minimum)
 
 ### Typography System
-**Font Pairing Strategy**: Inter for Latin text, Amiri for Arabic content
+**Font Pairing Strategy**: IBM Plex Sans Arabic as the primary font for all interface elements and content
 **Typographic Hierarchy**: Clear 6-level hierarchy from large headlines to small metadata
-**Font Personality**: Amiri brings cultural authenticity while Inter ensures international readability
-**Readability Focus**: Optimized line heights (1.6x) and spacing for Arabic text flow
-**Which fonts**: Inter (400, 500, 600, 700) and Amiri (400, 700) from Google Fonts
-**Legibility Check**: Both fonts tested extensively for Arabic newsroom content
+**Font Personality**: IBM Plex Sans Arabic provides professional, modern aesthetics with excellent Arabic language support and optimal readability
+**Readability Focus**: Optimized line heights (1.6x) and spacing for Arabic text flow with superior character rendering
+**Which fonts**: IBM Plex Sans Arabic (300, 400, 500, 600, 700) from Google Fonts as the unified typeface
+**Legibility Check**: IBM Plex Sans Arabic tested extensively for Arabic newsroom content with excellent RTL support
 
 ### Visual Hierarchy & Layout
 **Attention Direction**: AI suggestions highlighted with accent colors, critical actions prominently placed

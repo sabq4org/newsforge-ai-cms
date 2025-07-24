@@ -7,15 +7,16 @@
   }
   
   html {
-    font-family: 'Inter', sans-serif;
+    font-family: 'IBM Plex Sans Arabic', 'Inter', sans-serif;
   }
   
   html[dir="rtl"] {
-    font-family: 'Amiri', 'Inter', sans-serif;
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
   }
   
   body {
     @apply bg-background text-foreground;
+    font-family: 'IBM Plex Sans Arabic', 'Inter', sans-serif;
   }
   
   .rtl {
@@ -28,9 +29,10 @@
     text-align: left;
   }
 
-  /* Arabic typography improvements */
+  /* Arabic typography improvements with IBM Plex Sans Arabic */
   html[dir="rtl"] * {
     font-feature-settings: 'liga' 1, 'calt' 1, 'kern' 1;
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
   }
 
   /* RTL-specific adjustments */
@@ -44,6 +46,38 @@
     direction: ltr;
     unicode-bidi: embed;
   }
+
+  /* Ensure IBM Plex Sans Arabic is used for all UI elements */
+  h1, h2, h3, h4, h5, h6,
+  .font-sans,
+  .font-arabic,
+  button,
+  input,
+  select,
+  textarea,
+  .card,
+  .sidebar,
+  .nav,
+  .dashboard,
+  .editor,
+  p, span, div, label, 
+  [role="button"],
+  [role="option"],
+  [role="menuitem"] {
+    font-family: 'IBM Plex Sans Arabic', 'Inter', sans-serif;
+  }
+
+  /* Specific class for Arabic font */
+  .font-arabic {
+    font-family: 'IBM Plex Sans Arabic', sans-serif !important;
+  }
+
+  /* Ensure proper font weight mapping for IBM Plex Sans Arabic */
+  .font-light { font-weight: 300; }
+  .font-normal { font-weight: 400; }
+  .font-medium { font-weight: 500; }
+  .font-semibold { font-weight: 600; }
+  .font-bold { font-weight: 700; }
 }
 
 :root {

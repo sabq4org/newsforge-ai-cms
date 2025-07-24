@@ -246,26 +246,26 @@ export function RoleBasedDashboard({ onNavigate }: RoleBasedDashboardProps) {
   };
 
   return (
-    <div className={`space-y-6 ${isRTL ? 'text-right' : 'text-left'}`}>
+    <div className={`space-y-6 font-arabic ${isRTL ? 'text-right' : 'text-left'}`}>
       {/* Welcome Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">
+          <h1 className="text-2xl font-bold text-foreground font-arabic">
             {getRoleBasedGreeting()}
             {user && (
-              <span className="text-accent mr-2">
+              <span className="text-accent mr-2 font-arabic">
                 {isArabic ? user.nameAr : user.name}
               </span>
             )}
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground font-arabic">
             {isArabic 
               ? `مرحباً بك في منصة سبق الذكية - ${new Date().toLocaleDateString('ar-SA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`
               : `Welcome to Sabq Althakiyah - ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`
             }
           </p>
         </div>
-        <Badge variant="outline" className="flex items-center gap-1">
+        <Badge variant="outline" className="flex items-center gap-1 font-arabic">
           <Crown className="w-3 h-3" />
           {user?.role === 'admin' ? (isArabic ? 'مدير' : 'Administrator') :
            user?.role === 'editor-in-chief' ? (isArabic ? 'رئيس تحرير' : 'Editor-in-Chief') :
@@ -278,13 +278,13 @@ export function RoleBasedDashboard({ onNavigate }: RoleBasedDashboardProps) {
 
       {/* Priority Alerts */}
       {getPriorityAlerts().map((alert, index) => (
-        <Alert key={index} variant={alert.type === 'warning' ? 'destructive' : 'default'}>
+        <Alert key={index} variant={alert.type === 'warning' ? 'destructive' : 'default'} className="font-arabic">
           {alert.type === 'warning' ? <AlertTriangle className="w-4 h-4" /> : 
            alert.type === 'success' ? <CheckCircle className="w-4 h-4" /> : 
            <Globe className="w-4 h-4" />}
-          <AlertDescription className="flex items-center justify-between">
-            <span>{alert.message}</span>
-            <Button variant="outline" size="sm" onClick={alert.action}>
+          <AlertDescription className="flex items-center justify-between font-arabic">
+            <span className="font-arabic">{alert.message}</span>
+            <Button variant="outline" size="sm" onClick={alert.action} className="font-arabic">
               {isArabic ? 'عرض' : 'View'}
             </Button>
           </AlertDescription>
@@ -292,13 +292,13 @@ export function RoleBasedDashboard({ onNavigate }: RoleBasedDashboardProps) {
       ))}
 
       {/* Quick Actions */}
-      <Card>
+      <Card className="font-arabic">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 font-arabic">
             <Zap className="w-5 h-5 text-accent" />
             {isArabic ? 'الإجراءات السريعة' : 'Quick Actions'}
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="font-arabic">
             {isArabic ? 'الوصول السريع للمهام الأساسية' : 'Quick access to essential tasks'}
           </CardDescription>
         </CardHeader>
@@ -308,11 +308,11 @@ export function RoleBasedDashboard({ onNavigate }: RoleBasedDashboardProps) {
               <Button
                 key={index}
                 variant="outline"
-                className="h-auto p-4 flex flex-col items-center gap-2"
+                className="h-auto p-4 flex flex-col items-center gap-2 font-arabic"
                 onClick={() => onNavigate(action.view)}
               >
                 <action.icon className="w-6 h-6 text-accent" />
-                <span className="text-sm font-medium">{action.label}</span>
+                <span className="text-sm font-medium font-arabic">{action.label}</span>
               </Button>
             ))}
           </div>

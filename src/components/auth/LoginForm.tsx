@@ -39,37 +39,37 @@ export function LoginForm() {
   ];
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 to-accent/5 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 to-accent/5 p-4 font-arabic">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
           <div className="flex items-center justify-center gap-2 mb-4">
             <Newspaper size={32} className="text-primary" />
-            <h1 className="text-2xl font-bold text-primary">NewsFlow</h1>
+            <h1 className="text-2xl font-bold text-primary font-arabic">سبق الذكية</h1>
           </div>
-          <h2 className="text-xl font-semibold">
+          <h2 className="text-xl font-semibold font-arabic">
             {language.code === 'ar' ? 'تسجيل الدخول' : 'Sign In'}
           </h2>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground text-sm font-arabic">
             {language.code === 'ar' 
               ? 'ادخل إلى نظام إدارة المحتوى الذكي' 
               : 'Access your AI-powered content management system'}
           </p>
         </div>
 
-        <Card>
+        <Card className="font-arabic">
           <CardHeader className="pb-4">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">
+              <CardTitle className="text-lg font-arabic">
                 {language.code === 'ar' ? 'تسجيل الدخول' : 'Login'}
               </CardTitle>
               <Select value={language.code} onValueChange={(value: 'en' | 'ar') => switchLanguage(value)}>
-                <SelectTrigger className="w-24">
+                <SelectTrigger className="w-24 font-arabic">
                   <Globe size={16} />
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="en">EN</SelectItem>
-                  <SelectItem value="ar">عر</SelectItem>
+                <SelectContent className="font-arabic">
+                  <SelectItem value="en" className="font-arabic">EN</SelectItem>
+                  <SelectItem value="ar" className="font-arabic">عر</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -77,7 +77,7 @@ export function LoginForm() {
           <CardContent className="space-y-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">
+                <Label htmlFor="email" className="font-arabic">
                   {language.code === 'ar' ? 'البريد الإلكتروني' : 'Email'}
                 </Label>
                 <Input
@@ -87,10 +87,11 @@ export function LoginForm() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder={language.code === 'ar' ? 'أدخل بريدك الإلكتروني' : 'Enter your email'}
                   required
+                  className="font-arabic"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">
+                <Label htmlFor="password" className="font-arabic">
                   {language.code === 'ar' ? 'كلمة المرور' : 'Password'}
                 </Label>
                 <Input
@@ -100,9 +101,10 @@ export function LoginForm() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder={language.code === 'ar' ? 'أدخل كلمة المرور' : 'Enter your password'}
                   required
+                  className="font-arabic"
                 />
               </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button type="submit" className="w-full font-arabic" disabled={isLoading}>
                 {isLoading 
                   ? (language.code === 'ar' ? 'جاري تسجيل الدخول...' : 'Signing in...') 
                   : (language.code === 'ar' ? 'تسجيل الدخول' : 'Sign In')}
@@ -111,12 +113,12 @@ export function LoginForm() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="font-arabic">
           <CardHeader>
-            <CardTitle className="text-sm">
+            <CardTitle className="text-sm font-arabic">
               {language.code === 'ar' ? 'حسابات تجريبية' : 'Demo Accounts'}
             </CardTitle>
-            <CardDescription className="text-xs">
+            <CardDescription className="text-xs font-arabic">
               {language.code === 'ar' ? 'كلمة المرور: password' : 'Password: password'}
             </CardDescription>
           </CardHeader>

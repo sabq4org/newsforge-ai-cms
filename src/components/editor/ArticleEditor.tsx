@@ -235,9 +235,9 @@ export function ArticleEditor({ article, onSave }: ArticleEditorProps) {
   ];
 
   return (
-    <div className={`max-w-6xl mx-auto space-y-6 ${language.direction === 'rtl' ? 'rtl' : 'ltr'}`}>
+    <div className={`max-w-6xl mx-auto space-y-6 font-arabic ${language.direction === 'rtl' ? 'rtl' : 'ltr'}`}>
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">
+        <h1 className="text-2xl font-bold font-arabic">
           {article 
             ? (language.code === 'ar' ? 'تحرير المقال' : 'Edit Article')
             : (language.code === 'ar' ? 'مقال جديد' : 'New Article')
@@ -248,6 +248,7 @@ export function ArticleEditor({ article, onSave }: ArticleEditorProps) {
             variant="outline"
             onClick={() => setIsPreview(!isPreview)}
             disabled={activeTab !== 'editor'}
+            className="font-arabic"
           >
             <Eye size={16} />
             {isPreview 
