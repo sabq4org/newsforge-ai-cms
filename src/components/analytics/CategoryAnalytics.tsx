@@ -100,9 +100,13 @@ export function CategoryAnalytics() {
     }).reverse();
 
     // مساهمة المؤلفين
-    const authorContribution = Array.from(new Set(categoryArticles.map(a => a.author.name))).map(authorName => {
-      const authorArticles = categoryArticles.filter(a => a.author.name === authorName);
-      const avgViews = authorArticles.reduce((sum, a) => sum + a.analytics.views, 0) / authorArticles.length || 0;
+    const authorContribution = Array.from(new Set(
+      categoryArticles
+        .filter(a => a.author && a.author.name)
+        .map(a => a.author.name)
+    )).map(authorName => {
+      const authorArticles = categoryArticles.filter(a => a.author && a.author.name === authorName);
+      const avgViews = authorArticles.reduce((sum, a) => sum + (a.analytics?.views || 0), 0) / authorArticles.length || 0;
       return {
         authorName,
         articles: authorArticles.length,
@@ -131,7 +135,43 @@ export function CategoryAnalytics() {
   };
 
   const performanceData = useMemo(() => {
-    return categories.map(generatePerformanceData);
+    // Ensure categories is an array and contains valid category objects
+    if (!Array.isArray(categories) || categories.length === 0) {
+      console.warn('CategoryAnalytics: No valid categories found');
+      return [];
+    }
+    
+    return categories
+      .filter(category => category && typeof category === 'object' && category.id)
+      .map(category => {
+        try {
+          return generatePerformanceData(category);
+        } catch (error) {
+          console.error('Error generating performance data for category:', category.id, error);
+          // Return minimal valid data structure
+          return {
+            category: {
+              ...category,
+              color: category.color || '#6b7280'
+            },
+            articlesCount: 0,
+            totalViews: 0,
+            totalEngagement: 0,
+            averageReadTime: 0,
+            bounceRate: 0,
+            topArticle: null,
+            trending: 'stable' as const,
+            growthRate: 0,
+            engagementRate: 0,
+            publishingFrequency: 0,
+            readerRetention: 0,
+            shareabilityScore: 0,
+            timeOfDayPerformance: [],
+            weeklyTrends: [],
+            authorContribution: []
+          };
+        }
+      });
   }, [articles, categories]);
 
   const sortedData = useMemo(() => {
@@ -151,7 +191,7 @@ export function CategoryAnalytics() {
 
   const selectedCategoryData = selectedCategory === 'all' 
     ? null 
-    : performanceData.find(d => d.category.id === selectedCategory);
+    : performanceData.find(d => d && d.category && d.category.id === selectedCategory) || null;
 
   const overallStats = useMemo(() => {
     const total = performanceData.reduce((acc, data) => ({
@@ -526,7 +566,7 @@ export function CategoryAnalytics() {
                     </tr>
                   </thead>
                   <tbody>
-                    {sortedData.map((data) => (
+                    {sortedData.filter(data => data && data.category).map((data) => (
                       <tr key={data.category.id} className="border-b hover:bg-muted/50">
                         <td className="p-2">
                           <div className="flex items-center gap-2">
@@ -536,7 +576,10 @@ export function CategoryAnalytics() {
                               <Badge 
                                 variant="secondary" 
                                 className="mr-2"
-                                style={{ backgroundColor: data.category.color + '20', color: data.category.color }}
+                                style={{ 
+                                  backgroundColor: data.category?.color ? data.category.color + '20' : '#6b728020',
+                                  color: data.category?.color || '#6b7280'
+                                }}
                               >
                                 {data.category.slug}
                               </Badge>
@@ -611,7 +654,7 @@ export function CategoryAnalytics() {
             </Select>
           </div>
 
-          {selectedCategoryData ? (
+          {selectedCategoryData && selectedCategoryData.category ? (
             <>
               {/* بطاقة معلومات التصنيف المختار */}
               <Card>
@@ -624,7 +667,10 @@ export function CategoryAnalytics() {
                     </div>
                     <Badge 
                       variant="secondary"
-                      style={{ backgroundColor: selectedCategoryData.category.color + '20', color: selectedCategoryData.category.color }}
+                      style={{ 
+                        backgroundColor: selectedCategoryData.category?.color ? selectedCategoryData.category.color + '20' : '#6b728020',
+                        color: selectedCategoryData.category?.color || '#6b7280'
+                      }}
                     >
                       {selectedCategoryData.category.slug}
                     </Badge>

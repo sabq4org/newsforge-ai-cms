@@ -171,7 +171,7 @@ export function ArticleList({ onEditArticle, onCreateNew }: ArticleListProps) {
                       <span className="text-sm">{category.icon}</span>
                       <div 
                         className="w-2.5 h-2.5 rounded-full"
-                        style={{ backgroundColor: category.color }}
+                        style={{ backgroundColor: category.color || '#6b7280' }}
                       />
                       <span>
                         {language.code === 'ar' ? category.nameAr || category.name : category.nameEn || category.name}

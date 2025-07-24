@@ -338,7 +338,10 @@ export function ComprehensiveCategoryManager() {
                       <div className="flex items-center gap-4 flex-1">
                         <div
                           className="w-12 h-12 rounded-lg flex items-center justify-center text-xl"
-                          style={{ backgroundColor: category.color + '20', color: category.color }}
+                          style={{ 
+                            backgroundColor: category.color ? category.color + '20' : '#6b728020',
+                            color: category.color || '#6b7280'
+                          }}
                         >
                           {category.icon}
                         </div>
@@ -614,7 +617,10 @@ export function ComprehensiveCategoryManager() {
                         
                         <div
                           className="w-10 h-10 rounded-lg flex items-center justify-center"
-                          style={{ backgroundColor: category.color + '20', color: category.color }}
+                          style={{ 
+                            backgroundColor: category.color ? category.color + '20' : '#6b728020',
+                            color: category.color || '#6b7280'
+                          }}
                         >
                           {category.icon}
                         </div>

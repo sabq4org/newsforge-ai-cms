@@ -51,7 +51,7 @@ export function CategoryDisplay({
           {showColor && (
             <div 
               className="w-2 h-2 rounded-full"
-              style={{ backgroundColor: category.color }}
+              style={{ backgroundColor: category.color || '#6b7280' }}
             />
           )}
           <span className="font-medium">{displayName}</span>
@@ -69,7 +69,7 @@ export function CategoryDisplay({
             {showColor && (
               <div 
                 className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: category.color }}
+                style={{ backgroundColor: category.color || '#6b7280' }}
               />
             )}
           </div>
@@ -108,7 +108,7 @@ export function CategoryDisplay({
                 {showColor && (
                   <div 
                     className="w-3 h-3 rounded-full flex-shrink-0"
-                    style={{ backgroundColor: category.color }}
+                    style={{ backgroundColor: category.color || '#6b7280' }}
                   />
                 )}
               </div>
@@ -131,9 +131,9 @@ export function CategoryDisplay({
             "border-2 text-xs font-medium px-2 py-1"
           )}
           style={{ 
-            borderColor: showColor ? category.color : undefined,
-            color: showColor ? category.color : undefined,
-            backgroundColor: showColor ? `${category.color}10` : undefined
+            borderColor: showColor && category.color ? category.color : undefined,
+            color: showColor && category.color ? category.color : undefined,
+            backgroundColor: showColor && category.color ? `${category.color}10` : undefined
           }}
           onClick={handleClick}
         >

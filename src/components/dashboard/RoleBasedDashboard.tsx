@@ -374,13 +374,25 @@ export function RoleBasedDashboard({ onNavigate }: RoleBasedDashboardProps) {
                       {activity.user} • {(() => {
                         try {
                           let date = activity.timestamp;
-                          if (typeof date === 'string') date = new Date(date);
-                          if (typeof date === 'number') date = new Date(date);
-                          if (date && date instanceof Date && !isNaN(date.getTime())) {
-                            return date.toLocaleDateString(isArabic ? 'ar-SA' : 'en-US');
+                          
+                          // Handle different timestamp formats
+                          if (typeof date === 'string') {
+                            date = new Date(date);
+                          } else if (typeof date === 'number') {
+                            date = new Date(date);
+                          } else if (!date || !(date instanceof Date)) {
+                            date = new Date(); // fallback to current date
                           }
-                          return new Date().toLocaleDateString(isArabic ? 'ar-SA' : 'en-US');
+                          
+                          // Ensure the Date object is valid
+                          if (isNaN(date.getTime())) {
+                            date = new Date(); // fallback to current date for invalid dates
+                          }
+                          
+                          // Use the normalized date
+                          return date.toLocaleDateString(isArabic ? 'ar-SA' : 'en-US');
                         } catch (e) {
+                          console.warn('Date formatting error for activity:', activity, e);
                           return new Date().toLocaleDateString(isArabic ? 'ar-SA' : 'en-US');
                         }
                       })()}

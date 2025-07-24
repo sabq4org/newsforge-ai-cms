@@ -12,7 +12,17 @@ export function cn(...inputs: ClassValue[]) {
  * This fixes issues with serialization/deserialization of complex objects
  */
 export function normalizeArticles(articles: Article[]): Article[] {
-  return articles.map(article => {
+  if (!Array.isArray(articles)) {
+    console.warn('normalizeArticles: Expected array, got:', typeof articles);
+    return [];
+  }
+
+  return articles.map((article, index) => {
+    if (!article || typeof article !== 'object') {
+      console.warn(`normalizeArticles: Invalid article at index ${index}:`, article);
+      return null;
+    }
+
     // Ensure category exists and has proper structure
     if (!article.category || typeof article.category !== 'object' || !article.category.color) {
       // Find category by ID if it's a string, or use default
@@ -50,7 +60,12 @@ export function normalizeArticles(articles: Article[]): Article[] {
     ['createdAt', 'updatedAt', 'publishedAt', 'scheduledAt'].forEach(dateField => {
       const dateValue = article[dateField as keyof Article];
       if (dateValue && typeof dateValue === 'string') {
-        (article as any)[dateField] = new Date(dateValue);
+        try {
+          (article as any)[dateField] = new Date(dateValue);
+        } catch (e) {
+          console.warn(`normalizeArticles: Invalid date for ${dateField}:`, dateValue);
+          (article as any)[dateField] = new Date();
+        }
       } else if (dateValue && typeof dateValue === 'number') {
         (article as any)[dateField] = new Date(dateValue);
       }
@@ -71,15 +86,116 @@ export function normalizeArticles(articles: Article[]): Article[] {
       };
     }
 
+    // Ensure author exists
+    if (!article.author || typeof article.author !== 'object') {
+      article.author = {
+        id: 'unknown',
+        name: 'Unknown',
+        email: 'unknown@sabq.sa',
+        role: 'journalist',
+        permissions: [],
+        language: 'ar',
+        createdAt: new Date(),
+        lastActive: new Date()
+      };
+    }
+
     return article;
-  });
+  }).filter((article): article is Article => article !== null);
+/**
+ * Safely format a date with fallback handling
+ */
+export function safeDateFormat(
+  date: Date | string | number | undefined | null, 
+  locale: string = 'ar-SA',
+  options?: Intl.DateTimeFormatOptions
+): string {
+  if (!date) {
+    return new Date().toLocaleDateString(locale, options);
+  }
+  
+  try {
+    let dateObj: Date;
+    
+    if (date instanceof Date) {
+      dateObj = date;
+    } else if (typeof date === 'string') {
+      dateObj = new Date(date);
+    } else if (typeof date === 'number') {
+      dateObj = new Date(date);
+    } else {
+      dateObj = new Date();
+    }
+    
+    // Check if date is valid
+    if (isNaN(dateObj.getTime())) {
+      console.warn('safeDateFormat: Invalid date provided:', date);
+      return new Date().toLocaleDateString(locale, options);
+    }
+    
+    return dateObj.toLocaleDateString(locale, options);
+  } catch (error) {
+    console.error('safeDateFormat: Error formatting date:', date, error);
+    return new Date().toLocaleDateString(locale, options);
+  }
 }
 
 /**
- * Normalize activity timestamps to ensure they're Date objects
+ * Safely format a time with fallback handling
+ */
+export function safeTimeFormat(
+  date: Date | string | number | undefined | null,
+  locale: string = 'ar-SA',
+  options?: Intl.DateTimeFormatOptions
+): string {
+  if (!date) {
+    return new Date().toLocaleTimeString(locale, options);
+  }
+  
+  try {
+    let dateObj: Date;
+    
+    if (date instanceof Date) {
+      dateObj = date;
+    } else if (typeof date === 'string') {
+      dateObj = new Date(date);
+    } else if (typeof date === 'number') {
+      dateObj = new Date(date);
+    } else {
+      dateObj = new Date();
+    }
+    
+    // Check if date is valid
+    if (isNaN(dateObj.getTime())) {
+      console.warn('safeTimeFormat: Invalid date provided:', date);
+      return new Date().toLocaleTimeString(locale, options);
+    }
+    
+    return dateObj.toLocaleTimeString(locale, options);
+  } catch (error) {
+    console.error('safeTimeFormat: Error formatting time:', date, error);
+    return new Date().toLocaleTimeString(locale, options);
+  }
+}
  */
 export function normalizeActivityTimestamps(activities: any[]): any[] {
-  return activities.map(activity => {
+  if (!Array.isArray(activities)) {
+    console.warn('normalizeActivityTimestamps: Expected array, got:', typeof activities);
+    return [];
+  }
+  
+  return activities.map((activity, index) => {
+    if (!activity || typeof activity !== 'object') {
+      console.warn(`normalizeActivityTimestamps: Invalid activity at index ${index}:`, activity);
+      return {
+        id: `invalid-${index}`,
+        type: 'unknown',
+        article: 'Unknown',
+        user: 'Unknown',
+        timestamp: new Date()
+      };
+    }
+    
     // Handle different timestamp formats
     let timestamp = activity.timestamp;
     
@@ -88,11 +204,13 @@ export function normalizeActivityTimestamps(activities: any[]): any[] {
     } else if (typeof timestamp === 'number') {
       timestamp = new Date(timestamp);
     } else if (!timestamp || !(timestamp instanceof Date)) {
+      console.warn(`normalizeActivityTimestamps: Invalid timestamp at index ${index}:`, timestamp);
       timestamp = new Date(); // fallback to current date
     }
     
     // Ensure the Date object is valid
     if (isNaN(timestamp.getTime())) {
+      console.warn(`normalizeActivityTimestamps: Invalid date at index ${index}, using current date`);
       timestamp = new Date(); // fallback to current date for invalid dates
     }
     

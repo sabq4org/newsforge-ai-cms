@@ -26,6 +26,7 @@ import { SchedulingCalendar } from '@/components/scheduling';
 import { CategoryManager, CategoryStatistics, ComprehensiveCategoryManager } from '@/components/categories';
 import { LoyaltySystem } from '@/components/loyalty';
 import { PodcastDemo } from '@/components/demo/PodcastDemo';
+import { ErrorChecker } from '@/components/debug/ErrorChecker';
 import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
 import { mockArticles, mockCategories, mockMediaFiles } from '@/lib/mockData';
@@ -339,6 +340,9 @@ function AppContent() {
           );
         }
         return <ContentModeration onArticleSelect={handleEditArticle} />;
+      
+      case 'error-check':
+        return <ErrorChecker />;
       
       default:
         return <RoleBasedDashboard onNavigate={handleViewChange} />;
