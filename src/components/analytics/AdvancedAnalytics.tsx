@@ -42,7 +42,6 @@ import {
   Desktop,
   DeviceTablet,
   Clock,
-  TrendUp,
   Target,
   Globe
 } from '@phosphor-icons/react';

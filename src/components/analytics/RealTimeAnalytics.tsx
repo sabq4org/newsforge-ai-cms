@@ -25,9 +25,10 @@ import {
   Clock
 } from '@phosphor-icons/react';
 import { useKV } from '@github/spark/hooks';
+import { safeTimeFormat } from '@/lib/utils';
 
 interface RealTimeData {
-  timestamp: string;
+  timestamp: Date;
   activeUsers: number;
   pageViews: number;
   newLikes: number;
@@ -66,7 +67,7 @@ export function RealTimeAnalytics() {
     const interval = setInterval(() => {
       const now = new Date();
       const newDataPoint: RealTimeData = {
-        timestamp: now.toISOString(),
+        timestamp: now,
         activeUsers: Math.floor(Math.random() * 50) + 20,
         pageViews: Math.floor(Math.random() * 100) + 50,
         newLikes: Math.floor(Math.random() * 10),
@@ -124,7 +125,7 @@ export function RealTimeAnalytics() {
 
   // Format data for chart display
   const chartData = realtimeData.map((data, index) => ({
-    time: new Date(data.timestamp).toLocaleTimeString('en-US', { 
+    time: safeTimeFormat(data.timestamp, language.code === 'ar' ? 'ar-SA' : 'en-US', { 
       hour12: false, 
       hour: '2-digit', 
       minute: '2-digit' 
@@ -281,7 +282,7 @@ export function RealTimeAnalytics() {
                   </div>
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  {new Date(data.timestamp).toLocaleTimeString()}
+                  {safeTimeFormat(data.timestamp)}
                 </div>
               </div>
             ))}

@@ -9,7 +9,7 @@ import { LoginForm } from '@/components/auth/LoginForm';
 import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { RoleBasedDashboard } from '@/components/dashboard/RoleBasedDashboard';
-import { AdvancedAnalytics, RealTimeAnalytics, PerformanceInsights, CategoryAnalytics } from '@/components/analytics';
+import { AdvancedAnalytics, AnalyticsDashboard, InteractiveAnalytics, RealTimeAnalytics, PerformanceInsights, CategoryAnalytics } from '@/components/analytics';
 import { ArticleList } from '@/components/articles/ArticleList';
 import { ComprehensiveArticleEditor } from '@/components/editor/ComprehensiveArticleEditor';
 import { AIOptimizationEngine } from '@/components/optimization/AIOptimizationEngine';
@@ -141,16 +141,19 @@ function AppContent() {
         );
       
       case 'analytics':
-        return <AdvancedAnalytics onNavigate={handleViewChange} />;
+        return <AnalyticsDashboard onNavigate={handleViewChange} />;
       
       case 'category-analytics':
         return <CategoryAnalytics />;
       
+      case 'interactive-analytics':
+        return <InteractiveAnalytics onExport={(data) => console.log('Exported data:', data)} />;
+      
+      case 'advanced-analytics':
+        return <AdvancedAnalytics onNavigate={handleViewChange} />;
+      
       case 'realtime':
         return <RealTimeAnalytics />;
-      
-      case 'insights':
-        return <PerformanceInsights />;
       
       case 'recommendations':
         return (
