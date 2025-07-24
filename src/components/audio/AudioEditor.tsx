@@ -60,12 +60,27 @@ import {
   Minus,
   X,
   FloppyDisk,
-  FolderOpen
-} from '@phosphor-icons/react';
+  FolderOpen,
+  CloudArrowDown,
+  Waveform as WaveformIcon,
+  MusicNotes,
+  SpeakerSimpleHigh,
+  Headphones
+import { AdvancedTTSControls } from './AdvancedTTSControls';
+import { AudioLibraryBrowser } from './AudioLibraryBrowser';
+import { PodcastExporter } from './PodcastExporter';
 import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { 
+  elevenLabsService, 
+  ARABIC_VOICE_MAPPING, 
+  ARABIC_VOICE_CONFIGS,
+  optimizeArabicText,
+  estimateArabicDuration,
+  validateElevenLabsKey
+} from '@/services/elevenlabs';
 
 interface AudioSegment {
   id: string;
@@ -88,6 +103,18 @@ interface AudioSegment {
   };
   type: 'text' | 'intro' | 'outro' | 'transition' | 'music' | 'sfx';
   isLocked: boolean;
+  audioUrl?: string;
+  audioBlob?: Blob;
+  optimizedText?: string;
+  elevenLabsVoiceId?: string;
+  elevenLabsSettings?: {
+    stability: number;
+    similarity_boost: number;
+    style: number;
+    use_speaker_boost: boolean;
+  };
+  generationStatus?: 'pending' | 'generating' | 'completed' | 'failed';
+  generationProgress?: number;
 }
 
 interface AudioProject {
@@ -134,46 +161,58 @@ interface AudioEditorProps {
 
 const ARABIC_VOICES = [
   { 
-    id: 'fahad', 
-    name: 'فهد - صوت رجالي عميق', 
+    id: 'fahad_premium', 
+    name: 'فهد المحترف - صوت رجالي عميق', 
     gender: 'male', 
     style: 'formal',
-    description: 'صوت رجالي عميق ومتميز، مناسب للأخبار الرسمية'
+    description: 'صوت رجالي عميق ومتميز، مناسب للأخبار الرسمية والمحتوى الاحترافي',
+    elevenLabsId: ARABIC_VOICE_MAPPING.fahad_premium,
+    recommended: true
   },
   { 
-    id: 'sara', 
-    name: 'سارة - صوت نسائي واضح', 
+    id: 'sara_news', 
+    name: 'سارة الإخبارية - صوت نسائي واضح', 
+    gender: 'female', 
+    style: 'news',
+    description: 'صوت نسائي واضح واحترافي، مثالي للنشرات الإخبارية',
+    elevenLabsId: ARABIC_VOICE_MAPPING.sara_news,
+    recommended: true
+  },
+  { 
+    id: 'ahmed_warm', 
+    name: 'أحمد الدافئ - صوت تعليمي', 
+    gender: 'male', 
+    style: 'warm',
+    description: 'صوت دافئ ومطمئن مناسب للمحتوى التعليمي والثقافي',
+    elevenLabsId: ARABIC_VOICE_MAPPING.ahmed_warm,
+    recommended: false
+  },
+  { 
+    id: 'layla_modern', 
+    name: 'ليلى العصرية - صوت شبابي', 
+    gender: 'female', 
+    style: 'casual',
+    description: 'صوت شبابي حيوي مناسب للبودكاست والمحتوى غير الرسمي',
+    elevenLabsId: ARABIC_VOICE_MAPPING.layla_modern,
+    recommended: false
+  },
+  { 
+    id: 'omar_authority', 
+    name: 'عمر السلطة - صوت موثوق', 
+    gender: 'male', 
+    style: 'authoritative',
+    description: 'صوت موثوق وقوي للمحتوى الرسمي والتحليلات',
+    elevenLabsId: ARABIC_VOICE_MAPPING.omar_authority,
+    recommended: false
+  },
+  { 
+    id: 'nour_gentle', 
+    name: 'نور الرقيقة - صوت ودود', 
     gender: 'female', 
     style: 'friendly',
-    description: 'صوت نسائي واضح ودافئ، مناسب للمحتوى التعليمي'
-  },
-  { 
-    id: 'ahmed', 
-    name: 'أحمد - صوت إخباري', 
-    gender: 'male', 
-    style: 'news',
-    description: 'صوت إخباري احترافي مناسب للنشرات'
-  },
-  { 
-    id: 'layla', 
-    name: 'ليلى - صوت تقديمي', 
-    gender: 'female', 
-    style: 'presentation',
-    description: 'صوت تقديمي أنيق ومتقن'
-  },
-  { 
-    id: 'omar', 
-    name: 'عمر - صوت شبابي', 
-    gender: 'male', 
-    style: 'casual',
-    description: 'صوت شبابي حيوي مناسب للبودكاست'
-  },
-  { 
-    id: 'nour', 
-    name: 'نور - صوت طبيعي', 
-    gender: 'female', 
-    style: 'natural',
-    description: 'صوت طبيعي ومريح للأذن'
+    description: 'صوت رقيق وودود مناسب للمحتوى الاجتماعي والثقافي',
+    elevenLabsId: ARABIC_VOICE_MAPPING.nour_gentle,
+    recommended: false
   }
 ];
 
@@ -211,11 +250,35 @@ export function AudioEditor({ article, project: initialProject, onSave, onExport
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingProgress, setProcessingProgress] = useState(0);
+  const [apiKeyValid, setApiKeyValid] = useState<boolean | null>(null);
+  const [availableElevenLabsVoices, setAvailableElevenLabsVoices] = useState<any[]>([]);
+  const [backgroundMusicEnabled, setBackgroundMusicEnabled] = useState(false);
+  const [selectedBackgroundMusic, setSelectedBackgroundMusic] = useState<string>('');
+  const [showVoicePreview, setShowVoicePreview] = useState<string | null>(null);
 
   const audioRef = useRef<HTMLAudioElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const recordedChunksRef = useRef<Blob[]>([]);
+
+  // Check API key validity on component mount
+  useEffect(() => {
+    const checkApiKey = async () => {
+      const isValid = await validateElevenLabsKey();
+      setApiKeyValid(isValid);
+      
+      if (isValid) {
+        // Load available voices
+        const voices = await elevenLabsService.getVoices();
+        setAvailableElevenLabsVoices(voices);
+        toast.success('تم التحقق من مفتاح ElevenLabs بنجاح');
+      } else {
+        toast.error('مفتاح ElevenLabs غير صحيح - سيتم استخدام المحاكي');
+      }
+    };
+    
+    checkApiKey();
+  }, []);
 
   // Initialize new project from article
   const createProjectFromArticle = useCallback(async (article: Article) => {
@@ -247,7 +310,7 @@ Return a JSON structure with segments including: text, estimated_duration, voice
         text: seg.text || '',
         startTime: 0,
         duration: seg.estimated_duration || 10,
-        voice: 'fahad',
+        voice: 'fahad_premium',
         speed: 1.0,
         pitch: 1.0,
         volume: 1.0,
@@ -262,7 +325,10 @@ Return a JSON structure with segments including: text, estimated_duration, voice
           noise: false
         },
         type: seg.type || 'text',
-        isLocked: false
+        isLocked: false,
+        elevenLabsVoiceId: ARABIC_VOICE_MAPPING.fahad_premium,
+        elevenLabsSettings: ARABIC_VOICE_CONFIGS.fahad_premium,
+        generationStatus: 'pending'
       })) || [];
 
       const newProject: AudioProject = {
@@ -323,55 +389,104 @@ Return a JSON structure with segments including: text, estimated_duration, voice
     }
   }, [currentProject]);
 
-  // Generate TTS for segment
+  // Generate TTS for segment using ElevenLabs
   const generateTTS = async (segment: AudioSegment) => {
     setIsProcessing(true);
     setProcessingProgress(0);
 
+    // Update segment status
+    updateSegment(segment.id, { 
+      generationStatus: 'generating',
+      generationProgress: 0
+    });
+
     try {
       const voice = ARABIC_VOICES.find(v => v.id === segment.voice);
       
-      const prompt = spark.llmPrompt`Optimize this Arabic text for text-to-speech conversion:
-
-Text: "${segment.text}"
-Voice Style: ${voice?.style}
-Target Duration: ${segment.duration} seconds
-
-Instructions:
-- Add pronunciation guides for difficult words
-- Insert natural pauses with markers like [PAUSE:1.5]
-- Optimize for ${voice?.description}
-- Ensure proper Arabic diacritics where needed
-- Make it sound natural and engaging
-
-Return the optimized text with timing markers.`;
-
+      setProcessingProgress(10);
+      
+      // Step 1: Optimize text for Arabic TTS
+      const optimizedText = await optimizeArabicText(segment.text);
       setProcessingProgress(30);
-      const optimizedText = await spark.llm(prompt);
+      
+      updateSegment(segment.id, { 
+        optimizedText,
+        generationProgress: 30
+      });
 
-      setProcessingProgress(60);
-      // Simulate TTS generation
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Step 2: Generate audio using ElevenLabs
+      if (apiKeyValid && voice?.elevenLabsId) {
+        setProcessingProgress(50);
+        
+        const elevenLabsConfig = ARABIC_VOICE_CONFIGS[segment.voice as keyof typeof ARABIC_VOICE_CONFIGS];
+        
+        const audioBlob = await elevenLabsService.generateSpeech({
+          voice_id: voice.elevenLabsId,
+          text: optimizedText,
+          model_id: 'eleven_multilingual_v2',
+          stability: elevenLabsConfig.stability,
+          similarity_boost: elevenLabsConfig.similarity_boost,
+          style: elevenLabsConfig.style,
+          use_speaker_boost: true,
+          output_format: 'mp3_44100_128'
+        });
 
-      setProcessingProgress(90);
-      // In real implementation, would call actual TTS service
-      const audioUrl = `/generated/tts_${segment.id}.mp3`;
+        setProcessingProgress(80);
 
-      setCurrentProject(prev => prev ? {
-        ...prev,
-        segments: prev.segments.map(s => s.id === segment.id ? {
-          ...s,
+        if (audioBlob) {
+          // Create audio URL
+          const audioUrl = URL.createObjectURL(audioBlob);
+          
+          // Calculate actual duration
+          const audio = new Audio(audioUrl);
+          await new Promise<void>((resolve) => {
+            audio.addEventListener('loadedmetadata', () => {
+              const actualDuration = Math.ceil(audio.duration);
+              
+              updateSegment(segment.id, {
+                audioUrl,
+                audioBlob,
+                duration: actualDuration,
+                generationStatus: 'completed',
+                generationProgress: 100
+              });
+              
+              resolve();
+            });
+          });
+
+          setProcessingProgress(100);
+          toast.success('تم توليد الصوت بنجاح باستخدام ElevenLabs');
+        } else {
+          throw new Error('Failed to generate audio');
+        }
+      } else {
+        // Fallback: Simulate TTS generation
+        setProcessingProgress(70);
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        const estimatedDuration = estimateArabicDuration(optimizedText);
+        const audioUrl = `/generated/tts_${segment.id}.mp3`;
+
+        updateSegment(segment.id, {
           audioUrl,
-          optimizedText
-        } : s),
-        updatedAt: new Date()
-      } : null);
+          duration: estimatedDuration,
+          generationStatus: 'completed',
+          generationProgress: 100
+        });
 
-      setProcessingProgress(100);
-      toast.success('تم توليد الصوت بنجاح');
+        setProcessingProgress(100);
+        toast.info('تم محاكاة توليد الصوت (ElevenLabs غير متاح)');
+      }
 
     } catch (error) {
       console.error('Error generating TTS:', error);
+      
+      updateSegment(segment.id, { 
+        generationStatus: 'failed',
+        generationProgress: 0
+      });
+      
       toast.error('حدث خطأ في توليد الصوت');
     } finally {
       setIsProcessing(false);
@@ -450,7 +565,7 @@ Return the optimized text with timing markers.`;
       text: type === 'text' ? 'نص جديد...' : '',
       startTime: 0,
       duration: type === 'music' ? 30 : 10,
-      voice: 'fahad',
+      voice: 'fahad_premium',
       speed: 1.0,
       pitch: 1.0,
       volume: 1.0,
@@ -462,7 +577,10 @@ Return the optimized text with timing markers.`;
         noise: false
       },
       type,
-      isLocked: false
+      isLocked: false,
+      elevenLabsVoiceId: ARABIC_VOICE_MAPPING.fahad_premium,
+      elevenLabsSettings: ARABIC_VOICE_CONFIGS.fahad_premium,
+      generationStatus: 'pending'
     };
 
     setCurrentProject(prev => prev ? {
@@ -470,6 +588,89 @@ Return the optimized text with timing markers.`;
       segments: [...prev.segments, newSegment],
       updatedAt: new Date()
     } : null);
+  };
+
+  // Preview voice using ElevenLabs
+  const previewVoice = async (voiceId: string) => {
+    const voice = ARABIC_VOICES.find(v => v.id === voiceId);
+    if (!voice) return;
+
+    setShowVoicePreview(voiceId);
+    
+    try {
+      if (apiKeyValid && voice.elevenLabsId) {
+        const sampleText = "مرحباً، هذا عرض تجريبي للصوت. أنا أتحدث باللغة العربية بطريقة طبيعية ومفهومة.";
+        
+        const elevenLabsConfig = ARABIC_VOICE_CONFIGS[voiceId as keyof typeof ARABIC_VOICE_CONFIGS];
+        
+        const audioBlob = await elevenLabsService.generateSpeech({
+          voice_id: voice.elevenLabsId,
+          text: sampleText,
+          model_id: 'eleven_multilingual_v2',
+          stability: elevenLabsConfig.stability,
+          similarity_boost: elevenLabsConfig.similarity_boost,
+          style: elevenLabsConfig.style,
+          use_speaker_boost: true,
+          output_format: 'mp3_44100_128'
+        });
+
+        if (audioBlob) {
+          const audioUrl = URL.createObjectURL(audioBlob);
+          const audio = new Audio(audioUrl);
+          
+          audio.addEventListener('ended', () => {
+            setShowVoicePreview(null);
+          });
+          
+          await audio.play();
+          toast.success(`تشغيل عينة من صوت: ${voice.name}`);
+        } else {
+          throw new Error('Failed to generate preview');
+        }
+      } else {
+        // Simulate preview
+        toast.info(`معاينة صوت: ${voice.name} (محاكي)`);
+        setTimeout(() => {
+          setShowVoicePreview(null);
+        }, 3000);
+      }
+    } catch (error) {
+      console.error('Error previewing voice:', error);
+      toast.error('حدث خطأ في معاينة الصوت');
+      setShowVoicePreview(null);
+    }
+  };
+
+  // Download generated audio
+  const downloadAudio = (segment: AudioSegment) => {
+    if (!segment.audioBlob && !segment.audioUrl) {
+      toast.error('لا يوجد صوت للتحميل');
+      return;
+    }
+
+    try {
+      let url = segment.audioUrl;
+      
+      if (segment.audioBlob) {
+        url = URL.createObjectURL(segment.audioBlob);
+      }
+
+      const a = document.createElement('a');
+      a.href = url!;
+      a.download = `segment_${segment.id}.mp3`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      
+      if (segment.audioBlob) {
+        URL.revokeObjectURL(url!);
+      }
+      
+      toast.success('تم تحميل الملف الصوتي');
+    } catch (error) {
+      console.error('Error downloading audio:', error);
+      toast.error('حدث خطأ في تحميل الملف');
+    }
   };
 
   // Delete segment
@@ -663,7 +864,23 @@ Return the optimized text with timing markers.`;
         <div className="flex items-center gap-4">
           <div>
             <h1 className="text-3xl font-bold">محرر البودكاست المتقدم</h1>
-            <p className="text-muted-foreground">{currentProject.name}</p>
+            <div className="flex items-center gap-2 mt-1">
+              <p className="text-muted-foreground">{currentProject.name}</p>
+              <div className="flex items-center gap-1">
+                {apiKeyValid === true && (
+                  <Badge variant="secondary" className="text-xs">
+                    <SpeakerSimpleHigh size={12} className="ml-1" />
+                    ElevenLabs متصل
+                  </Badge>
+                )}
+                {apiKeyValid === false && (
+                  <Badge variant="outline" className="text-xs">
+                    <SpeakerX size={12} className="ml-1" />
+                    وضع المحاكي
+                  </Badge>
+                )}
+              </div>
+            </div>
           </div>
           <Badge variant="outline">{currentProject.status}</Badge>
         </div>
@@ -699,222 +916,371 @@ Return the optimized text with timing markers.`;
       <div className="grid grid-cols-4 gap-6">
         {/* Timeline and Waveform */}
         <div className="col-span-3 space-y-4">
-          {/* Transport Controls */}
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="sm">
-                    <SkipBack size={16} />
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    onClick={() => setIsPlaying(!isPlaying)}
-                  >
-                    {isPlaying ? <Pause size={20} /> : <Play size={20} />}
-                  </Button>
-                  <Button variant="ghost" size="sm">
-                    <SkipForward size={16} />
-                  </Button>
-                  <Button variant="ghost" size="sm">
-                    <Stop size={16} />
-                  </Button>
-                </div>
+          <Tabs defaultValue="timeline" className="w-full">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="timeline">المخطط الزمني</TabsTrigger>
+              <TabsTrigger value="library">مكتبة الصوتيات</TabsTrigger>
+              <TabsTrigger value="advanced">إعدادات متقدمة</TabsTrigger>
+              <TabsTrigger value="export">التصدير والنشر</TabsTrigger>
+            </TabsList>
 
-                <div className="flex items-center gap-4">
-                  <span className="text-sm">
-                    {formatTime(currentTime)} / {formatTime(totalDuration)}
-                  </span>
-                  
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm">السرعة:</span>
-                    <Select value={playbackSpeed.toString()} onValueChange={(v) => setPlaybackSpeed(parseFloat(v))}>
-                      <SelectTrigger className="w-20">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="0.5">0.5x</SelectItem>
-                        <SelectItem value="0.75">0.75x</SelectItem>
-                        <SelectItem value="1">1x</SelectItem>
-                        <SelectItem value="1.25">1.25x</SelectItem>
-                        <SelectItem value="1.5">1.5x</SelectItem>
-                        <SelectItem value="2">2x</SelectItem>
-                      </SelectContent>
-                    </Select>
+            <TabsContent value="timeline" className="space-y-4">
+              {/* Transport Controls */}
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Button variant="ghost" size="sm">
+                        <SkipBack size={16} />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => setIsPlaying(!isPlaying)}
+                      >
+                        {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+                      </Button>
+                      <Button variant="ghost" size="sm">
+                        <SkipForward size={16} />
+                      </Button>
+                      <Button variant="ghost" size="sm">
+                        <Stop size={16} />
+                      </Button>
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                      <span className="text-sm">
+                        {formatTime(currentTime)} / {formatTime(totalDuration)}
+                      </span>
+                      
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm">السرعة:</span>
+                        <Select value={playbackSpeed.toString()} onValueChange={(v) => setPlaybackSpeed(parseFloat(v))}>
+                          <SelectTrigger className="w-20">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="0.5">0.5x</SelectItem>
+                            <SelectItem value="0.75">0.75x</SelectItem>
+                            <SelectItem value="1">1x</SelectItem>
+                            <SelectItem value="1.25">1.25x</SelectItem>
+                            <SelectItem value="1.5">1.5x</SelectItem>
+                            <SelectItem value="2">2x</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => setIsMuted(!isMuted)}
+                        >
+                          {isMuted ? <VolumeX size={16} /> : <VolumeHigh size={16} />}
+                        </Button>
+                        <Slider
+                          value={[isMuted ? 0 : volume]}
+                          onValueChange={([v]) => setVolume(v)}
+                          max={1}
+                          step={0.1}
+                          className="w-20"
+                        />
+                      </div>
+                    </div>
                   </div>
+                </CardContent>
+              </Card>
 
-                  <div className="flex items-center gap-2">
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => setIsMuted(!isMuted)}
-                    >
-                      {isMuted ? <VolumeX size={16} /> : <VolumeHigh size={16} />}
-                    </Button>
-                    <Slider
-                      value={[isMuted ? 0 : volume]}
-                      onValueChange={([v]) => setVolume(v)}
-                      max={1}
-                      step={0.1}
-                      className="w-20"
+              {/* Waveform Display */}
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold">المخطط الزمني</h3>
+                      <div className="flex items-center gap-2">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => setZoomLevel(Math.max(0.5, zoomLevel - 0.5))}
+                        >
+                          <Minus size={16} />
+                        </Button>
+                        <span className="text-sm">{Math.round(zoomLevel * 100)}%</span>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => setZoomLevel(Math.min(5, zoomLevel + 0.5))}
+                        >
+                          <Plus size={16} />
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <canvas
+                      ref={canvasRef}
+                      width={800}
+                      height={200}
+                      className="w-full border rounded cursor-pointer"
+                      onClick={(e) => {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const clickTime = (x / rect.width) * totalDuration / zoomLevel;
+                        setCurrentTime(clickTime);
+                      }}
                     />
                   </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
 
-          {/* Waveform Display */}
-          <Card>
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-semibold">المخطط الزمني</h3>
-                  <div className="flex items-center gap-2">
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => setZoomLevel(Math.max(0.5, zoomLevel - 0.5))}
-                    >
-                      <Minus size={16} />
-                    </Button>
-                    <span className="text-sm">{Math.round(zoomLevel * 100)}%</span>
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => setZoomLevel(Math.min(5, zoomLevel + 0.5))}
-                    >
-                      <Plus size={16} />
-                    </Button>
+              {/* Segments List */}
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle>أجزاء البودكاست</CardTitle>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm" onClick={() => addSegment('text')}>
+                        <Plus className="ml-1" size={14} />
+                        نص
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => addSegment('music')}>
+                        <Plus className="ml-1" size={14} />
+                        موسيقى
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => addSegment('transition')}>
+                        <Plus className="ml-1" size={14} />
+                        انتقال
+                      </Button>
+                    </div>
                   </div>
-                </div>
-                
-                <canvas
-                  ref={canvasRef}
-                  width={800}
-                  height={200}
-                  className="w-full border rounded cursor-pointer"
-                  onClick={(e) => {
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const clickTime = (x / rect.width) * totalDuration / zoomLevel;
-                    setCurrentTime(clickTime);
-                  }}
-                />
-              </div>
-            </CardContent>
-          </Card>
+                </CardHeader>
+                <CardContent>
+                  <ScrollArea className="h-80">
+                    <div className="space-y-2">
+                      {currentProject.segments.map((segment, index) => (
+                        <div
+                          key={segment.id}
+                          className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                            selectedSegmentId === segment.id
+                              ? 'border-primary bg-primary/5'
+                              : 'border-border hover:bg-muted/50'
+                          }`}
+                          onClick={() => setSelectedSegmentId(segment.id)}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-medium">{index + 1}</span>
+                                {getSegmentTypeIcon(segment.type)}
+                              </div>
+                              
+                              <div className="flex-1">
+                                <p className="font-medium text-sm">
+                                  {segment.type === 'text' ? segment.text.substring(0, 50) + '...' : 
+                                   segment.type === 'music' ? 'موسيقى خلفية' :
+                                   segment.type === 'intro' ? 'مقدمة' :
+                                   segment.type === 'outro' ? 'خاتمة' :
+                                   'انتقال'}
+                                </p>
+                                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                                  <span>{formatTime(segment.duration)}</span>
+                                  <Badge variant="outline" className="text-xs">
+                                    {ARABIC_VOICES.find(v => v.id === segment.voice)?.name.split(' - ')[0]}
+                                  </Badge>
+                                  <span>السرعة: {segment.speed}x</span>
+                                  {segment.generationStatus && (
+                                    <Badge 
+                                      variant={
+                                        segment.generationStatus === 'completed' ? 'default' :
+                                        segment.generationStatus === 'generating' ? 'secondary' :
+                                        segment.generationStatus === 'failed' ? 'destructive' : 'outline'
+                                      }
+                                      className="text-xs"
+                                    >
+                                      {segment.generationStatus === 'completed' ? 'مكتمل' :
+                                       segment.generationStatus === 'generating' ? 'جاري التوليد' :
+                                       segment.generationStatus === 'failed' ? 'فشل' : 'في الانتظار'}
+                                    </Badge>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
 
-          {/* Segments List */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>أجزاء البودكاست</CardTitle>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => addSegment('text')}>
-                    <Plus className="ml-1" size={14} />
-                    نص
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => addSegment('music')}>
-                    <Plus className="ml-1" size={14} />
-                    موسيقى
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => addSegment('transition')}>
-                    <Plus className="ml-1" size={14} />
-                    انتقال
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <ScrollArea className="h-80">
-                <div className="space-y-2">
-                  {currentProject.segments.map((segment, index) => (
-                    <div
-                      key={segment.id}
-                      className={`p-3 border rounded-lg cursor-pointer transition-colors ${
-                        selectedSegmentId === segment.id
-                          ? 'border-primary bg-primary/5'
-                          : 'border-border hover:bg-muted/50'
-                      }`}
-                      onClick={() => setSelectedSegmentId(segment.id)}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium">{index + 1}</span>
-                            {getSegmentTypeIcon(segment.type)}
-                          </div>
-                          
-                          <div className="flex-1">
-                            <p className="font-medium text-sm">
-                              {segment.type === 'text' ? segment.text.substring(0, 50) + '...' : 
-                               segment.type === 'music' ? 'موسيقى خلفية' :
-                               segment.type === 'intro' ? 'مقدمة' :
-                               segment.type === 'outro' ? 'خاتمة' :
-                               'انتقال'}
-                            </p>
-                            <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                              <span>{formatTime(segment.duration)}</span>
-                              <Badge variant="outline" className="text-xs">
-                                {ARABIC_VOICES.find(v => v.id === segment.voice)?.name.split(' - ')[0]}
-                              </Badge>
-                              <span>السرعة: {segment.speed}x</span>
+                            <div className="flex items-center gap-1">
+                              {segment.type === 'text' && (
+                                <>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (isRecording && recordingSegment === segment.id) {
+                                        stopRecording();
+                                      } else {
+                                        startRecording(segment.id);
+                                      }
+                                    }}
+                                    className={isRecording && recordingSegment === segment.id ? 'text-red-500' : ''}
+                                  >
+                                    {isRecording && recordingSegment === segment.id ? 
+                                      <RecordFill size={14} /> : <Record size={14} />
+                                    }
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      generateTTS(segment);
+                                    }}
+                                    disabled={segment.generationStatus === 'generating'}
+                                  >
+                                    {segment.generationStatus === 'generating' ? 
+                                      <div className="w-3 h-3 border border-primary border-t-transparent rounded-full animate-spin" /> :
+                                      <Robot size={14} />
+                                    }
+                                  </Button>
+                                  {segment.audioUrl && (
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        downloadAudio(segment);
+                                      }}
+                                    >
+                                      <CloudArrowDown size={14} />
+                                    </Button>
+                                  )}
+                                </>
+                              )}
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  deleteSegment(segment.id);
+                                }}
+                              >
+                                <Trash size={14} />
+                              </Button>
                             </div>
                           </div>
                         </div>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-                        <div className="flex items-center gap-1">
-                          {segment.type === 'text' && (
-                            <>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  if (isRecording && recordingSegment === segment.id) {
-                                    stopRecording();
-                                  } else {
-                                    startRecording(segment.id);
-                                  }
-                                }}
-                                className={isRecording && recordingSegment === segment.id ? 'text-red-500' : ''}
-                              >
-                                {isRecording && recordingSegment === segment.id ? 
-                                  <RecordFill size={14} /> : <Record size={14} />
-                                }
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  generateTTS(segment);
-                                }}
-                              >
-                                <Robot size={14} />
-                              </Button>
-                            </>
-                          )}
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteSegment(segment.id);
-                            }}
-                          >
-                            <Trash size={14} />
-                          </Button>
-                        </div>
+            <TabsContent value="library">
+              <AudioLibraryBrowser 
+                onMusicSelect={(music) => {
+                  // Add background music to project
+                  if (currentProject) {
+                    setCurrentProject(prev => prev ? {
+                      ...prev,
+                      globalSettings: {
+                        ...prev.globalSettings,
+                        backgroundMusic: {
+                          ...prev.globalSettings.backgroundMusic,
+                          enabled: true,
+                          url: music.url,
+                          volume: music.volume_recommendation
+                        }
+                      }
+                    } : null);
+                    toast.success(`تم إضافة الموسيقى: ${music.name}`);
+                  }
+                }}
+                onEffectSelect={(effect) => {
+                  // Add sound effect as new segment
+                  const newSegment: AudioSegment = {
+                    id: `effect_${Date.now()}`,
+                    text: '',
+                    startTime: 0,
+                    duration: effect.duration,
+                    voice: 'fahad_premium',
+                    speed: 1.0,
+                    pitch: 1.0,
+                    volume: effect.volume_recommendation,
+                    pause: { before: 0.5, after: 0.5 },
+                    effects: {
+                      fade: { in: 0.1, out: 0.1 },
+                      echo: 0,
+                      reverb: 0,
+                      noise: false
+                    },
+                    type: 'sfx',
+                    isLocked: false,
+                    audioUrl: effect.url,
+                    generationStatus: 'completed'
+                  };
+
+                  setCurrentProject(prev => prev ? {
+                    ...prev,
+                    segments: [...prev.segments, newSegment],
+                    updatedAt: new Date()
+                  } : null);
+                  
+                  toast.success(`تم إضافة التأثير: ${effect.name}`);
+                }}
+              />
+            </TabsContent>
+
+            <TabsContent value="advanced">
+              {selectedSegment ? (
+                <AdvancedTTSControls
+                  segment={selectedSegment}
+                  onSettingsChange={(settings) => {
+                    updateSegment(selectedSegment.id, {
+                      elevenLabsSettings: settings
+                    });
+                  }}
+                  onTextOptimized={(optimizedText) => {
+                    updateSegment(selectedSegment.id, {
+                      optimizedText,
+                      text: optimizedText
+                    });
+                  }}
+                  onGenerateAudio={() => generateTTS(selectedSegment)}
+                />
+              ) : (
+                <Card>
+                  <CardContent className="pt-6 text-center">
+                    <div className="space-y-4">
+                      <Settings size={64} className="mx-auto text-muted-foreground" />
+                      <div>
+                        <h3 className="font-semibold">اختر جزءاً للتحكم المتقدم</h3>
+                        <p className="text-sm text-muted-foreground">
+                          حدد جزءاً من القائمة لفتح الإعدادات المتقدمة
+                        </p>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </ScrollArea>
-            </CardContent>
-          </Card>
+                  </CardContent>
+                </Card>
+              )}
+            </TabsContent>
+
+            <TabsContent value="export">
+              <PodcastExporter 
+                project={currentProject}
+                onExportStart={() => {
+                  toast.info('بدء عملية التصدير...');
+                }}
+                onExportComplete={(result) => {
+                  if (result.success) {
+                    setCurrentProject(prev => prev ? {
+                      ...prev,
+                      status: 'completed',
+                      outputUrl: result.outputUrl,
+                      updatedAt: new Date()
+                    } : null);
+                  }
+                }}
+              />
+            </TabsContent>
+          </Tabs>
         </div>
 
         {/* Properties Panel */}
@@ -960,7 +1326,14 @@ Return the optimized text with timing markers.`;
                       <Label>الصوت</Label>
                       <Select 
                         value={selectedSegment.voice}
-                        onValueChange={(value) => updateSegment(selectedSegment.id, { voice: value })}
+                        onValueChange={(value) => {
+                          const voice = ARABIC_VOICES.find(v => v.id === value);
+                          updateSegment(selectedSegment.id, { 
+                            voice: value,
+                            elevenLabsVoiceId: voice?.elevenLabsId,
+                            elevenLabsSettings: ARABIC_VOICE_CONFIGS[value as keyof typeof ARABIC_VOICE_CONFIGS]
+                          });
+                        }}
                       >
                         <SelectTrigger>
                           <SelectValue />
@@ -968,11 +1341,36 @@ Return the optimized text with timing markers.`;
                         <SelectContent>
                           {ARABIC_VOICES.map(voice => (
                             <SelectItem key={voice.id} value={voice.id}>
-                              {voice.name}
+                              <div className="flex items-center gap-2">
+                                {voice.name}
+                                {voice.recommended && (
+                                  <Badge variant="secondary" className="text-xs">مستحسن</Badge>
+                                )}
+                              </div>
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
+                      
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="w-full mt-2"
+                        onClick={() => previewVoice(selectedSegment.voice)}
+                        disabled={showVoicePreview === selectedSegment.voice}
+                      >
+                        {showVoicePreview === selectedSegment.voice ? (
+                          <>
+                            <div className="w-3 h-3 border border-primary border-t-transparent rounded-full animate-spin ml-1" />
+                            جاري التشغيل...
+                          </>
+                        ) : (
+                          <>
+                            <Headphones size={14} className="ml-1" />
+                            معاينة الصوت
+                          </>
+                        )}
+                      </Button>
                     </div>
                   </>
                 )}
