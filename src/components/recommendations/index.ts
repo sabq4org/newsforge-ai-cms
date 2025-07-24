@@ -7,3 +7,6 @@ export { RecommendationEvaluation } from './RecommendationEvaluation';
 export { RecommendationInsights } from './RecommendationInsights';
 export { RecommendationDashboard } from './RecommendationDashboard';
 export { RecommendationSystemOverview } from './RecommendationSystemOverview';
+export { GenerativeAIRecommendationSystem } from './GenerativeAIRecommendationSystem';
+export { SmartContentPersonalizationEngine } from './SmartContentPersonalizationEngine';
+export { AITrendAnalysisSystem } from './AITrendAnalysisSystem';

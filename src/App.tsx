@@ -31,7 +31,7 @@ import { MachineLearningEngine } from '@/components/recommendations/MachineLearn
 import { SmartRecommendationSystem } from '@/components/recommendations/SmartRecommendationSystem';
 import { PersonalizedRecommendations } from '@/components/recommendations/PersonalizedRecommendations';
 import { PersonalizedFeedEngine } from '@/components/recommendations/PersonalizedFeedEngine';
-import { RecommendationEvaluation, RecommendationInsights, RecommendationDashboard, RecommendationSystemOverview } from '@/components/recommendations';
+import { RecommendationEvaluation, RecommendationInsights, RecommendationDashboard, RecommendationSystemOverview, GenerativeAIRecommendationSystem, SmartContentPersonalizationEngine, AITrendAnalysisSystem } from '@/components/recommendations';
 import { ReadingBehaviorTracker } from '@/components/analytics/ReadingBehaviorTracker';
 import { ContentModeration } from '@/components/moderation/ContentModeration';
 import { SchedulingCalendar } from '@/components/scheduling';
@@ -568,6 +568,27 @@ function AppContent() {
               تسجيل الدخول
             </Button>
           </div>
+        );
+      
+      case 'generative-recommendations':
+        return (
+          <GenerativeAIRecommendationSystem
+            onArticleSelect={handleEditArticle}
+          />
+        );
+      
+      case 'content-personalization':
+        return (
+          <SmartContentPersonalizationEngine
+            onArticleSelect={handleEditArticle}
+          />
+        );
+      
+      case 'ai-trend-analysis':
+        return (
+          <AITrendAnalysisSystem
+            onArticleSelect={handleEditArticle}
+          />
         );
       
       case 'reading-behavior':

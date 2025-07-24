@@ -207,6 +207,27 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       badge: isArabic ? 'ذكي' : 'ML'
     },
     {
+      id: 'generative-recommendations',
+      label: isArabic ? 'الذكاء الاصطناعي التوليدي' : 'Generative AI Recommendations',
+      icon: Sparkles,
+      show: canAccess('ai-tools'),
+      badge: isArabic ? 'توليدي' : 'GPT'
+    },
+    {
+      id: 'content-personalization',
+      label: isArabic ? 'تخصيص المحتوى الذكي' : 'Smart Content Personalization',
+      icon: Brain,
+      show: canAccess('ai-tools'),
+      badge: isArabic ? 'شخصي' : 'Personal'
+    },
+    {
+      id: 'ai-trend-analysis',
+      label: isArabic ? 'تحليل الاتجاهات الذكي' : 'AI Trend Analysis',
+      icon: TrendingUp,
+      show: canAccess('ai-tools'),
+      badge: isArabic ? 'توقع' : 'Predict'
+    },
+    {
       id: 'personalized-recommendations',
       label: isArabic ? 'التوصيات المخصصة' : 'Personalized Recommendations',
       icon: Sparkles,
