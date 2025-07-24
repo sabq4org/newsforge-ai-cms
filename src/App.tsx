@@ -9,7 +9,7 @@ import { LoginForm } from '@/components/auth/LoginForm';
 import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { RoleBasedDashboard } from '@/components/dashboard/RoleBasedDashboard';
-import { AdvancedAnalytics, RealTimeAnalytics, PerformanceInsights } from '@/components/analytics';
+import { AdvancedAnalytics, RealTimeAnalytics, PerformanceInsights, CategoryAnalytics } from '@/components/analytics';
 import { ArticleList } from '@/components/articles/ArticleList';
 import { ArticleEditor } from '@/components/editor/ArticleEditor';
 import { AIOptimizationEngine } from '@/components/optimization/AIOptimizationEngine';
@@ -136,6 +136,9 @@ function AppContent() {
       
       case 'analytics':
         return <AdvancedAnalytics onNavigate={handleViewChange} />;
+      
+      case 'category-analytics':
+        return <CategoryAnalytics />;
       
       case 'realtime':
         return <RealTimeAnalytics />;

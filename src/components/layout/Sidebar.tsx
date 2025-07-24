@@ -145,6 +145,12 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       show: hasPermission('read', 'analytics')
     },
     {
+      id: 'category-analytics',
+      label: isArabic ? 'إحصائيات التصنيفات' : 'Category Analytics',
+      icon: TrendingUp,
+      show: hasPermission('read', 'analytics')
+    },
+    {
       id: 'realtime',
       label: isArabic ? 'التحليل المباشر' : 'Real-time',
       icon: Eye,
