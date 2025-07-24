@@ -104,6 +104,13 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       show: hasPermission('create', 'articles')
     },
     {
+      id: 'podcast-demo',
+      label: isArabic ? '🎙️ تجربة البودكاست' : '🎙️ Podcast Demo',
+      icon: Sparkles,
+      show: true,
+      badge: isArabic ? 'تجريبي' : 'Demo'
+    },
+    {
       id: 'audio-editor',
       label: isArabic ? 'محرر البودكاست' : 'Audio Editor',
       icon: Microphone,

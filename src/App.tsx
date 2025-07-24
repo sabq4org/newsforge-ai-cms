@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Toaster } from '@/components/ui/sonner';
+import { toast } from 'sonner';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { CollaborativeProvider } from '@/contexts/CollaborativeContext';
 import { CollaborativeManager } from '@/components/collaborative';
@@ -24,7 +25,7 @@ import { ContentModeration } from '@/components/moderation/ContentModeration';
 import { SchedulingCalendar } from '@/components/scheduling';
 import { CategoryManager } from '@/components/categories';
 import { LoyaltySystem } from '@/components/loyalty';
-import { SystemMaintenance } from '@/components/maintenance';
+import { PodcastDemo } from '@/components/demo/PodcastDemo';
 import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
 import { mockArticles, mockCategories, mockMediaFiles } from '@/lib/mockData';
@@ -254,6 +255,16 @@ function AppContent() {
 
       case 'system-maintenance':
         return <SystemMaintenance />;
+      
+      case 'podcast-demo':
+        return (
+          <PodcastDemo 
+            onArticleSelect={(article) => {
+              setEditingArticle(article);
+              setActiveView('audio-editor');
+            }}
+          />
+        );
       
       case 'users':
         if (!canAccess('user-management')) {

@@ -66,6 +66,7 @@ import {
   MusicNotes,
   SpeakerSimpleHigh,
   Headphones
+} from '@phosphor-icons/react';
 import { AdvancedTTSControls } from './AdvancedTTSControls';
 import { AudioLibraryBrowser } from './AudioLibraryBrowser';
 import { PodcastExporter } from './PodcastExporter';
