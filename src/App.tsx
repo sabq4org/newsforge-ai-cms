@@ -15,7 +15,8 @@ import { Sidebar } from '@/components/layout/Sidebar';
 import { RoleBasedDashboard } from '@/components/dashboard/RoleBasedDashboard';
 import { PublicInterface } from '@/components/public';
 import { AdvancedAnalytics, AnalyticsDashboard, InteractiveAnalytics, RealTimeAnalytics, PerformanceInsights, CategoryAnalytics } from '@/components/analytics';
-import { ArticleList } from '@/components/articles/ArticleList';
+import { ComprehensiveArticleModule } from '@/components/articles';
+import { ComprehensiveDeepAnalysisModule } from '@/components/analysis';
 import { ComprehensiveArticleEditor } from '@/components/editor/ComprehensiveArticleEditor';
 import { AIOptimizationEngine } from '@/components/optimization/AIOptimizationEngine';
 import { ABTestingFramework } from '@/components/optimization/ABTestingFramework';
@@ -201,9 +202,20 @@ function AppContent() {
       
       case 'articles':
         return (
-          <ArticleList 
+          <ComprehensiveArticleModule 
             onEditArticle={handleEditArticle}
             onCreateNew={handleCreateNew}
+          />
+        );
+      
+      case 'deep-analysis':
+        return (
+          <ComprehensiveDeepAnalysisModule 
+            article={editingArticle}
+            onAnalysisComplete={(analysis) => {
+              console.log('Analysis completed:', analysis);
+              toast.success('تم إكمال التحليل العميق');
+            }}
           />
         );
       
@@ -556,17 +568,6 @@ function AppContent() {
               تسجيل الدخول
             </Button>
           </div>
-        );
-      
-      case 'deep-analysis':
-        return (
-          <ComprehensiveAnalysisEngine 
-            article={editingArticle}
-            onAnalysisComplete={(analysis) => {
-              console.log('Analysis completed:', analysis);
-              toast.success('تم إكمال التحليل العميق');
-            }}
-          />
         );
       
       default:

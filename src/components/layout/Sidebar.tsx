@@ -57,16 +57,17 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
     },
     {
       id: 'articles',
-      label: isArabic ? 'المقالات' : 'Articles',
+      label: isArabic ? 'إدارة المقالات' : 'Article Management',
       icon: FileText,
       show: true,
       badge: isArabic ? '١٢' : '12'
     },
     {
-      id: 'create-article',
-      label: isArabic ? 'مقال جديد' : 'New Article',
-      icon: PlusCircle,
-      show: hasPermission('create', 'articles')
+      id: 'deep-analysis',
+      label: isArabic ? 'التحليل العميق' : 'Deep Analysis',
+      icon: Brain,
+      show: canAccess('ai-tools'),
+      badge: isArabic ? 'ذكي' : 'AI'
     }
   ];
 
@@ -184,6 +185,42 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       show: hasPermission('read', 'analytics')
     },
     {
+      id: 'recommendation-system-overview',
+      label: isArabic ? 'نظام التوصيات' : 'Recommendation System',
+      icon: Medal, // Using Medal instead of Award to fix runtime error
+      show: canAccess('ai-tools'),
+      badge: isArabic ? 'ذكي' : 'AI'
+    },
+    {
+      id: 'personalized-recommendations',
+      label: isArabic ? 'التوصيات المخصصة' : 'Personalized Recommendations',
+      icon: Sparkles,
+      show: hasPermission('read', 'analytics'),
+      badge: isArabic ? 'جديد' : 'New'
+    },
+    {
+      id: 'ai-optimization',
+      label: isArabic ? 'التحسين الذكي' : 'AI Optimization',
+      icon: Brain,
+      show: canAccess('ai-tools')
+    },
+    {
+      id: 'ab-testing',
+      label: isArabic ? 'اختبار A/B' : 'A/B Testing',
+      icon: TestTube,
+      show: canAccess('ab-testing')
+    },
+    {
+      id: 'collaborative',
+      label: isArabic ? 'التعاون المباشر' : 'Live Collaboration',
+      icon: GitMerge,
+      show: canAccess('collaboration')
+    }
+  ];
+
+  // Notifications & User Experience items
+  const notificationItems = [
+    {
       id: 'breaking-news',
       label: isArabic ? 'الأخبار العاجلة' : 'Breaking News',
       icon: BellRinging,
@@ -209,34 +246,17 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       icon: BarChart3,
       show: hasPermission('read', 'analytics'),
       badge: isArabic ? 'تحليل' : 'Analytics'
-    },
+    }
+  ];
+
+  // User Experience & Personalization items
+  const userExperienceItems = [
     {
-      id: 'advanced-analytics',
-      label: isArabic ? 'التحليلات المتقدمة' : 'Advanced Analytics',
-      icon: Brain,
-      show: hasPermission('read', 'analytics'),
-      badge: isArabic ? 'ذكي' : 'AI'
-    },
-    {
-      id: 'personalized-recommendations',
-      label: isArabic ? 'التوصيات المخصصة' : 'Personalized Recommendations',
-      icon: Sparkles,
-      show: hasPermission('read', 'analytics'),
-      badge: isArabic ? 'جديد' : 'New'
-    },
-    {
-      id: 'recommendation-system-overview',
-      label: isArabic ? 'نظرة على نظام التوصيات' : 'Recommendation System Overview',
-      icon: Medal, // Using Medal instead of Award to fix runtime error
-      show: canAccess('ai-tools'),
-      badge: isArabic ? 'عرض' : 'Demo'
-    },
-    {
-      id: 'smart-recommendations',
-      label: isArabic ? 'التوصيات الذكية' : 'Smart Recommendations',
-      icon: Brain,
+      id: 'member-profile',
+      label: isArabic ? 'الملف الشخصي' : 'Member Profile',
+      icon: Users,
       show: true,
-      badge: isArabic ? 'ذكي' : 'AI'
+      badge: isArabic ? 'عضو' : 'Member'
     },
     {
       id: 'personalized-feed',
@@ -253,81 +273,11 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       badge: isArabic ? 'تحليل' : 'Analytics'
     },
     {
-      id: 'member-profile',
-      label: isArabic ? 'الملف الشخصي' : 'Member Profile',
-      icon: Users,
+      id: 'smart-recommendations',
+      label: isArabic ? 'التوصيات الذكية' : 'Smart Recommendations',
+      icon: Brain,
       show: true,
-      badge: isArabic ? 'عضو' : 'Member'
-    },
-    {
-      id: 'recommendation-dashboard',
-      label: isArabic ? 'لوحة التوصيات' : 'Recommendation Dashboard',
-      icon: Brain,
-      show: canAccess('ai-tools'),
-      badge: isArabic ? 'متكامل' : 'Full'
-    },
-    {
-      id: 'category-analytics',
-      label: isArabic ? 'إحصائيات التصنيفات' : 'Category Analytics',
-      icon: TrendingUp,
-      show: hasPermission('read', 'analytics')
-    },
-    {
-      id: 'realtime',
-      label: isArabic ? 'التحليل المباشر' : 'Real-time',
-      icon: Eye,
-      show: canAccess('advanced-analytics')
-    },
-    {
-      id: 'insights',
-      label: isArabic ? 'رؤى الأداء' : 'Performance Insights',
-      icon: TrendingUp,
-      show: canAccess('advanced-analytics')
-    },
-    {
-      id: 'recommendations',
-      label: isArabic ? 'التوصيات الذكية' : 'AI Recommendations',
-      icon: Brain,
-      show: canAccess('ai-tools')
-    },
-    {
-      id: 'recommendation-evaluation',
-      label: isArabic ? 'تقييم التوصيات' : 'Recommendation Evaluation',
-      icon: Sparkles,
-      show: canAccess('ai-tools'),
-      badge: isArabic ? 'جديد' : 'New'
-    },
-    {
-      id: 'recommendation-insights',
-      label: isArabic ? 'رؤى التوصيات' : 'Recommendation Insights',
-      icon: TrendingUp,
-      show: canAccess('advanced-analytics'),
       badge: isArabic ? 'ذكي' : 'AI'
-    },
-    {
-      id: 'ai-optimization',
-      label: isArabic ? 'التحسين الذكي' : 'AI Optimization',
-      icon: Brain,
-      show: canAccess('ai-tools')
-    },
-    {
-      id: 'ab-testing',
-      label: isArabic ? 'اختبار A/B' : 'A/B Testing',
-      icon: TestTube,
-      show: canAccess('ab-testing')
-    },
-    {
-      id: 'deep-analysis',
-      label: isArabic ? 'التحليل العميق' : 'Deep Analysis',
-      icon: Brain,
-      show: canAccess('ai-tools'),
-      badge: isArabic ? 'ذكي' : 'AI'
-    },
-    {
-      id: 'collaborative',
-      label: isArabic ? 'التعاون المباشر' : 'Live Collaboration',
-      icon: GitMerge,
-      show: canAccess('collaboration')
     }
   ];
 
@@ -471,6 +421,16 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
             
             {/* AI & Analytics */}
             {renderMenuSection(aiAnalyticsItems, isArabic ? 'التحليلات والذكاء الاصطناعي' : 'AI & Analytics')}
+            
+            <Separator />
+            
+            {/* Notifications */}
+            {renderMenuSection(notificationItems, isArabic ? 'الإشعارات' : 'Notifications')}
+            
+            <Separator />
+            
+            {/* User Experience */}
+            {renderMenuSection(userExperienceItems, isArabic ? 'تجربة المستخدم' : 'User Experience')}
             
             <Separator />
             
