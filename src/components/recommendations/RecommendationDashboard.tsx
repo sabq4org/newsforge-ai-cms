@@ -18,7 +18,7 @@ import {
   MessageCircle,
   Trophy,
   Calendar,
-  TrendUp // Using TrendUp as fallback for ChartLine
+  TrendUp
 } from '@phosphor-icons/react';
 import { PersonalizedRecommendations } from './PersonalizedRecommendations';
 import { RecommendationEvaluation } from './RecommendationEvaluation';

@@ -30,7 +30,7 @@ import {
   Filter,
   Calendar,
   Trophy,
-  TrendUp // Using TrendUp as fallback for ChartLine
+  TrendUp
 } from '@phosphor-icons/react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useKV } from '@github/spark/hooks';

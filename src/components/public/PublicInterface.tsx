@@ -27,7 +27,7 @@ import {
   TrendingUp,
   BookOpen,
   Headphones,
-  BarChart3 // Using BarChart3 as fallback for ChartLine
+  BarChart3
 } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
