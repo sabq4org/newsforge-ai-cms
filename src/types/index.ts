@@ -371,3 +371,139 @@ export interface NotificationPreference {
     breaking: boolean;
   };
 }
+
+// Real-time Collaborative Editing Types
+export interface CollaborativeSession {
+  id: string;
+  articleId: string;
+  participants: CollaborativeUser[];
+  isActive: boolean;
+  createdAt: Date;
+  lastActivity: Date;
+  lockTimeout: number; // seconds
+}
+
+export interface CollaborativeUser {
+  id: string;
+  name: string;
+  nameAr?: string;
+  avatar?: string;
+  role: string;
+  cursor?: CursorPosition;
+  selection?: TextSelection;
+  color: string; // Unique color for this session
+  isTyping: boolean;
+  lastSeen: Date;
+  connectionStatus: 'online' | 'away' | 'offline';
+}
+
+export interface CursorPosition {
+  line: number;
+  column: number;
+  section: 'title' | 'content' | 'excerpt';
+}
+
+export interface TextSelection {
+  start: CursorPosition;
+  end: CursorPosition;
+  section: 'title' | 'content' | 'excerpt';
+}
+
+export interface CollaborativeOperation {
+  id: string;
+  sessionId: string;
+  userId: string;
+  type: 'insert' | 'delete' | 'format' | 'cursor-move' | 'selection-change';
+  section: 'title' | 'content' | 'excerpt' | 'tags' | 'category';
+  position: {
+    index: number;
+    length?: number;
+  };
+  content?: string;
+  formatting?: TextFormatting;
+  timestamp: Date;
+  appliedBy: string[];
+}
+
+export interface TextFormatting {
+  bold?: boolean;
+  italic?: boolean;
+  underline?: boolean;
+  strikethrough?: boolean;
+  color?: string;
+  backgroundColor?: string;
+  fontSize?: number;
+  fontFamily?: string;
+  alignment?: 'left' | 'center' | 'right' | 'justify';
+  listType?: 'ordered' | 'unordered' | 'none';
+  heading?: 1 | 2 | 3 | 4 | 5 | 6 | null;
+}
+
+export interface CollaborativeComment {
+  id: string;
+  articleId: string;
+  sessionId: string;
+  author: CollaborativeUser;
+  content: string;
+  position: {
+    section: 'title' | 'content' | 'excerpt';
+    startIndex: number;
+    endIndex: number;
+    selectedText: string;
+  };
+  type: 'comment' | 'suggestion' | 'approval' | 'question';
+  status: 'open' | 'resolved' | 'dismissed';
+  replies: CollaborativeComment[];
+  createdAt: Date;
+  updatedAt: Date;
+  resolvedBy?: string;
+  resolvedAt?: Date;
+}
+
+export interface CollaborativeChanges {
+  articleId: string;
+  sessionId: string;
+  changes: {
+    field: 'title' | 'content' | 'excerpt' | 'tags' | 'category' | 'status';
+    oldValue: any;
+    newValue: any;
+    author: CollaborativeUser;
+    timestamp: Date;
+    approved: boolean;
+    approvedBy?: string;
+  }[];
+  conflictResolution?: {
+    conflicts: ConflictResolution[];
+    resolvedAt: Date;
+    resolvedBy: string;
+  };
+}
+
+export interface ConflictResolution {
+  id: string;
+  type: 'merge' | 'overwrite' | 'manual';
+  field: string;
+  conflictingChanges: {
+    user1: { userId: string; value: any; timestamp: Date };
+    user2: { userId: string; value: any; timestamp: Date };
+  };
+  resolution: any;
+  resolvedBy: string;
+  resolvedAt: Date;
+}
+
+export interface CollaborativePermissions {
+  userId: string;
+  articleId: string;
+  permissions: {
+    canEdit: boolean;
+    canComment: boolean;
+    canApprove: boolean;
+    canPublish: boolean;
+    canInviteOthers: boolean;
+    sectionsAccess: ('title' | 'content' | 'excerpt' | 'metadata')[];
+  };
+  assignedBy: string;
+  assignedAt: Date;
+  expiresAt?: Date;
+}

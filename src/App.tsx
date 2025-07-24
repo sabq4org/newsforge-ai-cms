@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Toaster } from '@/components/ui/sonner';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
+import { CollaborativeProvider } from '@/contexts/CollaborativeContext';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
@@ -247,13 +248,15 @@ function AppContent() {
 function App() {
   return (
     <AuthProvider>
-      <AppContent />
-      <Toaster 
-        position="top-right"
-        toastOptions={{
-          duration: 3000,
-        }}
-      />
+      <CollaborativeProvider>
+        <AppContent />
+        <Toaster 
+          position="top-right"
+          toastOptions={{
+            duration: 3000,
+          }}
+        />
+      </CollaborativeProvider>
     </AuthProvider>
   );
 }

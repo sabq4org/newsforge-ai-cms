@@ -9,10 +9,15 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCollaborative } from '@/contexts/CollaborativeContext';
 import { mockCategories, mockTags } from '@/lib/mockData';
 import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
 import { PerformanceOptimizationEngine } from '@/components/optimization';
+import { CollaborativePresence } from '@/components/collaborative/CollaborativePresence';
+import { CollaborativeTextEditor } from '@/components/collaborative/CollaborativeTextEditor';
+import { ConflictResolutionPanel } from '@/components/collaborative/ConflictResolutionPanel';
+import { CollaborativeWorkspace } from '@/components/collaborative/CollaborativeWorkspace';
 import { 
   Bold, 
   Italic, 
@@ -38,6 +43,7 @@ interface ArticleEditorProps {
 
 export function ArticleEditor({ article, onSave }: ArticleEditorProps) {
   const { language, user } = useAuth();
+  const { currentSession, resolveConflict } = useCollaborative();
   const [title, setTitle] = useState(article?.title || '');
   const [content, setContent] = useState(article?.content || '');
   const [excerpt, setExcerpt] = useState(article?.excerpt || '');
@@ -49,6 +55,11 @@ export function ArticleEditor({ article, onSave }: ArticleEditorProps) {
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const [isPreview, setIsPreview] = useState(false);
   const [activeTab, setActiveTab] = useState('editor');
+  
+  // Mock conflicts for demonstration
+  const [conflicts] = useState([
+    // This would come from the collaborative context in a real implementation
+  ]);
   
   // Create a complete article object for optimization engine
   const [articleData, setArticleData] = useState<Partial<Article>>({
@@ -271,92 +282,123 @@ export function ArticleEditor({ article, onSave }: ArticleEditorProps) {
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {/* Main Editor */}
             <div className="lg:col-span-3 space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                {language.code === 'ar' ? 'المحتوى' : 'Content'}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="title">
-                  {language.code === 'ar' ? 'العنوان' : 'Title'}
-                </Label>
-                <Input
-                  id="title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder={language.code === 'ar' ? 'أدخل عنوان المقال' : 'Enter article title'}
-                  className="text-lg font-semibold"
+              {/* Collaborative Presence */}
+              {article && (
+                <CollaborativePresence 
+                  articleId={article.id}
+                  className="lg:hidden" 
                 />
-              </div>
-
-              {!isPreview && (
-                <>
-                  {/* Toolbar */}
-                  <div className="flex items-center gap-1 p-2 border rounded-md bg-muted/50">
-                    {toolbarButtons.map((button, index) => (
-                      <Button
-                        key={index}
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleFormatText(button.action)}
-                        title={button.tooltip}
-                      >
-                        <button.icon size={16} />
-                      </Button>
-                    ))}
-                    <Separator orientation="vertical" className="h-6" />
-                    <Button variant="ghost" size="sm" title="Add Link">
-                      <Link size={16} />
-                    </Button>
-                    <Button variant="ghost" size="sm" title="Add Image">
-                      <ImageIcon size={16} />
-                    </Button>
-                  </div>
-
-                  <Textarea
-                    ref={contentRef}
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    placeholder={language.code === 'ar' ? 'اكتب محتوى المقال هنا...' : 'Write your article content here...'}
-                    className="min-h-[400px] resize-none font-mono text-sm"
-                  />
-                </>
+              )}
+              
+              {/* Conflict Resolution */}
+              {conflicts.length > 0 && (
+                <ConflictResolutionPanel
+                  conflicts={conflicts}
+                  onResolveConflict={resolveConflict}
+                />
               )}
 
-              {isPreview && (
-                <div className="min-h-[400px] p-6 border rounded-md bg-background">
-                  <h1 className="text-3xl font-bold mb-4">{title}</h1>
-                  <div 
-                    className="prose prose-sm max-w-none"
-                    dangerouslySetInnerHTML={{ 
-                      __html: content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                        .replace(/\n/g, '<br/>')
-                    }}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <span>
+                      {language.code === 'ar' ? 'المحتوى التعاوني' : 'Collaborative Content'}
+                    </span>
+                    {currentSession && (
+                      <Badge variant="outline" className="text-xs">
+                        {language.code === 'ar' ? 'جلسة تعاونية نشطة' : 'Active Collaboration'}
+                      </Badge>
+                    )}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Collaborative Title Editor */}
+                  <CollaborativeTextEditor
+                    value={title}
+                    onChange={setTitle}
+                    section="title"
+                    label={language.code === 'ar' ? 'العنوان' : 'Title'}
+                    placeholder={language.code === 'ar' ? 'أدخل عنوان المقال' : 'Enter article title'}
+                    maxLength={120}
+                    required
+                    rows={1}
+                    className="text-lg font-semibold"
                   />
-                </div>
-              )}
 
-              <div>
-                <Label htmlFor="excerpt">
-                  {language.code === 'ar' ? 'المقتطف' : 'Excerpt'}
-                </Label>
-                <Textarea
-                  id="excerpt"
-                  value={excerpt}
-                  onChange={(e) => setExcerpt(e.target.value)}
-                  placeholder={language.code === 'ar' ? 'ملخص قصير للمقال' : 'Brief summary of the article'}
-                  rows={3}
+                  {!isPreview && (
+                    <>
+                      {/* Toolbar */}
+                      <div className="flex items-center gap-1 p-2 border rounded-md bg-muted/50">
+                        {toolbarButtons.map((button, index) => (
+                          <Button
+                            key={index}
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleFormatText(button.action)}
+                            title={button.tooltip}
+                          >
+                            <button.icon size={16} />
+                          </Button>
+                        ))}
+                        <Separator orientation="vertical" className="h-6" />
+                        <Button variant="ghost" size="sm" title="Add Link">
+                          <Link size={16} />
+                        </Button>
+                        <Button variant="ghost" size="sm" title="Add Image">
+                          <ImageIcon size={16} />
+                        </Button>
+                      </div>
+
+                      {/* Collaborative Content Editor */}
+                      <CollaborativeTextEditor
+                        value={content}
+                        onChange={setContent}
+                        section="content"
+                        label={language.code === 'ar' ? 'المحتوى' : 'Content'}
+                        placeholder={language.code === 'ar' ? 'اكتب محتوى المقال هنا...' : 'Write your article content here...'}
+                        rows={15}
+                        className="min-h-[400px] resize-none font-mono text-sm"
+                      />
+                    </>
+                  )}
+
+                  {isPreview && (
+                    <div className="min-h-[400px] p-6 border rounded-md bg-background">
+                      <h1 className="text-3xl font-bold mb-4">{title}</h1>
+                      <div 
+                        className="prose prose-sm max-w-none"
+                        dangerouslySetInnerHTML={{ 
+                          __html: content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                            .replace(/\n/g, '<br/>')
+                        }}
+                      />
+                    </div>
+                  )}
+
+                  {/* Collaborative Excerpt Editor */}
+                  <CollaborativeTextEditor
+                    value={excerpt}
+                    onChange={setExcerpt}
+                    section="excerpt"
+                    label={language.code === 'ar' ? 'المقتطف' : 'Excerpt'}
+                    placeholder={language.code === 'ar' ? 'ملخص قصير للمقال' : 'Brief summary of the article'}
+                    rows={3}
+                    maxLength={200}
+                  />
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Sidebar */}
+            <div className="space-y-4">
+              {/* Collaborative Presence - Desktop */}
+              {article && (
+                <CollaborativePresence 
+                  articleId={article.id}
+                  className="hidden lg:block" 
                 />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Sidebar */}
-        <div className="space-y-4">
+              )}
           {/* Publish Actions */}
           <Card>
             <CardHeader>
@@ -478,6 +520,13 @@ export function ArticleEditor({ article, onSave }: ArticleEditorProps) {
               )}
             </CardContent>
           </Card>
+          
+          {/* Collaborative Workspace */}
+          {article && (
+            <CollaborativeWorkspace 
+              articleId={article.id}
+            />
+          )}
         </div>
           </div>
         </TabsContent>
