@@ -32,7 +32,8 @@ import {
   Coffee,
   Drop,
   Bell,
-  BellRinging
+  BellRinging,
+  Medal // Using Medal as a fallback for Award
 } from '@phosphor-icons/react';
 
 interface SidebarProps {
@@ -220,7 +221,7 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
     {
       id: 'recommendation-system-overview',
       label: isArabic ? 'نظرة على نظام التوصيات' : 'Recommendation System Overview',
-      icon: Award,
+      icon: Medal, // Using Medal instead of Award to fix runtime error
       show: canAccess('ai-tools'),
       badge: isArabic ? 'عرض' : 'Demo'
     },

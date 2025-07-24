@@ -27,10 +27,10 @@ import {
   Share2,
   BookOpen,
   Sparkles,
-  ChartLine,
   Filter,
   Calendar,
-  Award
+  Award,
+  TrendUp // Using TrendUp as fallback for ChartLine
 } from '@phosphor-icons/react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useKV } from '@github/spark/hooks';

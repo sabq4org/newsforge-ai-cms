@@ -9,10 +9,10 @@ import {
   Globe,
   Bell,
   Lightning,
-  ChartLine,
   Sparkle,
   Info,
-  Envelope
+  Envelope,
+  BarChart3 // Using BarChart3 as fallback for ChartLine
 } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
 import { mockCategories } from '@/lib/mockData';
@@ -56,7 +56,7 @@ export function PublicHeader({
       id: 'analysis', 
       labelAr: 'التحليل العميق', 
       labelEn: 'Deep Analysis', 
-      icon: ChartLine,
+      icon: BarChart3,
       section: 'analysis'
     },
     { 

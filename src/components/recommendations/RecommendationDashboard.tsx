@@ -18,7 +18,7 @@ import {
   MessageCircle,
   Award,
   Calendar,
-  ChartLine
+  TrendUp // Using TrendUp as fallback for ChartLine
 } from '@phosphor-icons/react';
 import { PersonalizedRecommendations } from './PersonalizedRecommendations';
 import { RecommendationEvaluation } from './RecommendationEvaluation';
@@ -329,7 +329,7 @@ export function RecommendationDashboard({ onNavigate, onArticleSelect }: Recomme
             التقييم
           </TabsTrigger>
           <TabsTrigger value="insights" className="flex items-center gap-2">
-            <ChartLine size={16} />
+            <TrendUp size={16} />
             الرؤى
           </TabsTrigger>
         </TabsList>
