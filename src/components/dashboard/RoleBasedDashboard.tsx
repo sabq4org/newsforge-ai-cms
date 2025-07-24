@@ -369,7 +369,7 @@ export function RoleBasedDashboard({ onNavigate }: RoleBasedDashboardProps) {
                       {activity.article}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {activity.user} • {activity.timestamp.toLocaleDateString(isArabic ? 'ar-SA' : 'en-US')}
+                      {activity.user} • {new Date(activity.timestamp).toLocaleDateString(isArabic ? 'ar-SA' : 'en-US')}
                     </p>
                   </div>
                   <Badge variant="outline" className="text-xs">
