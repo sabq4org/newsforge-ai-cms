@@ -233,8 +233,8 @@ export function ArticleList({ onEditArticle, onCreateNew }: ArticleListProps) {
                   <Badge 
                     variant="outline" 
                     style={{ 
-                      borderColor: article.category.color || '#6b7280', 
-                      color: article.category.color || '#6b7280'
+                      borderColor: article.category?.color || '#6b7280', 
+                      color: article.category?.color || '#6b7280'
                     }}
                     className="text-xs"
                   >

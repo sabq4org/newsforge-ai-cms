@@ -115,6 +115,12 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       show: canAccess('advanced-analytics')
     },
     {
+      id: 'recommendations',
+      label: isArabic ? 'التوصيات الذكية' : 'AI Recommendations',
+      icon: Brain,
+      show: canAccess('ai-tools')
+    },
+    {
       id: 'ai-optimization',
       label: isArabic ? 'التحسين الذكي' : 'AI Optimization',
       icon: Brain,

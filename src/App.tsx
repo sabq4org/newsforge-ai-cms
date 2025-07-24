@@ -17,6 +17,7 @@ import { TypographyShowcase } from '@/components/showcase/TypographyShowcase';
 import { MediaUpload } from '@/components/media/MediaUpload';
 import { SystemAnalysis } from '@/components/analysis/SystemAnalysis';
 import { AISearch } from '@/components/search/AISearch';
+import { AIRecommendationEngine } from '@/components/recommendations/AIRecommendationEngine';
 import { ContentModeration } from '@/components/moderation/ContentModeration';
 import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
@@ -134,6 +135,15 @@ function AppContent() {
       
       case 'insights':
         return <PerformanceInsights />;
+      
+      case 'recommendations':
+        return (
+          <AIRecommendationEngine
+            currentArticleId={editingArticle?.id}
+            userId={user?.id}
+            onArticleSelect={handleEditArticle}
+          />
+        );
       
       case 'ai-optimization':
         if (editingArticle && editingArticle.category) {

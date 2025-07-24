@@ -2,781 +2,756 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Switch } from '@/components/ui/switch';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Progress } from '@/components/ui/progress';
+import { Separator } from '@/components/ui/separator';
 import { 
-  Shield, 
-  AlertTriangle, 
-  CheckCircle, 
-  XCircle, 
-  Clock, 
+  Shield,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  Clock,
   Eye,
-  Brain,
   Flag,
-  Settings,
-  TrendingUp,
-  Users,
+  Brain,
   FileText,
-  Zap,
+  User,
+  Calendar,
+  TrendingUp,
+  Settings,
   RefreshCw,
-  MessageSquare,
-  Globe,
-  AlertCircle,
-  ThumbsUp,
-  ThumbsDown
+  Download,
+  Filter
 } from '@phosphor-icons/react';
-import { contentModerationService, ModerationResult, ModerationRule, ModerationSettings } from '@/lib/contentModerationService';
-import { useAuth } from '@/contexts/AuthContext';
-import { useOptimizedTypography } from '@/hooks/useOptimizedTypography';
+import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
 import { mockArticles } from '@/lib/mockData';
-import { Article } from '@/types';
-import { cn } from '@/lib/utils';
+import { normalizeArticles } from '@/lib/utils';
 import { toast } from 'sonner';
-import { format } from 'date-fns';
-import { ar } from 'date-fns/locale';
 
-interface ContentModerationProps {
-  onArticleSelect?: (articleId: string) => void;
-  className?: string;
+interface ModerationAlert {
+  id: string;
+  articleId: string;
+  type: 'content' | 'language' | 'policy' | 'bias' | 'sensitivity' | 'accuracy';
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  message: string;
+  suggestion?: string;
+  createdAt: Date;
+  reviewedAt?: Date;
+  reviewedBy?: string;
+  status: 'pending' | 'approved' | 'rejected' | 'escalated';
+  autoDetected: boolean;
 }
 
-export function ContentModeration({ onArticleSelect, className }: ContentModerationProps) {
-  const { language, canAccess } = useAuth();
-  const typography = useOptimizedTypography();
-  const { isRTL, isArabic } = typography;
+interface ModerationRule {
+  id: string;
+  name: string;
+  type: string;
+  enabled: boolean;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  keywords: string[];
+  description: string;
+}
+
+interface ContentModerationProps {
+  onArticleSelect: (article: Article) => void;
+}
+
+export function ContentModeration({ onArticleSelect }: ContentModerationProps) {
+  const [rawArticles] = useKV<Article[]>('sabq-articles', mockArticles);
+  const articles = normalizeArticles(rawArticles);
   
-  const [articles] = useKV<Article[]>('sabq-articles', mockArticles);
-  const [moderationResults, setModerationResults] = useKV<ModerationResult[]>('moderation-results', []);
-  const [moderationSettings, setModerationSettings] = useKV<ModerationSettings>('moderation-settings', contentModerationService.getSettings());
-  const [moderationRules, setModerationRules] = useKV<ModerationRule[]>('moderation-rules', contentModerationService.getModerationRules());
+  const [moderationAlerts, setModerationAlerts] = useKV<ModerationAlert[]>('moderation-alerts', []);
+  const [moderationRules, setModerationRules] = useKV<ModerationRule[]>('moderation-rules', [
+    {
+      id: 'rule_1',
+      name: 'كلمات محظورة',
+      type: 'banned-words',
+      enabled: true,
+      severity: 'high',
+      keywords: ['كلمة محظورة', 'محتوى غير مناسب'],
+      description: 'اكتشاف الكلمات المحظورة في المحتوى'
+    },
+    {
+      id: 'rule_2',
+      name: 'تحليل المشاعر',
+      type: 'sentiment',
+      enabled: true,
+      severity: 'medium',
+      keywords: [],
+      description: 'تحليل الطابع العاطفي للمحتوى'
+    },
+    {
+      id: 'rule_3',
+      name: 'دقة المعلومات',
+      type: 'fact-check',
+      enabled: true,
+      severity: 'critical',
+      keywords: [],
+      description: 'التحقق من دقة المعلومات والادعاءات'
+    }
+  ]);
   
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
-  const [testContent, setTestContent] = useState('');
-  const [testResult, setTestResult] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'queue' | 'rules' | 'settings' | 'test'>('dashboard');
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [selectedTab, setSelectedTab] = useState('alerts');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
 
-  // Update moderation service settings when they change
-  useEffect(() => {
-    contentModerationService.updateSettings(moderationSettings);
-  }, [moderationSettings]);
-
-  // Check if user has moderation access
-  if (!canAccess('moderation')) {
-    return (
-      <Card className="text-center p-8">
-        <CardContent>
-          <Shield className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-          <h3 className="text-xl font-semibold mb-2">
-            {isArabic ? 'غير مصرح بالوصول' : 'Access Denied'}
-          </h3>
-          <p className="text-muted-foreground">
-            {isArabic 
-              ? 'ليس لديك صلاحية للوصول إلى نظام الإشراف على المحتوى'
-              : 'You do not have permission to access the content moderation system'
-            }
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  // Process a single article through moderation
-  const moderateArticle = async (article: Article) => {
-    setIsProcessing(true);
+  const analyzeArticleContent = async (article: Article) => {
+    const alerts: ModerationAlert[] = [];
+    
     try {
-      const result = await contentModerationService.moderateArticle(article);
-      setModerationResults(prev => {
-        const existing = prev.findIndex(r => r.articleId === article.id);
-        if (existing >= 0) {
-          const updated = [...prev];
-          updated[existing] = result;
-          return updated;
-        } else {
-          return [...prev, result];
-        }
-      });
-      
-      toast.success(
-        isArabic 
-          ? `تم تحليل المقال: ${result.status}`
-          : `Article analyzed: ${result.status}`
-      );
+      // 1. Language Detection and Analysis
+      const languageAnalysis = await analyzeLangaugeAndTone(article);
+      if (languageAnalysis.issues.length > 0) {
+        languageAnalysis.issues.forEach(issue => {
+          alerts.push({
+            id: `alert_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            articleId: article.id,
+            type: 'language',
+            severity: issue.severity,
+            message: issue.message,
+            suggestion: issue.suggestion,
+            createdAt: new Date(),
+            status: 'pending',
+            autoDetected: true
+          });
+        });
+      }
+
+      // 2. Content Policy Check
+      const policyCheck = await checkContentPolicy(article);
+      if (policyCheck.violations.length > 0) {
+        policyCheck.violations.forEach(violation => {
+          alerts.push({
+            id: `alert_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            articleId: article.id,
+            type: 'policy',
+            severity: violation.severity,
+            message: violation.message,
+            suggestion: violation.suggestion,
+            createdAt: new Date(),
+            status: 'pending',
+            autoDetected: true
+          });
+        });
+      }
+
+      // 3. Bias Detection
+      const biasAnalysis = await detectBias(article);
+      if (biasAnalysis.biasScore > 0.7) {
+        alerts.push({
+          id: `alert_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          articleId: article.id,
+          type: 'bias',
+          severity: biasAnalysis.biasScore > 0.9 ? 'high' : 'medium',
+          message: `تم اكتشاف تحيز محتمل: ${biasAnalysis.type}`,
+          suggestion: biasAnalysis.suggestion,
+          createdAt: new Date(),
+          status: 'pending',
+          autoDetected: true
+        });
+      }
+
+      // 4. Sensitivity Analysis
+      const sensitivityCheck = await checkSensitivity(article);
+      if (sensitivityCheck.isSensitive) {
+        alerts.push({
+          id: `alert_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          articleId: article.id,
+          type: 'sensitivity',
+          severity: sensitivityCheck.severity,
+          message: `محتوى حساس: ${sensitivityCheck.reason}`,
+          suggestion: sensitivityCheck.suggestion,
+          createdAt: new Date(),
+          status: 'pending',
+          autoDetected: true
+        });
+      }
+
+      return alerts;
     } catch (error) {
-      console.error('Moderation failed:', error);
-      toast.error(
-        isArabic 
-          ? 'فشل في تحليل المقال'
-          : 'Failed to analyze article'
-      );
-    } finally {
-      setIsProcessing(false);
+      console.error('Content analysis error:', error);
+      return [];
     }
   };
 
-  // Process all articles
-  const moderateAllArticles = async () => {
-    if (articles.length === 0) return;
-    
-    setIsProcessing(true);
-    const results: ModerationResult[] = [];
+  const analyzeLangaugeAndTone = async (article: Article) => {
+    const prompt = spark.llmPrompt`
+      Analyze this Arabic news article for language quality and tone issues:
+      
+      Title: "${article.title}"
+      Content: "${article.content.substring(0, 1000)}..."
+      
+      Check for:
+      1. Grammar and spelling errors
+      2. Inappropriate tone for journalism
+      3. Offensive or inflammatory language
+      4. Professional writing standards
+      
+      Return a JSON object with:
+      {
+        "issues": [
+          {
+            "type": "grammar|tone|language|professionalism",
+            "severity": "low|medium|high",
+            "message": "Description in Arabic",
+            "suggestion": "How to fix it in Arabic"
+          }
+        ]
+      }
+    `;
+
+    try {
+      const result = await spark.llm(prompt, 'gpt-4o', true);
+      return JSON.parse(result);
+    } catch {
+      return { issues: [] };
+    }
+  };
+
+  const checkContentPolicy = async (article: Article) => {
+    const prompt = spark.llmPrompt`
+      Review this Arabic news article for policy violations:
+      
+      Title: "${article.title}"
+      Content: "${article.content.substring(0, 1000)}..."
+      
+      Check for violations of:
+      1. Editorial guidelines
+      2. Fact accuracy requirements
+      3. Source attribution standards
+      4. Copyright concerns
+      5. Privacy issues
+      
+      Return a JSON object with:
+      {
+        "violations": [
+          {
+            "type": "accuracy|attribution|copyright|privacy|editorial",
+            "severity": "low|medium|high|critical",
+            "message": "Description in Arabic",
+            "suggestion": "How to fix it in Arabic"
+          }
+        ]
+      }
+    `;
+
+    try {
+      const result = await spark.llm(prompt, 'gpt-4o', true);
+      return JSON.parse(result);
+    } catch {
+      return { violations: [] };
+    }
+  };
+
+  const detectBias = async (article: Article) => {
+    const prompt = spark.llmPrompt`
+      Analyze this Arabic news article for potential bias:
+      
+      Title: "${article.title}"
+      Content: "${article.content.substring(0, 1000)}..."
+      
+      Evaluate for:
+      1. Political bias
+      2. Cultural bias
+      3. Gender bias
+      4. Source bias
+      5. Confirmation bias
+      
+      Return a JSON object with:
+      {
+        "biasScore": 0.0-1.0,
+        "type": "political|cultural|gender|source|confirmation",
+        "confidence": 0.0-1.0,
+        "suggestion": "How to reduce bias in Arabic"
+      }
+    `;
+
+    try {
+      const result = await spark.llm(prompt, 'gpt-4o', true);
+      return JSON.parse(result);
+    } catch {
+      return { biasScore: 0, type: 'none', confidence: 0, suggestion: '' };
+    }
+  };
+
+  const checkSensitivity = async (article: Article) => {
+    const prompt = spark.llmPrompt`
+      Check if this Arabic news article contains sensitive content:
+      
+      Title: "${article.title}"
+      Content: "${article.content.substring(0, 1000)}..."
+      
+      Look for:
+      1. Violence or graphic content
+      2. Religious sensitivities
+      3. Political tensions
+      4. Social controversies
+      5. Child safety concerns
+      
+      Return a JSON object with:
+      {
+        "isSensitive": true/false,
+        "severity": "low|medium|high|critical",
+        "reason": "Description in Arabic",
+        "suggestion": "How to handle it in Arabic"
+      }
+    `;
+
+    try {
+      const result = await spark.llm(prompt, 'gpt-4o', true);
+      return JSON.parse(result);
+    } catch {
+      return { isSensitive: false, severity: 'low', reason: '', suggestion: '' };
+    }
+  };
+
+  const runFullModerationScan = async () => {
+    setIsAnalyzing(true);
     
     try {
-      for (let i = 0; i < articles.length; i++) {
-        const article = articles[i];
-        const result = await contentModerationService.moderateArticle(article);
-        results.push(result);
-        
-        // Update progress
-        toast.info(
-          isArabic 
-            ? `تم تحليل ${i + 1} من ${articles.length} مقال`
-            : `Analyzed ${i + 1} of ${articles.length} articles`
-        );
+      const allAlerts: ModerationAlert[] = [];
+      
+      for (const article of articles) {
+        if (article.status === 'draft' || article.status === 'review') {
+          const articleAlerts = await analyzeArticleContent(article);
+          allAlerts.push(...articleAlerts);
+        }
       }
       
-      setModerationResults(results);
-      toast.success(
-        isArabic 
-          ? 'تم تحليل جميع المقالات بنجاح'
-          : 'All articles analyzed successfully'
-      );
+      setModerationAlerts(prev => {
+        // Remove old alerts for the same articles
+        const articleIds = new Set(allAlerts.map(a => a.articleId));
+        const filteredPrev = prev.filter(alert => !articleIds.has(alert.articleId) || alert.status !== 'pending');
+        return [...filteredPrev, ...allAlerts];
+      });
+      
+      toast.success(`تم فحص ${articles.length} مقال، وتم العثور على ${allAlerts.length} تنبيه جديد`);
+      
     } catch (error) {
-      console.error('Bulk moderation failed:', error);
-      toast.error(
-        isArabic 
-          ? 'فشل في تحليل بعض المقالات'
-          : 'Failed to analyze some articles'
-      );
+      console.error('Moderation scan error:', error);
+      toast.error('خطأ في فحص المحتوى');
     } finally {
-      setIsProcessing(false);
+      setIsAnalyzing(false);
     }
   };
 
-  // Test content moderation
-  const testContentModeration = async () => {
-    if (!testContent.trim()) return;
+  const handleAlertAction = (alertId: string, action: 'approve' | 'reject' | 'escalate') => {
+    setModerationAlerts(prev => prev.map(alert => 
+      alert.id === alertId 
+        ? { 
+            ...alert, 
+            status: action === 'approve' ? 'approved' : action === 'reject' ? 'rejected' : 'escalated',
+            reviewedAt: new Date(),
+            reviewedBy: 'current-user'
+          }
+        : alert
+    ));
     
-    setIsProcessing(true);
-    try {
-      const result = await contentModerationService.quickModerationCheck(testContent);
-      setTestResult(result);
-    } catch (error) {
-      console.error('Test moderation failed:', error);
-      toast.error(
-        isArabic 
-          ? 'فشل في اختبار المحتوى'
-          : 'Failed to test content'
-      );
-    } finally {
-      setIsProcessing(false);
-    }
+    const actionText = action === 'approve' ? 'وافق على' : action === 'reject' ? 'رفض' : 'تم تصعيد';
+    toast.success(`تم ${actionText} التنبيه`);
   };
 
-  // Get moderation statistics
-  const getModerationStats = () => {
-    const total = moderationResults.length;
-    const approved = moderationResults.filter(r => r.status === 'approved').length;
-    const flagged = moderationResults.filter(r => r.status === 'flagged').length;
-    const rejected = moderationResults.filter(r => r.status === 'rejected').length;
-    const needsReview = moderationResults.filter(r => r.status === 'requires-review').length;
-    
-    const totalFlags = moderationResults.reduce((sum, r) => sum + r.flags.length, 0);
-    const avgScore = total > 0 ? moderationResults.reduce((sum, r) => sum + r.score, 0) / total : 0;
-    
-    return { total, approved, flagged, rejected, needsReview, totalFlags, avgScore };
-  };
-
-  const stats = getModerationStats();
-
-  // Get severity color
-  const getSeverityColor = (severity: string) => {
+  const getSeverityColor = (severity: ModerationAlert['severity']) => {
     switch (severity) {
-      case 'critical': return 'destructive';
-      case 'high': return 'destructive';
-      case 'medium': return 'secondary';
-      case 'low': return 'outline';
-      default: return 'outline';
+      case 'critical': return 'text-red-600 bg-red-50 border-red-200';
+      case 'high': return 'text-orange-600 bg-orange-50 border-orange-200';
+      case 'medium': return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+      case 'low': return 'text-blue-600 bg-blue-50 border-blue-200';
+      default: return 'text-gray-600 bg-gray-50 border-gray-200';
     }
   };
 
-  // Get status color
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'approved': return 'default';
-      case 'flagged': return 'secondary';
-      case 'rejected': return 'destructive';
-      case 'requires-review': return 'outline';
-      default: return 'outline';
+  const getSeverityIcon = (severity: ModerationAlert['severity']) => {
+    switch (severity) {
+      case 'critical': return <XCircle className="h-4 w-4" />;
+      case 'high': return <AlertTriangle className="h-4 w-4" />;
+      case 'medium': return <Flag className="h-4 w-4" />;
+      case 'low': return <Eye className="h-4 w-4" />;
+      default: return <Eye className="h-4 w-4" />;
     }
   };
 
-  // Render moderation result card
-  const renderModerationResult = (result: ModerationResult) => {
-    const article = articles.find(a => a.id === result.articleId);
-    if (!article) return null;
+  const filteredAlerts = moderationAlerts.filter(alert => 
+    filterStatus === 'all' || alert.status === filterStatus
+  );
+
+  const getStats = () => {
+    const total = moderationAlerts.length;
+    const pending = moderationAlerts.filter(a => a.status === 'pending').length;
+    const critical = moderationAlerts.filter(a => a.severity === 'critical').length;
+    const resolved = moderationAlerts.filter(a => a.status === 'approved' || a.status === 'rejected').length;
     
-    return (
-      <Card key={result.articleId} className="cursor-pointer hover:shadow-md transition-all">
-        <CardContent className="p-4">
-          <div className="flex justify-between items-start mb-3">
-            <div className="flex-1 min-w-0">
-              <h4 className="font-semibold truncate">{article.title}</h4>
-              <p className="text-sm text-muted-foreground">
-                {article.author.name} • {format(new Date(result.moderatedAt), 'PPp', { locale: isArabic ? ar : undefined })}
-              </p>
-            </div>
-            <div className="flex items-center gap-2 ml-4">
-              <Badge variant={getStatusColor(result.status) as any}>
-                {result.status}
-              </Badge>
-              <div className="text-right">
-                <div className="text-sm font-medium">{result.score.toFixed(0)}%</div>
-                <div className="text-xs text-muted-foreground">
-                  {isArabic ? 'نقاط' : 'score'}
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Language Detection */}
-          <div className="flex items-center gap-2 mb-2">
-            <Globe className="w-4 h-4 text-muted-foreground" />
-            <span className="text-sm">
-              {result.languageDetection.primary} ({(result.languageDetection.confidence * 100).toFixed(0)}%)
-            </span>
-            {result.languageDetection.arabicRatio > 0 && (
-              <span className="text-xs text-muted-foreground">
-                • {(result.languageDetection.arabicRatio * 100).toFixed(0)}% Arabic
-              </span>
-            )}
-          </div>
-          
-          {/* Flags */}
-          {result.flags.length > 0 && (
-            <div className="space-y-2 mb-3">
-              {result.flags.slice(0, 3).map((flag, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  <Badge variant={getSeverityColor(flag.severity) as any} className="text-xs">
-                    {flag.type}
-                  </Badge>
-                  <span className="text-xs text-muted-foreground truncate">
-                    {flag.description}
-                  </span>
-                </div>
-              ))}
-              {result.flags.length > 3 && (
-                <p className="text-xs text-muted-foreground">
-                  +{result.flags.length - 3} more flags
-                </p>
-              )}
-            </div>
-          )}
-          
-          {/* Content Analysis Summary */}
-          <div className="grid grid-cols-2 gap-4 text-xs">
-            <div>
-              <span className="text-muted-foreground">Readability:</span>
-              <span className="ml-1 font-medium">{result.contentAnalysis.readabilityScore}%</span>
-            </div>
-            <div>
-              <span className="text-muted-foreground">Sentiment:</span>
-              <span className="ml-1 font-medium">{(result.contentAnalysis.sentimentScore * 100).toFixed(0)}%</span>
-            </div>
-          </div>
-          
-          {/* Action Buttons */}
-          <div className="flex gap-2 mt-4">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                setSelectedArticle(article);
-                if (onArticleSelect) onArticleSelect(article.id);
-              }}
-            >
-              <Eye className="w-4 h-4 mr-1" />
-              {isArabic ? 'عرض' : 'View'}
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => moderateArticle(article)}
-              disabled={isProcessing}
-            >
-              <RefreshCw className="w-4 h-4 mr-1" />
-              {isArabic ? 'إعادة تحليل' : 'Re-analyze'}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    );
+    return { total, pending, critical, resolved };
   };
+
+  const stats = getStats();
 
   return (
-    <div className={cn("space-y-6", className)}>
-      {/* Header */}
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-primary/10 rounded-lg">
-            <Shield className="w-6 h-6 text-primary" />
+            <Shield className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold">
-              {isArabic ? 'الإشراف على المحتوى' : 'Content Moderation'}
-            </h1>
-            <p className="text-muted-foreground">
-              {isArabic 
-                ? 'نظام ذكي لمراقبة وتحليل المحتوى تلقائياً'
-                : 'AI-powered content monitoring and analysis system'
-              }
-            </p>
+            <h1 className="text-2xl font-bold">إدارة المحتوى</h1>
+            <p className="text-muted-foreground">مراقبة ذكية للمحتوى مدعومة بالذكاء الاصطناعي</p>
           </div>
         </div>
         
-        <div className="flex gap-2">
-          <Button
-            onClick={moderateAllArticles}
-            disabled={isProcessing || articles.length === 0}
-          >
-            {isProcessing ? (
-              <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-            ) : (
-              <Brain className="w-4 h-4 mr-2" />
-            )}
-            {isArabic ? 'تحليل الكل' : 'Analyze All'}
-          </Button>
-        </div>
+        <Button 
+          onClick={runFullModerationScan}
+          disabled={isAnalyzing}
+          className="gap-2"
+        >
+          {isAnalyzing ? (
+            <RefreshCw className="h-4 w-4 animate-spin" />
+          ) : (
+            <Brain className="h-4 w-4" />
+          )}
+          فحص شامل
+        </Button>
       </div>
 
-      {/* Navigation Tabs */}
-      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)}>
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="dashboard">
-            <TrendingUp className="w-4 h-4 mr-2" />
-            {isArabic ? 'الإحصائيات' : 'Dashboard'}
-          </TabsTrigger>
-          <TabsTrigger value="queue">
-            <FileText className="w-4 h-4 mr-2" />
-            {isArabic ? 'قائمة المراجعة' : 'Review Queue'}
-          </TabsTrigger>
-          <TabsTrigger value="rules">
-            <Flag className="w-4 h-4 mr-2" />
-            {isArabic ? 'القواعد' : 'Rules'}
-          </TabsTrigger>
-          <TabsTrigger value="settings">
-            <Settings className="w-4 h-4 mr-2" />
-            {isArabic ? 'الإعدادات' : 'Settings'}
-          </TabsTrigger>
-          <TabsTrigger value="test">
-            <Zap className="w-4 h-4 mr-2" />
-            {isArabic ? 'اختبار' : 'Test'}
-          </TabsTrigger>
+      {/* Statistics Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <Flag className="h-8 w-8 text-blue-500" />
+              <div>
+                <p className="text-sm text-muted-foreground">إجمالي التنبيهات</p>
+                <p className="text-2xl font-bold">{stats.total}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <Clock className="h-8 w-8 text-yellow-500" />
+              <div>
+                <p className="text-sm text-muted-foreground">قيد المراجعة</p>
+                <p className="text-2xl font-bold">{stats.pending}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <AlertTriangle className="h-8 w-8 text-red-500" />
+              <div>
+                <p className="text-sm text-muted-foreground">تنبيهات حرجة</p>
+                <p className="text-2xl font-bold">{stats.critical}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <CheckCircle className="h-8 w-8 text-green-500" />
+              <div>
+                <p className="text-sm text-muted-foreground">تم حلها</p>
+                <p className="text-2xl font-bold">{stats.resolved}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Tabs value={selectedTab} onValueChange={setSelectedTab}>
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="alerts">التنبيهات</TabsTrigger>
+          <TabsTrigger value="rules">القواعد</TabsTrigger>
+          <TabsTrigger value="analytics">التحليلات</TabsTrigger>
         </TabsList>
 
-        {/* Dashboard Tab */}
-        <TabsContent value="dashboard" className="space-y-6">
-          {/* Statistics Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      {isArabic ? 'المجموع' : 'Total Articles'}
-                    </p>
-                    <p className="text-2xl font-bold">{stats.total}</p>
-                  </div>
-                  <FileText className="w-8 h-8 text-muted-foreground" />
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      {isArabic ? 'موافق عليها' : 'Approved'}
-                    </p>
-                    <p className="text-2xl font-bold text-green-600">{stats.approved}</p>
-                  </div>
-                  <CheckCircle className="w-8 h-8 text-green-600" />
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      {isArabic ? 'مرفوضة' : 'Rejected'}
-                    </p>
-                    <p className="text-2xl font-bold text-red-600">{stats.rejected}</p>
-                  </div>
-                  <XCircle className="w-8 h-8 text-red-600" />
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      {isArabic ? 'تحتاج مراجعة' : 'Needs Review'}
-                    </p>
-                    <p className="text-2xl font-bold text-yellow-600">{stats.needsReview}</p>
-                  </div>
-                  <Clock className="w-8 h-8 text-yellow-600" />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-          
-          {/* Overall Health Score */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="w-5 h-5" />
-                {isArabic ? 'نقاط صحة المحتوى العامة' : 'Overall Content Health Score'}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span>{isArabic ? 'متوسط النقاط' : 'Average Score'}</span>
-                  <span className="font-bold">{stats.avgScore.toFixed(1)}%</span>
-                </div>
-                <Progress value={stats.avgScore} className="h-3" />
-                
-                <div className="grid grid-cols-2 gap-4 mt-4">
-                  <div className="text-center p-3 bg-muted/50 rounded-lg">
-                    <p className="text-sm text-muted-foreground">
-                      {isArabic ? 'إجمالي العلامات' : 'Total Flags'}
-                    </p>
-                    <p className="text-xl font-bold">{stats.totalFlags}</p>
-                  </div>
-                  <div className="text-center p-3 bg-muted/50 rounded-lg">
-                    <p className="text-sm text-muted-foreground">
-                      {isArabic ? 'معدل الموافقة' : 'Approval Rate'}
-                    </p>
-                    <p className="text-xl font-bold">
-                      {stats.total > 0 ? ((stats.approved / stats.total) * 100).toFixed(1) : 0}%
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          {/* Recent Activity */}
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                {isArabic ? 'النشاط الأخير' : 'Recent Activity'}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ScrollArea className="h-64">
-                {moderationResults.slice(0, 10).map(renderModerationResult)}
-                {moderationResults.length === 0 && (
-                  <div className="text-center py-8 text-muted-foreground">
-                    {isArabic ? 'لا توجد نتائج تحليل بعد' : 'No moderation results yet'}
-                  </div>
-                )}
-              </ScrollArea>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Review Queue Tab */}
-        <TabsContent value="queue" className="space-y-4">
+        <TabsContent value="alerts" className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">
-              {isArabic ? 'قائمة انتظار المراجعة' : 'Moderation Queue'}
-            </h3>
-            <Badge variant="outline">
-              {moderationResults.filter(r => r.requiresReview).length} {isArabic ? 'مقال' : 'items'}
-            </Badge>
-          </div>
-          
-          <ScrollArea className="h-[600px]">
-            <div className="space-y-4">
-              {moderationResults
-                .filter(r => r.requiresReview || r.status === 'requires-review' || r.status === 'flagged')
-                .map(renderModerationResult)}
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant={filterStatus === 'all' ? 'default' : 'outline'}
+                onClick={() => setFilterStatus('all')}
+              >
+                الكل
+              </Button>
+              <Button
+                size="sm"
+                variant={filterStatus === 'pending' ? 'default' : 'outline'}
+                onClick={() => setFilterStatus('pending')}
+              >
+                قيد المراجعة ({stats.pending})
+              </Button>
+              <Button
+                size="sm"
+                variant={filterStatus === 'approved' ? 'default' : 'outline'}
+                onClick={() => setFilterStatus('approved')}
+              >
+                موافق عليها
+              </Button>
+              <Button
+                size="sm"
+                variant={filterStatus === 'rejected' ? 'default' : 'outline'}
+                onClick={() => setFilterStatus('rejected')}
+              >
+                مرفوضة
+              </Button>
             </div>
-          </ScrollArea>
-        </TabsContent>
-
-        {/* Rules Tab */}
-        <TabsContent value="rules" className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">
-              {isArabic ? 'قواعد الإشراف' : 'Moderation Rules'}
-            </h3>
-            <Button size="sm">
-              {isArabic ? 'إضافة قاعدة' : 'Add Rule'}
+            
+            <Button size="sm" variant="outline">
+              <Download className="h-4 w-4 mr-2" />
+              تصدير التقرير
             </Button>
           </div>
-          
+
           <div className="space-y-4">
-            {moderationRules.map(rule => (
-              <Card key={rule.id}>
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h4 className="font-semibold">
-                          {isArabic && rule.nameAr ? rule.nameAr : rule.name}
-                        </h4>
-                        <Badge variant={getSeverityColor(rule.severity) as any}>
-                          {rule.severity}
-                        </Badge>
-                        <Badge variant="outline">
-                          {rule.type}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        {isArabic && rule.descriptionAr ? rule.descriptionAr : rule.description}
-                      </p>
-                      {rule.keywords && rule.keywords.length > 0 && (
-                        <div className="mt-2">
-                          <span className="text-xs text-muted-foreground">Keywords: </span>
-                          <span className="text-xs">{rule.keywords.slice(0, 3).join(', ')}</span>
-                          {rule.keywords.length > 3 && <span className="text-xs text-muted-foreground"> +{rule.keywords.length - 3} more</span>}
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Switch
-                        checked={rule.active}
-                        onCheckedChange={(checked) => {
-                          setModerationRules(prev => 
-                            prev.map(r => r.id === rule.id ? { ...r, active: checked } : r)
-                          );
-                        }}
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-
-        {/* Settings Tab */}
-        <TabsContent value="settings" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                {isArabic ? 'إعدادات الإشراف' : 'Moderation Settings'}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="auto-approval">
-                      {isArabic ? 'حد الموافقة التلقائية' : 'Auto-approval Threshold'}
-                    </Label>
-                    <div className="mt-2">
-                      <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        value={moderationSettings.autoApprovalThreshold}
-                        onChange={(e) => setModerationSettings(prev => ({
-                          ...prev,
-                          autoApprovalThreshold: parseInt(e.target.value)
-                        }))}
-                        className="w-full"
-                      />
-                      <div className="text-sm text-muted-foreground mt-1">
-                        {moderationSettings.autoApprovalThreshold}% or higher
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="review-threshold">
-                      {isArabic ? 'حد المراجعة المطلوبة' : 'Review Required Threshold'}
-                    </Label>
-                    <div className="mt-2">
-                      <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        value={moderationSettings.requireReviewThreshold}
-                        onChange={(e) => setModerationSettings(prev => ({
-                          ...prev,
-                          requireReviewThreshold: parseInt(e.target.value)
-                        }))}
-                        className="w-full"
-                      />
-                      <div className="text-sm text-muted-foreground mt-1">
-                        {moderationSettings.requireReviewThreshold}% or lower
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="strict-mode">
-                      {isArabic ? 'الوضع الصارم' : 'Strict Mode'}
-                    </Label>
-                    <Switch
-                      id="strict-mode"
-                      checked={moderationSettings.strictMode}
-                      onCheckedChange={(checked) => setModerationSettings(prev => ({
-                        ...prev,
-                        strictMode: checked
-                      }))}
-                    />
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="ai-analysis">
-                      {isArabic ? 'تحليل الذكاء الاصطناعي' : 'AI Analysis'}
-                    </Label>
-                    <Switch
-                      id="ai-analysis"
-                      checked={moderationSettings.enableAIAnalysis}
-                      onCheckedChange={(checked) => setModerationSettings(prev => ({
-                        ...prev,
-                        enableAIAnalysis: checked
-                      }))}
-                    />
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="notify-editors">
-                      {isArabic ? 'إشعار المحررين' : 'Notify Editors'}
-                    </Label>
-                    <Switch
-                      id="notify-editors"
-                      checked={moderationSettings.notifyEditorsOnFlag}
-                      onCheckedChange={(checked) => setModerationSettings(prev => ({
-                        ...prev,
-                        notifyEditorsOnFlag: checked
-                      }))}
-                    />
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="log-all">
-                      {isArabic ? 'تسجيل جميع العمليات' : 'Log All Moderation'}
-                    </Label>
-                    <Switch
-                      id="log-all"
-                      checked={moderationSettings.logAllModeration}
-                      onCheckedChange={(checked) => setModerationSettings(prev => ({
-                        ...prev,
-                        logAllModeration: checked
-                      }))}
-                    />
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Test Tab */}
-        <TabsContent value="test" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Zap className="w-5 h-5" />
-                {isArabic ? 'اختبار نظام الإشراف' : 'Test Moderation System'}
-              </CardTitle>
-              <CardDescription>
-                {isArabic 
-                  ? 'اختبر المحتوى للحصول على تحليل سريع قبل النشر'
-                  : 'Test content for quick analysis before publishing'
-                }
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="test-content">
-                  {isArabic ? 'المحتوى المراد اختباره' : 'Content to Test'}
-                </Label>
-                <Textarea
-                  id="test-content"
-                  value={testContent}
-                  onChange={(e) => setTestContent(e.target.value)}
-                  placeholder={isArabic ? 'أدخل النص المراد تحليله...' : 'Enter text to analyze...'}
-                  rows={6}
-                  className="mt-2"
-                />
-              </div>
+            {filteredAlerts.map((alert) => {
+              const article = articles.find(a => a.id === alert.articleId);
               
-              <Button
-                onClick={testContentModeration}
-                disabled={!testContent.trim() || isProcessing}
-              >
-                {isProcessing ? (
-                  <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                ) : (
-                  <Brain className="w-4 h-4 mr-2" />
-                )}
-                {isArabic ? 'تحليل المحتوى' : 'Analyze Content'}
-              </Button>
-              
-              {testResult && (
-                <Card className="mt-4">
+              return (
+                <Card key={alert.id} className={`border-l-4 ${getSeverityColor(alert.severity)}`}>
                   <CardContent className="p-4">
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium">
-                          {isArabic ? 'النتيجة' : 'Result'}
-                        </span>
-                        <Badge variant={testResult.safe ? 'default' : 'destructive'}>
-                          {testResult.safe ? (isArabic ? 'آمن' : 'Safe') : (isArabic ? 'مشكوك' : 'Flagged')}
-                        </Badge>
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">
-                          {isArabic ? 'مستوى الخطورة' : 'Severity Level'}
-                        </span>
-                        <Badge variant={getSeverityColor(testResult.severity) as any}>
-                          {testResult.severity}
-                        </Badge>
-                      </div>
-                      
-                      {testResult.issues.length > 0 && (
-                        <div>
-                          <h4 className="font-medium mb-2">
-                            {isArabic ? 'المشاكل المكتشفة' : 'Detected Issues'}
-                          </h4>
-                          <ul className="space-y-1">
-                            {testResult.issues.map((issue: string, index: number) => (
-                              <li key={index} className="text-sm text-muted-foreground flex items-center gap-2">
-                                <AlertTriangle className="w-3 h-3" />
-                                {issue}
-                              </li>
-                            ))}
-                          </ul>
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          {getSeverityIcon(alert.severity)}
+                          <Badge variant="outline" className={getSeverityColor(alert.severity)}>
+                            {alert.severity === 'critical' && 'حرج'}
+                            {alert.severity === 'high' && 'عالي'}
+                            {alert.severity === 'medium' && 'متوسط'}
+                            {alert.severity === 'low' && 'منخفض'}
+                          </Badge>
+                          <Badge variant="secondary">
+                            {alert.type === 'content' && 'محتوى'}
+                            {alert.type === 'language' && 'لغة'}
+                            {alert.type === 'policy' && 'سياسة'}
+                            {alert.type === 'bias' && 'تحيز'}
+                            {alert.type === 'sensitivity' && 'حساسية'}
+                            {alert.type === 'accuracy' && 'دقة'}
+                          </Badge>
+                          {alert.autoDetected && (
+                            <Badge variant="outline">
+                              <Brain className="h-3 w-3 mr-1" />
+                              كشف تلقائي
+                            </Badge>
+                          )}
                         </div>
-                      )}
+                        
+                        <h4 className="font-semibold mb-1">
+                          {article?.title || 'مقال محذوف'}
+                        </h4>
+                        
+                        <p className="text-sm text-muted-foreground mb-2">
+                          {alert.message}
+                        </p>
+                        
+                        {alert.suggestion && (
+                          <div className="p-2 bg-accent/10 rounded-lg mb-2">
+                            <p className="text-sm">
+                              <strong>اقتراح:</strong> {alert.suggestion}
+                            </p>
+                          </div>
+                        )}
+                        
+                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                          <span>
+                            <Calendar className="inline h-3 w-3 mr-1" />
+                            {new Date(alert.createdAt).toLocaleDateString('ar-SA')}
+                          </span>
+                          {alert.reviewedAt && (
+                            <span>
+                              <User className="inline h-3 w-3 mr-1" />
+                              تمت المراجعة: {new Date(alert.reviewedAt).toLocaleDateString('ar-SA')}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      
+                      <div className="flex gap-2 ml-4">
+                        {alert.status === 'pending' && (
+                          <>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleAlertAction(alert.id, 'approve')}
+                            >
+                              <CheckCircle className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleAlertAction(alert.id, 'reject')}
+                            >
+                              <XCircle className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleAlertAction(alert.id, 'escalate')}
+                            >
+                              <AlertTriangle className="h-4 w-4" />
+                            </Button>
+                            {article && (
+                              <Button
+                                size="sm"
+                                onClick={() => onArticleSelect(article)}
+                              >
+                                مراجعة المقال
+                              </Button>
+                            )}
+                          </>
+                        )}
+                        
+                        {alert.status !== 'pending' && (
+                          <Badge variant={alert.status === 'approved' ? 'default' : 'secondary'}>
+                            {alert.status === 'approved' && 'موافق عليه'}
+                            {alert.status === 'rejected' && 'مرفوض'}
+                            {alert.status === 'escalated' && 'مُصعد'}
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
-              )}
+              );
+            })}
+            
+            {filteredAlerts.length === 0 && (
+              <Card>
+                <CardContent className="text-center py-12">
+                  <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">لا توجد تنبيهات</h3>
+                  <p className="text-muted-foreground">
+                    {filterStatus === 'all' 
+                      ? 'لا توجد تنبيهات حالياً. قم بتشغيل فحص شامل للمحتوى.'
+                      : `لا توجد تنبيهات بحالة "${filterStatus}"`
+                    }
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="rules" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>قواعد الإشراف</CardTitle>
+              <CardDescription>
+                إدارة قواعد الكشف التلقائي عن المحتوى
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {moderationRules.map((rule) => (
+                <div key={rule.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3">
+                      <Switch
+                        checked={rule.enabled}
+                        onCheckedChange={(enabled) => {
+                          setModerationRules(prev => prev.map(r => 
+                            r.id === rule.id ? { ...r, enabled } : r
+                          ));
+                        }}
+                      />
+                      <div>
+                        <h4 className="font-semibold">{rule.name}</h4>
+                        <p className="text-sm text-muted-foreground">{rule.description}</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className={getSeverityColor(rule.severity)}>
+                      {rule.severity === 'critical' && 'حرج'}
+                      {rule.severity === 'high' && 'عالي'}
+                      {rule.severity === 'medium' && 'متوسط'}
+                      {rule.severity === 'low' && 'منخفض'}
+                    </Badge>
+                    <Button size="sm" variant="outline">
+                      تحرير
+                    </Button>
+                  </div>
+                </div>
+              ))}
+              
+              <Button className="w-full">
+                إضافة قاعدة جديدة
+              </Button>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="analytics" className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>أداء الإشراف</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex justify-between text-sm mb-2">
+                      <span>معدل الكشف التلقائي</span>
+                      <span>85%</span>
+                    </div>
+                    <Progress value={85} />
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-sm mb-2">
+                      <span>دقة التنبيهات</span>
+                      <span>92%</span>
+                    </div>
+                    <Progress value={92} />
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-sm mb-2">
+                      <span>سرعة المراجعة</span>
+                      <span>78%</span>
+                    </div>
+                    <Progress value={78} />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>إحصائيات الفترة الأخيرة</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-sm">مقالات تم فحصها</span>
+                    <span className="font-semibold">{articles.length}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm">تنبيهات تم إنشاؤها</span>
+                    <span className="font-semibold">{stats.total}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm">مراجعات مكتملة</span>
+                    <span className="font-semibold">{stats.resolved}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm">متوسط وقت المراجعة</span>
+                    <span className="font-semibold">2.5 ساعة</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </div>
