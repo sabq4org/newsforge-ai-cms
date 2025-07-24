@@ -20,19 +20,19 @@ import {
   Star,
   ThumbsUp,
   Eye,
-  Share2,
-  Settings,
-  RefreshCw,
+  ShareNetwork,
+  Gear,
+  ArrowsClockwise,
   Lightbulb,
-  Wand2,
-  ChartLine,
-  Zap,
+  MagicWand,
+  TrendUp,
+  Lightning,
   Cpu,
-  MessageSquare,
+  ChatCircle,
   Heart,
-  Award,
-  Filter,
-  Search,
+  Trophy,
+  FunnelSimple,
+  MagnifyingGlass,
   Calendar,
   Globe,
   ArrowRight
@@ -199,6 +199,7 @@ export function GenerativeAIRecommendationSystem({
       const analysis = await spark.llm(prompt, 'gpt-4o');
       return analysis;
     } catch (error) {
+      console.error('Error in context analysis:', error);
       return 'تحليل أساسي: المستخدم يبحث عن محتوى متنوع يتماشى مع اهتماماته';
     }
   };
@@ -257,6 +258,7 @@ export function GenerativeAIRecommendationSystem({
           });
         }
       } catch (error) {
+        console.error('Error in AI generation:', error);
         // Fallback to basic scoring
         const basicScore = calculateBasicContentScore(article);
         if (basicScore > 0.6) {
@@ -325,6 +327,7 @@ export function GenerativeAIRecommendationSystem({
         explanationText: 'مستخدمون بنفس اهتماماتك قرأوا هذا المحتوى'
       })) || [];
     } catch (error) {
+      console.error('Error in collaborative recommendations:', error);
       return [];
     }
   };
@@ -617,7 +620,7 @@ export function GenerativeAIRecommendationSystem({
                 <div className="text-muted-foreground">إعجاب</div>
               </div>
               <div className="text-center p-2 bg-purple-50 rounded">
-                <Share2 className="h-4 w-4 mx-auto mb-1 text-purple-500" />
+                <ShareNetwork className="h-4 w-4 mx-auto mb-1 text-purple-500" />
                 <div className="font-medium">{rec.predictedEngagement.shares}</div>
                 <div className="text-muted-foreground">مشاركة</div>
               </div>
@@ -640,13 +643,13 @@ export function GenerativeAIRecommendationSystem({
             )}
 
             {/* Action Button */}
-            <Button 
-              className="w-full gap-2"
-              onClick={() => onArticleSelect(article)}
-            >
-              قراءة المقال
-              <ArrowRight className="h-4 w-4" />
-            </Button>
+              <Button 
+                className="w-full gap-2"
+                onClick={() => onArticleSelect(article)}
+              >
+                قراءة المقال
+                <ArrowRight className="h-4 w-4" />
+              </Button>
           </div>
         </CardContent>
       </Card>
@@ -671,6 +674,17 @@ export function GenerativeAIRecommendationSystem({
         ${articles.slice(0, 8).map(a => `"${a.title}" - ${a.category?.name}`).join('\n')}
         
         اعط نتائج بصيغة JSON مع توضيح مفصل لكل توصية.
+        
+        المطلوب: مصفوفة من التوصيات باسم "recommendations" مع كل توصية تحتوي على:
+        {
+          "title": "العنوان المخصص",
+          "excerpt": "الملخص المخصص", 
+          "relevanceScore": "نقاط من 0-100",
+          "reasoning": "سبب التوصية",
+          "tone": "النبرة المناسبة",
+          "tags": ["كلمات", "مفتاحية"],
+          "explanation": "شرح شخصي للمستخدم"
+        }
       `;
       
       const result = await spark.llm(prompt, 'gpt-4o', true);
@@ -681,11 +695,11 @@ export function GenerativeAIRecommendationSystem({
           id: `query_${idx}_${Date.now()}`,
           type: 'contextual',
           articleId: articles.find(a => a.title.includes(rec.matchedTitle?.split(' ')[0]))?.id || articles[idx]?.id || articles[0].id,
-          score: rec.relevanceScore || 0.8,
+          score: (rec.relevanceScore || 80) / 100,
           confidence: 0.9,
           reasoning: rec.reasoning || 'استجابة للاستعلام',
-          personalizedTitle: rec.personalizedTitle || rec.title,
-          personalizedExcerpt: rec.personalizedExcerpt || rec.excerpt,
+          personalizedTitle: rec.title || rec.personalizedTitle,
+          personalizedExcerpt: rec.excerpt || rec.personalizedExcerpt,
           timeSlot: getCurrentTimeSlot() as any,
           emotionalTone: rec.tone || 'informative',
           aiGeneratedTags: rec.tags || [currentQuery],
@@ -702,7 +716,44 @@ export function GenerativeAIRecommendationSystem({
         toast.success('تم إنتاج توصيات مخصصة للاستعلام');
       }
     } catch (error) {
+      console.error('Error generating contextual query:', error);
       toast.error('خطأ في إنتاج التوصيات للاستعلام');
+      
+      // Fallback: create basic recommendations based on keyword matching
+      const fallbackRecs = articles
+        .filter(article => 
+          article.title.toLowerCase().includes(currentQuery.toLowerCase()) ||
+          article.excerpt.toLowerCase().includes(currentQuery.toLowerCase()) ||
+          userPersona.interests.some(interest => 
+            article.category?.name.includes(interest) || article.title.includes(interest)
+          )
+        )
+        .slice(0, 4)
+        .map((article, idx) => ({
+          id: `fallback_${idx}_${Date.now()}`,
+          type: 'contextual' as const,
+          articleId: article.id,
+          score: 0.7,
+          confidence: 0.6,
+          reasoning: 'تطابق أساسي مع الكلمات المفتاحية',
+          personalizedTitle: article.title,
+          personalizedExcerpt: article.excerpt,
+          timeSlot: getCurrentTimeSlot() as any,
+          emotionalTone: 'informative' as const,
+          aiGeneratedTags: [currentQuery],
+          predictedEngagement: {
+            views: 800,
+            likes: 80,
+            shares: 40,
+            readTime: 4
+          },
+          explanationText: `نتيجة بحث عن: ${currentQuery}`
+        }));
+      
+      setRecommendations(fallbackRecs);
+      if (fallbackRecs.length > 0) {
+        toast.success('تم إنتاج توصيات أساسية');
+      }
     } finally {
       setIsGenerating(false);
     }
@@ -734,9 +785,9 @@ export function GenerativeAIRecommendationSystem({
           className="gap-2 bg-gradient-to-r from-primary to-accent"
         >
           {isGenerating ? (
-            <RefreshCw className="h-5 w-5 animate-spin" />
+            <ArrowsClockwise className="h-5 w-5 animate-spin" />
           ) : (
-            <Wand2 className="h-5 w-5" />
+            <MagicWand className="h-5 w-5" />
           )}
           إنتاج توصيات جديدة
         </Button>
@@ -746,7 +797,7 @@ export function GenerativeAIRecommendationSystem({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Search className="h-5 w-5" />
+            <MagnifyingGlass className="h-5 w-5" />
             استعلام ذكي مخصص
           </CardTitle>
           <CardDescription>
@@ -776,13 +827,268 @@ export function GenerativeAIRecommendationSystem({
       </Card>
 
       <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
+          <TabsTrigger value="demo">عرض تجريبي</TabsTrigger>
           <TabsTrigger value="recommendations">التوصيات الذكية</TabsTrigger>
           <TabsTrigger value="persona">الشخصية الرقمية</TabsTrigger>
           <TabsTrigger value="config">إعدادات الذكاء الاصطناعي</TabsTrigger>
           <TabsTrigger value="analytics">تحليلات متقدمة</TabsTrigger>
           <TabsTrigger value="insights">رؤى الذكاء الاصطناعي</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="demo" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5" />
+                عرض تجريبي - نظام التوصيات التوليدي
+              </CardTitle>
+              <CardDescription>
+                جرب مختلف أنواع التوصيات المدعومة بالذكاء الاصطناعي
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <Button
+                  variant="outline"
+                  className="h-24 flex flex-col gap-2"
+                  onClick={() => {
+                    // Generate content-based demo recommendations
+                    const demoRecs: GenerativeRecommendation[] = articles.slice(0, 3).map((article, idx) => ({
+                      id: `demo_content_${idx}`,
+                      type: 'content-based',
+                      articleId: article.id,
+                      score: 0.85 + (idx * 0.05),
+                      confidence: 0.9,
+                      reasoning: 'تحليل محتوى ذكي متقدم',
+                      personalizedTitle: `${article.title} - مخصص لك`,
+                      personalizedExcerpt: `بناءً على اهتمامك بـ${userPersona.interests[0] || 'التقنية'}: ${article.excerpt}`,
+                      timeSlot: 'evening',
+                      emotionalTone: 'informative',
+                      aiGeneratedTags: ['مخصص', 'ذكي', userPersona.interests[0] || 'تقنية'],
+                      predictedEngagement: {
+                        views: 950 + (idx * 100),
+                        likes: 95 + (idx * 10),
+                        shares: 48 + (idx * 5),
+                        readTime: 4 + idx
+                      },
+                      explanationText: `هذا المحتوى يتطابق مع اهتمامك بـ${userPersona.interests[0] || 'التقنية'} ويناسب حالتك المزاجية الحالية`
+                    }));
+                    setRecommendations(demoRecs);
+                    toast.success('تم إنتاج توصيات تجريبية للمحتوى المناسب');
+                  }}
+                >
+                  <Target className="h-6 w-6" />
+                  <span className="text-sm">محتوى مناسب</span>
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className="h-24 flex flex-col gap-2"
+                  onClick={() => {
+                    // Generate trend prediction demo
+                    const trendRecs: GenerativeRecommendation[] = articles.slice(3, 6).map((article, idx) => ({
+                      id: `demo_trend_${idx}`,
+                      type: 'trend-prediction',
+                      articleId: article.id,
+                      score: 0.92 - (idx * 0.02),
+                      confidence: 0.85,
+                      reasoning: 'توقع اتجاهات رائجة',
+                      personalizedTitle: `🔥 ${article.title} - رائج الآن`,
+                      personalizedExcerpt: `هذا المحتوى متوقع أن يصبح الأكثر تفاعلاً خلال الساعات القادمة: ${article.excerpt}`,
+                      timeSlot: 'afternoon',
+                      emotionalTone: 'urgent',
+                      aiGeneratedTags: ['رائج', 'متوقع', 'شائع', 'تريند'],
+                      predictedEngagement: {
+                        views: 1500 + (idx * 200),
+                        likes: 180 + (idx * 20),
+                        shares: 95 + (idx * 10),
+                        readTime: 3 + idx
+                      },
+                      explanationText: 'الذكاء الاصطناعي يتوقع أن يكون هذا المحتوى من الأكثر تفاعلاً اليوم'
+                    }));
+                    setRecommendations(trendRecs);
+                    toast.success('تم إنتاج توصيات تجريبية للمحتوى الرائج');
+                  }}
+                >
+                  <TrendingUp className="h-6 w-6" />
+                  <span className="text-sm">توقع رائج</span>
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className="h-24 flex flex-col gap-2"
+                  onClick={() => {
+                    // Generate contextual demo
+                    const timeSlot = getCurrentTimeSlot();
+                    const contextRecs: GenerativeRecommendation[] = articles.slice(6, 9).map((article, idx) => ({
+                      id: `demo_contextual_${idx}`,
+                      type: 'contextual',
+                      articleId: article.id,
+                      score: 0.78 + (idx * 0.05),
+                      confidence: 0.88,
+                      reasoning: 'مناسب للوقت والسياق',
+                      personalizedTitle: `${timeSlot === 'morning' ? '☀️' : timeSlot === 'afternoon' ? '☁️' : timeSlot === 'evening' ? '🌅' : '🌙'} ${article.title}`,
+                      personalizedExcerpt: `محتوى مثالي لفترة ${timeSlot === 'morning' ? 'الصباح' : timeSlot === 'afternoon' ? 'الظهيرة' : timeSlot === 'evening' ? 'المساء' : 'المساء المتأخر'}: ${article.excerpt}`,
+                      timeSlot: timeSlot as any,
+                      emotionalTone: userPersona.currentMood as any,
+                      aiGeneratedTags: [timeSlot, 'مناسب للوقت', 'سياقي'],
+                      predictedEngagement: {
+                        views: 850 + (idx * 50),
+                        likes: 85 + (idx * 5),
+                        shares: 42 + (idx * 3),
+                        readTime: 4 + (idx * 0.5)
+                      },
+                      explanationText: `مخصص لفترة ${timeSlot === 'morning' ? 'الصباح' : timeSlot === 'afternoon' ? 'الظهيرة' : timeSlot === 'evening' ? 'المساء' : 'المساء المتأخر'} ويتماشى مع حالتك المزاجية`
+                    }));
+                    setRecommendations(contextRecs);
+                    toast.success('تم إنتاج توصيات تجريبية حسب السياق والوقت');
+                  }}
+                >
+                  <Clock className="h-6 w-6" />
+                  <span className="text-sm">مناسب للوقت</span>
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className="h-24 flex flex-col gap-2"
+                  onClick={() => {
+                    // Generate hybrid demo
+                    const hybridRecs: GenerativeRecommendation[] = articles.slice(9, 12).map((article, idx) => ({
+                      id: `demo_hybrid_${idx}`,
+                      type: 'hybrid',
+                      articleId: article.id,
+                      score: 0.88 + (idx * 0.02),
+                      confidence: 0.92,
+                      reasoning: 'خليط ذكي من عدة خوارزميات',
+                      personalizedTitle: `🧠 ${article.title} - توصية ذكية مدمجة`,
+                      personalizedExcerpt: `نتيجة دمج خوارزميات متعددة للذكاء الاصطناعي: ${article.excerpt}`,
+                      timeSlot: 'evening',
+                      emotionalTone: 'analytical',
+                      aiGeneratedTags: ['ذكي', 'مدمج', 'متقدم', 'شامل'],
+                      predictedEngagement: {
+                        views: 1200 + (idx * 100),
+                        likes: 140 + (idx * 15),
+                        shares: 78 + (idx * 8),
+                        readTime: 5 + idx
+                      },
+                      explanationText: 'نتيجة تحليل متقدم يجمع بين التخصيص الشخصي والاتجاهات والسياق الزمني'
+                    }));
+                    setRecommendations(hybridRecs);
+                    toast.success('تم إنتاج توصيات تجريبية هجينة متقدمة');
+                  }}
+                >
+                  <Brain className="h-6 w-6" />
+                  <span className="text-sm">هجين متقدم</span>
+                </Button>
+              </div>
+
+              <Separator />
+
+              <div>
+                <h3 className="text-lg font-semibold mb-4">اختبار توليد المحتوى التفاعلي</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      const testQuery = "أريد مقالات ملهمة عن التكنولوجيا";
+                      setCurrentQuery(testQuery);
+                      // Simulate immediate result
+                      const simulatedRecs: GenerativeRecommendation[] = articles.slice(0, 2).map((article, idx) => ({
+                        id: `test_${idx}`,
+                        type: 'contextual',
+                        articleId: article.id,
+                        score: 0.9,
+                        confidence: 0.95,
+                        reasoning: 'استجابة لطلب المستخدم',
+                        personalizedTitle: `✨ ${article.title} - محتوى ملهم مخصص لك`,
+                        personalizedExcerpt: `محتوى ملهم عن التكنولوجيا: ${article.excerpt}`,
+                        timeSlot: 'evening',
+                        emotionalTone: 'inspiring',
+                        aiGeneratedTags: ['ملهم', 'تكنولوجيا', 'مخصص'],
+                        predictedEngagement: {
+                          views: 1100,
+                          likes: 130,
+                          shares: 65,
+                          readTime: 4
+                        },
+                        explanationText: 'محتوى ملهم عن التكنولوجيا كما طلبت'
+                      }));
+                      setRecommendations(simulatedRecs);
+                      toast.success('تم إنتاج محتوى مخصص للاستعلام التجريبي');
+                    }}
+                  >
+                    💡 محتوى ملهم تقني
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      const testQuery = "أخبار سريعة وعاجلة";
+                      setCurrentQuery(testQuery);
+                      const simulatedRecs: GenerativeRecommendation[] = articles.slice(2, 4).map((article, idx) => ({
+                        id: `urgent_test_${idx}`,
+                        type: 'contextual',
+                        articleId: article.id,
+                        score: 0.87,
+                        confidence: 0.9,
+                        reasoning: 'أخبار عاجلة وسريعة',
+                        personalizedTitle: `⚡ عاجل: ${article.title}`,
+                        personalizedExcerpt: `أخبار سريعة ومهمة: ${article.excerpt}`,
+                        timeSlot: 'afternoon',
+                        emotionalTone: 'urgent',
+                        aiGeneratedTags: ['عاجل', 'سريع', 'مهم'],
+                        predictedEngagement: {
+                          views: 1400,
+                          likes: 110,
+                          shares: 85,
+                          readTime: 2
+                        },
+                        explanationText: 'أخبار عاجلة وسريعة كما طلبت'
+                      }));
+                      setRecommendations(simulatedRecs);
+                      toast.success('تم إنتاج أخبار عاجلة تجريبية');
+                    }}
+                  >
+                    ⚡ أخبار عاجلة
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      const testQuery = "محتوى تحليلي عميق";
+                      setCurrentQuery(testQuery);
+                      const simulatedRecs: GenerativeRecommendation[] = articles.slice(4, 6).map((article, idx) => ({
+                        id: `analytical_test_${idx}`,
+                        type: 'contextual',
+                        articleId: article.id,
+                        score: 0.91,
+                        confidence: 0.88,
+                        reasoning: 'تحليل عميق ومفصل',
+                        personalizedTitle: `📊 تحليل: ${article.title}`,
+                        personalizedExcerpt: `تحليل عميق ومدروس: ${article.excerpt}`,
+                        timeSlot: 'evening',
+                        emotionalTone: 'analytical',
+                        aiGeneratedTags: ['تحليلي', 'عميق', 'مفصل'],
+                        predictedEngagement: {
+                          views: 800,
+                          likes: 95,
+                          shares: 45,
+                          readTime: 7
+                        },
+                        explanationText: 'محتوى تحليلي عميق يناسب رغبتك في الفهم المتقدم'
+                      }));
+                      setRecommendations(simulatedRecs);
+                      toast.success('تم إنتاج محتوى تحليلي تجريبي');
+                    }}
+                  >
+                    📊 تحليل عميق
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="recommendations" className="space-y-6">
           {recommendations.length === 0 ? (
@@ -842,10 +1148,10 @@ export function GenerativeAIRecommendationSystem({
                 <Label className="text-base font-medium">الحالة المزاجية الحالية</Label>
                 <div className="flex gap-2 mt-3">
                   {[
-                    { value: 'curious', label: 'فضولي', icon: Search },
+                    { value: 'curious', label: 'فضولي', icon: MagnifyingGlass },
                     { value: 'focused', label: 'متركز', icon: Target },
                     { value: 'relaxed', label: 'مسترخي', icon: Heart },
-                    { value: 'urgent', label: 'متعجل', icon: Zap },
+                    { value: 'urgent', label: 'متعجل', icon: Lightning },
                     { value: 'exploratory', label: 'استكشافي', icon: Globe }
                   ].map((mood) => (
                     <Button
@@ -902,7 +1208,7 @@ export function GenerativeAIRecommendationSystem({
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Settings className="h-5 w-5" />
+                <Gear className="h-5 w-5" />
                 إعدادات محرك الذكاء الاصطناعي
               </CardTitle>
               <CardDescription>
@@ -1165,7 +1471,7 @@ export function GenerativeAIRecommendationSystem({
 
                 <div className="p-4 border border-green-200 rounded-lg bg-green-50">
                   <div className="flex items-start gap-3">
-                    <Award className="h-5 w-5 text-green-600 mt-1" />
+                    <Trophy className="h-5 w-5 text-green-600 mt-1" />
                     <div>
                       <h4 className="font-medium text-green-900">توصية للتحسين</h4>
                       <p className="text-green-700 text-sm mt-1">
@@ -1189,7 +1495,7 @@ export function GenerativeAIRecommendationSystem({
 
                 <div className="p-4 border border-orange-200 rounded-lg bg-orange-50">
                   <div className="flex items-start gap-3">
-                    <ChartLine className="h-5 w-5 text-orange-600 mt-1" />
+                    <TrendUp className="h-5 w-5 text-orange-600 mt-1" />
                     <div>
                       <h4 className="font-medium text-orange-900">توقع أداء</h4>
                       <p className="text-orange-700 text-sm mt-1">
