@@ -11,19 +11,19 @@ import { Sidebar } from '@/components/layout/Sidebar';
 import { RoleBasedDashboard } from '@/components/dashboard/RoleBasedDashboard';
 import { AdvancedAnalytics, RealTimeAnalytics, PerformanceInsights, CategoryAnalytics } from '@/components/analytics';
 import { ArticleList } from '@/components/articles/ArticleList';
-import { EnhancedArticleEditor } from '@/components/editor/EnhancedArticleEditor';
+import { ComprehensiveArticleEditor } from '@/components/editor/ComprehensiveArticleEditor';
 import { AIOptimizationEngine } from '@/components/optimization/AIOptimizationEngine';
 import { ABTestingFramework } from '@/components/optimization/ABTestingFramework';
 import { TypographySettings } from '@/components/settings/TypographySettings';
 import { TypographyShowcase } from '@/components/showcase/TypographyShowcase';
-import { MediaUpload, MediaGenerator } from '@/components/media';
+import { MediaUpload, MediaGenerator, ComprehensiveMediaManager } from '@/components/media';
 import { AudioEditor, AudioLibrary, AudioAnalytics } from '@/components/audio';
 import { SystemAnalysis } from '@/components/analysis/SystemAnalysis';
-import { AISearch } from '@/components/search/AISearch';
+import { AISearch, ComprehensiveSearch } from '@/components/search';
 import { AIRecommendationEngine } from '@/components/recommendations/AIRecommendationEngine';
 import { ContentModeration } from '@/components/moderation/ContentModeration';
 import { SchedulingCalendar } from '@/components/scheduling';
-import { CategoryManager, CategoryStatistics } from '@/components/categories';
+import { CategoryManager, CategoryStatistics, ComprehensiveCategoryManager } from '@/components/categories';
 import { LoyaltySystem } from '@/components/loyalty';
 import { PodcastDemo } from '@/components/demo/PodcastDemo';
 import { Article } from '@/types';
@@ -128,7 +128,7 @@ function AppContent() {
       case 'create-article':
       case 'editor':
         return (
-          <EnhancedArticleEditor 
+          <ComprehensiveArticleEditor 
             article={editingArticle}
             onSave={handleSaveArticle}
             onCancel={() => setActiveView('articles')}
@@ -200,7 +200,7 @@ function AppContent() {
         return <CategoryStatistics />;
       
       case 'categories':
-        return <CategoryManager onCategoryUpdate={(cats) => console.log('Categories updated:', cats)} />;
+        return <ComprehensiveCategoryManager />;
       
       case 'tags':
         return <CategoryManager onCategoryUpdate={(cats) => console.log('Categories updated:', cats)} />;
@@ -301,13 +301,13 @@ function AppContent() {
         return <TypographyShowcase />;
       
       case 'media':
-        return <MediaUpload />;
+        return <ComprehensiveMediaManager />;
       
       case 'system-analysis':
         return <SystemAnalysis />;
       
       case 'search':
-        return <AISearch onArticleEdit={handleEditArticle} />;
+        return <ComprehensiveSearch onArticleEdit={handleEditArticle} />;
       
       case 'moderation':
         if (!canAccess('moderation')) {

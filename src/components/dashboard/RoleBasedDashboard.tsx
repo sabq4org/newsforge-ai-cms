@@ -371,10 +371,19 @@ export function RoleBasedDashboard({ onNavigate }: RoleBasedDashboardProps) {
                       {activity.article}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {activity.user} • {activity.timestamp && activity.timestamp instanceof Date ? 
-                        activity.timestamp.toLocaleDateString(isArabic ? 'ar-SA' : 'en-US') : 
-                        new Date().toLocaleDateString(isArabic ? 'ar-SA' : 'en-US')
-                      }
+                      {activity.user} • {(() => {
+                        try {
+                          let date = activity.timestamp;
+                          if (typeof date === 'string') date = new Date(date);
+                          if (typeof date === 'number') date = new Date(date);
+                          if (date && date instanceof Date && !isNaN(date.getTime())) {
+                            return date.toLocaleDateString(isArabic ? 'ar-SA' : 'en-US');
+                          }
+                          return new Date().toLocaleDateString(isArabic ? 'ar-SA' : 'en-US');
+                        } catch (e) {
+                          return new Date().toLocaleDateString(isArabic ? 'ar-SA' : 'en-US');
+                        }
+                      })()}
                     </p>
                   </div>
                   <Badge variant="outline" className="text-xs">
