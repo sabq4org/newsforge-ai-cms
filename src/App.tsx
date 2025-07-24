@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Toaster } from '@/components/ui/sonner';
+import { Button } from '@/components/ui/button';
+import { Globe, Gear as Settings } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { CollaborativeProvider } from '@/contexts/CollaborativeContext';
@@ -9,6 +11,7 @@ import { LoginForm } from '@/components/auth/LoginForm';
 import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { RoleBasedDashboard } from '@/components/dashboard/RoleBasedDashboard';
+import { PublicInterface } from '@/components/public';
 import { AdvancedAnalytics, AnalyticsDashboard, InteractiveAnalytics, RealTimeAnalytics, PerformanceInsights, CategoryAnalytics } from '@/components/analytics';
 import { ArticleList } from '@/components/articles/ArticleList';
 import { ComprehensiveArticleEditor } from '@/components/editor/ComprehensiveArticleEditor';
@@ -45,6 +48,7 @@ function AppContent() {
   const [editingArticle, setEditingArticle] = useState<Article | undefined>();
   const [rawArticles, setRawArticles] = useKV<Article[]>('sabq-articles', mockArticles);
   const articles = normalizeArticles(rawArticles);
+  const [isPublicView, setIsPublicView] = useState(false);
   
   // Initialize media files
   const [mediaFiles, setMediaFiles] = useKV('sabq-media-files', mockMediaFiles);
@@ -56,8 +60,43 @@ function AppContent() {
     });
   };
 
+  // If in public view mode, show public interface
+  if (isPublicView) {
+    return (
+      <div className="relative">
+        {/* Admin Toggle */}
+        <div className="fixed top-4 left-4 z-50">
+          <Button
+            variant="outline"
+            onClick={() => setIsPublicView(false)}
+            className="gap-2 bg-background border-border"
+          >
+            <Settings className="w-4 h-4" />
+            لوحة التحكم
+          </Button>
+        </div>
+        <PublicInterface />
+      </div>
+    );
+  }
+
   if (!isAuthenticated) {
-    return <LoginForm />;
+    return (
+      <div className="min-h-screen bg-background">
+        {/* Public/Login Toggle */}
+        <div className="absolute top-4 right-4 z-50">
+          <Button
+            variant="outline"
+            onClick={() => setIsPublicView(true)}
+            className="gap-2"
+          >
+            <Globe className="w-4 h-4" />
+            عرض الموقع العام
+          </Button>
+        </div>
+        <LoginForm />
+      </div>
+    );
   }
 
   const handleViewChange = (view: string) => {
@@ -426,6 +465,19 @@ function AppContent() {
             onMenuClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             isMobileMenuOpen={isMobileMenuOpen}
           />
+          
+          {/* Public View Toggle */}
+          <div className="border-b border-border px-6 py-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsPublicView(true)}
+              className="gap-2 ml-auto"
+            >
+              <Globe className="w-4 h-4" />
+              عرض الموقع العام
+            </Button>
+          </div>
           
           <main className="flex-1 overflow-y-auto p-6">
             {renderContent()}
