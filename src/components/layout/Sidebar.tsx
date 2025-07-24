@@ -226,6 +226,20 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       badge: isArabic ? 'عرض' : 'Demo'
     },
     {
+      id: 'smart-recommendations',
+      label: isArabic ? 'التوصيات الذكية' : 'Smart Recommendations',
+      icon: Brain,
+      show: true,
+      badge: isArabic ? 'ذكي' : 'AI'
+    },
+    {
+      id: 'member-profile',
+      label: isArabic ? 'الملف الشخصي' : 'Member Profile',
+      icon: Users,
+      show: true,
+      badge: isArabic ? 'عضو' : 'Member'
+    },
+    {
       id: 'recommendation-dashboard',
       label: isArabic ? 'لوحة التوصيات' : 'Recommendation Dashboard',
       icon: Brain,

@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/contexts/AuthContext';
+import { HeaderProfileMenu } from '@/components/membership';
 import { cn } from '@/lib/utils';
 import { 
   Sparkles, 
@@ -24,13 +25,25 @@ import {
   Crown,
   Brain
 } from '@phosphor-icons/react';
+import { UserProfile } from '@/types/membership';
 
 interface HeaderProps {
   onMenuClick: () => void;
   isMobileMenuOpen: boolean;
+  memberUser?: UserProfile | null;
+  onShowMemberLogin?: () => void;
+  onShowMemberProfile?: () => void;
+  onMemberLogout?: () => void;
 }
 
-export function Header({ onMenuClick, isMobileMenuOpen }: HeaderProps) {
+export function Header({ 
+  onMenuClick, 
+  isMobileMenuOpen, 
+  memberUser, 
+  onShowMemberLogin, 
+  onShowMemberProfile, 
+  onMemberLogout 
+}: HeaderProps) {
   const { user, logout, language, switchLanguage } = useAuth();
   const isRTL = language.direction === 'rtl';
   const isArabic = language.code === 'ar';
@@ -130,6 +143,27 @@ export function Header({ onMenuClick, isMobileMenuOpen }: HeaderProps) {
         </Button>
 
         {/* User Menu */}
+        {memberUser ? (
+          <HeaderProfileMenu
+            user={memberUser}
+            onShowProfile={onShowMemberProfile || (() => {})}
+            onShowSettings={onShowMemberProfile || (() => {})}
+            onLogout={onMemberLogout || (() => {})}
+            unreadNotifications={3}
+          />
+        ) : (
+          <Button 
+            variant="outline" 
+            size="sm"
+            className="gap-2"
+            onClick={onShowMemberLogin}
+          >
+            <User size={16} />
+            {isArabic ? 'تسجيل الدخول' : 'Sign In'}
+          </Button>
+        )}
+
+        {/* Admin User Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-9 px-2 gap-2 rounded-lg">

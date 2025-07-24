@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { Toaster } from '@/components/ui/sonner';
 import { Button } from '@/components/ui/button';
-import { Globe, Gear as Settings } from '@phosphor-icons/react';
+import { Globe, Gear as Settings, X } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { CollaborativeProvider } from '@/contexts/CollaborativeContext';
 import { CollaborativeManager } from '@/components/collaborative';
 import { TypographyProvider } from '@/contexts/TypographyContext';
 import { LoginForm } from '@/components/auth/LoginForm';
+import { RegisterForm, UserProfilePage, SmartRecommendationDashboard } from '@/components/membership';
 import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { RoleBasedDashboard } from '@/components/dashboard/RoleBasedDashboard';
@@ -41,6 +42,7 @@ import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
 import { mockArticles, mockCategories, mockMediaFiles } from '@/lib/mockData';
 import { normalizeArticles } from '@/lib/utils';
+import { UserProfile } from '@/types/membership';
 
 function AppContent() {
   const { isAuthenticated, user, canAccess } = useAuth();
@@ -54,11 +56,41 @@ function AppContent() {
   // Initialize media files
   const [mediaFiles, setMediaFiles] = useKV('sabq-media-files', mockMediaFiles);
   
+  // Membership system state
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
+  const [memberUser, setMemberUser] = useKV<UserProfile | null>('current-member-user', null);
+  
   const setArticles = (updater: (currentArticles: Article[]) => Article[]) => {
     setRawArticles(currentArticles => {
       const normalized = normalizeArticles(currentArticles || []);
       return updater(normalized);
     });
+  };
+
+  // Membership handlers
+  const handleMemberLogin = (userData: UserProfile) => {
+    setMemberUser(userData);
+    setShowAuthModal(false);
+    toast.success(`مرحباً بك ${userData.name}!`);
+  };
+
+  const handleMemberRegister = (userData: UserProfile) => {
+    setMemberUser(userData);
+    setShowAuthModal(false);
+    toast.success(`تم إنشاء حسابك بنجاح! مرحباً بك ${userData.name}`);
+  };
+
+  const handleMemberLogout = () => {
+    setMemberUser(null);
+    toast.success('تم تسجيل الخروج بنجاح');
+  };
+
+  const handleUpdateProfile = (updates: Partial<UserProfile>) => {
+    if (memberUser) {
+      setMemberUser(prev => ({ ...prev!, ...updates }));
+      toast.success('تم تحديث الملف الشخصي');
+    }
   };
 
   // If in public view mode, show public interface
@@ -444,6 +476,37 @@ function AppContent() {
       case 'notification-analytics':
         return <NotificationAnalytics />;
       
+      case 'member-profile':
+        return memberUser ? (
+          <UserProfilePage 
+            user={memberUser}
+            onUpdateProfile={handleUpdateProfile}
+            articles={articles}
+          />
+        ) : (
+          <div className="text-center py-12">
+            <h2 className="text-xl font-semibold">الملف الشخصي</h2>
+            <p className="text-muted-foreground mt-2">يرجى تسجيل الدخول أولاً</p>
+          </div>
+        );
+      
+      case 'smart-recommendations':
+        return memberUser ? (
+          <SmartRecommendationDashboard
+            userId={memberUser.id}
+            articles={articles}
+            onArticleSelect={handleEditArticle}
+          />
+        ) : (
+          <div className="text-center py-12">
+            <h2 className="text-xl font-semibold">التوصيات الذكية</h2>
+            <p className="text-muted-foreground mt-2">يرجى تسجيل الدخول للحصول على توصيات شخصية</p>
+            <Button className="mt-4" onClick={() => setShowAuthModal(true)}>
+              تسجيل الدخول
+            </Button>
+          </div>
+        );
+      
       case 'deep-analysis':
         return (
           <ComprehensiveAnalysisEngine 
@@ -477,6 +540,10 @@ function AppContent() {
           <Header 
             onMenuClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             isMobileMenuOpen={isMobileMenuOpen}
+            memberUser={memberUser}
+            onShowMemberLogin={() => setShowAuthModal(true)}
+            onShowMemberProfile={() => setActiveView('member-profile')}
+            onMemberLogout={handleMemberLogout}
           />
           
           {/* Public View Toggle */}
@@ -500,6 +567,36 @@ function AppContent() {
       
       {/* Notification Center */}
       <NotificationCenter />
+      
+      {/* Membership Authentication Modal */}
+      {showAuthModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="max-w-2xl w-full max-h-[90vh] overflow-auto">
+            {authMode === 'login' ? (
+              <LoginForm
+                onLogin={handleMemberLogin}
+                onSwitchToRegister={() => setAuthMode('register')}
+                onForgotPassword={() => {
+                  toast.info('سيتم إضافة استرداد كلمة المرور قريباً');
+                }}
+              />
+            ) : (
+              <RegisterForm
+                onRegister={handleMemberRegister}
+                onSwitchToLogin={() => setAuthMode('login')}
+              />
+            )}
+          </div>
+          
+          {/* Close button */}
+          <button
+            onClick={() => setShowAuthModal(false)}
+            className="absolute top-4 right-4 text-white hover:text-gray-300"
+          >
+            <X size={24} />
+          </button>
+        </div>
+      )}
     </div>
   );
 }

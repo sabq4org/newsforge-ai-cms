@@ -928,3 +928,6 @@ export interface AudioProject {
   outputUrl?: string;
   waveformData?: number[];
 }
+
+// Re-export membership types
+export * from './membership';
