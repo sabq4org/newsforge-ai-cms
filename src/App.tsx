@@ -36,6 +36,7 @@ import { ErrorChecker } from '@/components/debug/ErrorChecker';
 import { ErrorBoundary } from '@/components/debug/ErrorBoundary';
 import { RuntimeChecker } from '@/components/debug/RuntimeChecker';
 import { ExternalDataManager, NewsAggregator } from '@/components/external';
+import { BreakingNewsNotifications, NotificationCenter, LiveNotificationBanner, NotificationPreferences, NotificationAnalytics } from '@/components/notifications';
 import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
 import { mockArticles, mockCategories, mockMediaFiles } from '@/lib/mockData';
@@ -434,6 +435,15 @@ function AppContent() {
       case 'news-aggregator':
         return <NewsAggregator />;
       
+      case 'breaking-news':
+        return <BreakingNewsNotifications />;
+      
+      case 'notification-preferences':
+        return <NotificationPreferences />;
+      
+      case 'notification-analytics':
+        return <NotificationAnalytics />;
+      
       case 'deep-analysis':
         return (
           <ComprehensiveAnalysisEngine 
@@ -461,6 +471,9 @@ function AppContent() {
         />
         
         <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Live Notification Banner */}
+          <LiveNotificationBanner />
+          
           <Header 
             onMenuClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             isMobileMenuOpen={isMobileMenuOpen}
@@ -484,6 +497,9 @@ function AppContent() {
           </main>
         </div>
       </div>
+      
+      {/* Notification Center */}
+      <NotificationCenter />
     </div>
   );
 }

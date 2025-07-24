@@ -30,7 +30,9 @@ import {
   FileAudio,
   TrendUp,
   Coffee,
-  Drop
+  Drop,
+  Bell,
+  BellRinging
 } from '@phosphor-icons/react';
 
 interface SidebarProps {
@@ -180,6 +182,26 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       label: isArabic ? 'التحليلات' : 'Analytics',
       icon: BarChart3,
       show: hasPermission('read', 'analytics')
+    },
+    {
+      id: 'breaking-news',
+      label: isArabic ? 'الأخبار العاجلة' : 'Breaking News',
+      icon: BellRinging,
+      show: hasPermission('create', 'articles'),
+      badge: isArabic ? 'فوري' : 'Live'
+    },
+    {
+      id: 'notification-preferences',
+      label: isArabic ? 'إعدادات الإشعارات' : 'Notification Settings',
+      icon: Bell,
+      show: true
+    },
+    {
+      id: 'notification-analytics',
+      label: isArabic ? 'إحصائيات الإشعارات' : 'Notification Analytics',
+      icon: BarChart3,
+      show: hasPermission('read', 'analytics'),
+      badge: isArabic ? 'تحليل' : 'Analytics'
     },
     {
       id: 'advanced-analytics',

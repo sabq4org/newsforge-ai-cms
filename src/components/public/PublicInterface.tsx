@@ -3,6 +3,7 @@ import { PublicHeader } from './PublicHeader';
 import { PublicFooter } from './PublicFooter';
 import { PublicHomePage } from './PublicHomePage';
 import { PublicArticleView } from './PublicArticleView';
+import { NotificationCenter, LiveNotificationBanner } from '@/components/notifications';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -225,6 +226,9 @@ export function PublicInterface({ className }: PublicInterfaceProps) {
 
   return (
     <div className={cn("min-h-screen bg-background font-arabic", className)} dir={isRTL ? 'rtl' : 'ltr'}>
+      {/* Live Notification Banner */}
+      <LiveNotificationBanner />
+      
       <PublicHeader
         currentLanguage={currentLanguage}
         onLanguageChange={handleLanguageChange}
@@ -240,6 +244,9 @@ export function PublicInterface({ className }: PublicInterfaceProps) {
         currentLanguage={currentLanguage}
         onSectionClick={handleSectionClick}
       />
+      
+      {/* Notification Center for Public View */}
+      <NotificationCenter />
     </div>
   );
 }
