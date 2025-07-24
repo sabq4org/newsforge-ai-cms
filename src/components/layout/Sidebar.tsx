@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
   House, 
@@ -11,7 +12,14 @@ import {
   FolderOpen, 
   Tag, 
   Settings,
-  Calendar
+  Calendar,
+  Brain,
+  TestTube,
+  Eye,
+  TrendingUp,
+  Shield,
+  Sparkles,
+  Globe
 } from '@phosphor-icons/react';
 
 interface SidebarProps {
@@ -22,69 +30,152 @@ interface SidebarProps {
 }
 
 export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarProps) {
-  const { language, hasPermission } = useAuth();
+  const { language, user, canAccess, hasPermission } = useAuth();
+  const isRTL = language.direction === 'rtl';
+  const isArabic = language.code === 'ar';
 
-  const menuItems = [
+  // Core navigation items
+  const coreItems = [
     {
       id: 'dashboard',
-      label: language.code === 'ar' ? 'لوحة التحكم' : 'Dashboard',
+      label: isArabic ? 'لوحة التحكم' : 'Dashboard',
       icon: House,
-      permission: null
+      show: true
     },
     {
       id: 'articles',
-      label: language.code === 'ar' ? 'المقالات' : 'Articles',
+      label: isArabic ? 'المقالات' : 'Articles',
       icon: FileText,
-      permission: null,
-      badge: '12'
+      show: true,
+      badge: isArabic ? '١٢' : '12'
     },
     {
       id: 'create-article',
-      label: language.code === 'ar' ? 'مقال جديد' : 'New Article',
+      label: isArabic ? 'مقال جديد' : 'New Article',
       icon: PlusCircle,
-      permission: 'create'
-    },
-    {
-      id: 'scheduled',
-      label: language.code === 'ar' ? 'المجدولة' : 'Scheduled',
-      icon: Calendar,
-      permission: 'publish',
-      badge: '3'
-    },
-    {
-      id: 'analytics',
-      label: language.code === 'ar' ? 'التحليلات' : 'Analytics',
-      icon: BarChart3,
-      permission: 'view-analytics'
-    },
-    {
-      id: 'categories',
-      label: language.code === 'ar' ? 'التصنيفات' : 'Categories',
-      icon: FolderOpen,
-      permission: 'edit'
-    },
-    {
-      id: 'tags',
-      label: language.code === 'ar' ? 'العلامات' : 'Tags',
-      icon: Tag,
-      permission: 'edit'
-    },
-    {
-      id: 'users',
-      label: language.code === 'ar' ? 'المستخدمون' : 'Users',
-      icon: Users,
-      permission: 'manage-users'
-    },
-    {
-      id: 'settings',
-      label: language.code === 'ar' ? 'الإعدادات' : 'Settings',
-      icon: Settings,
-      permission: null
+      show: hasPermission('create', 'articles')
     }
   ];
 
-  const filteredItems = menuItems.filter(item => 
-    !item.permission || hasPermission(item.permission as any)
+  // Content management items
+  const contentItems = [
+    {
+      id: 'scheduled',
+      label: isArabic ? 'الجدولة' : 'Scheduled',
+      icon: Calendar,
+      show: hasPermission('schedule', 'articles'),
+      badge: isArabic ? '٣' : '3'
+    },
+    {
+      id: 'categories',
+      label: isArabic ? 'التصنيفات' : 'Categories',
+      icon: FolderOpen,
+      show: hasPermission('update', 'categories')
+    },
+    {
+      id: 'tags',
+      label: isArabic ? 'العلامات' : 'Tags',
+      icon: Tag,
+      show: hasPermission('update', 'tags')
+    }
+  ];
+
+  // AI & Analytics items
+  const aiAnalyticsItems = [
+    {
+      id: 'analytics',
+      label: isArabic ? 'التحليلات' : 'Analytics',
+      icon: BarChart3,
+      show: hasPermission('read', 'analytics')
+    },
+    {
+      id: 'realtime',
+      label: isArabic ? 'التحليل المباشر' : 'Real-time',
+      icon: Eye,
+      show: canAccess('advanced-analytics')
+    },
+    {
+      id: 'insights',
+      label: isArabic ? 'رؤى الأداء' : 'Performance Insights',
+      icon: TrendingUp,
+      show: canAccess('advanced-analytics')
+    },
+    {
+      id: 'ai-optimization',
+      label: isArabic ? 'التحسين الذكي' : 'AI Optimization',
+      icon: Brain,
+      show: canAccess('ai-tools')
+    },
+    {
+      id: 'ab-testing',
+      label: isArabic ? 'اختبار A/B' : 'A/B Testing',
+      icon: TestTube,
+      show: canAccess('ab-testing')
+    }
+  ];
+
+  // Management items
+  const managementItems = [
+    {
+      id: 'users',
+      label: isArabic ? 'المستخدمون' : 'Users',
+      icon: Users,
+      show: canAccess('user-management')
+    },
+    {
+      id: 'moderation',
+      label: isArabic ? 'الإشراف' : 'Moderation',
+      icon: Shield,
+      show: canAccess('moderation'),
+      badge: isArabic ? '٢' : '2'
+    },
+    {
+      id: 'settings',
+      label: isArabic ? 'الإعدادات' : 'Settings',
+      icon: Settings,
+      show: canAccess('settings')
+    }
+  ];
+
+  const renderMenuSection = (items: any[], title?: string) => (
+    <div className="space-y-1">
+      {title && (
+        <>
+          <div className="px-2 py-1">
+            <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              {title}
+            </h3>
+          </div>
+        </>
+      )}
+      {items.filter(item => item.show).map((item) => (
+        <Button
+          key={item.id}
+          variant={activeView === item.id ? "secondary" : "ghost"}
+          className={cn(
+            "w-full justify-start h-9 text-sm",
+            isRTL && "justify-end flex-row-reverse"
+          )}
+          onClick={() => {
+            onViewChange(item.id);
+            onClose();
+          }}
+        >
+          <item.icon size={16} />
+          <span className={cn(
+            "flex-1",
+            isRTL ? "text-right mr-2" : "text-left ml-2"
+          )}>
+            {item.label}
+          </span>
+          {item.badge && (
+            <Badge variant="secondary" className="text-xs h-4 px-1">
+              {item.badge}
+            </Badge>
+          )}
+        </Button>
+      ))}
+    </div>
   );
 
   return (
@@ -99,57 +190,85 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       
       {/* Sidebar */}
       <aside className={cn(
-        "fixed top-0 left-0 z-50 h-full w-64 bg-card border-r border-border transform transition-transform duration-200 ease-in-out lg:relative lg:translate-x-0",
-        isOpen ? "translate-x-0" : "-translate-x-full",
-        language.direction === 'rtl' && "right-0 left-auto",
-        language.direction === 'rtl' && isOpen ? "translate-x-0" : language.direction === 'rtl' && "translate-x-full"
+        "fixed top-0 z-50 h-full w-64 bg-card border-r border-border transform transition-transform duration-200 ease-in-out lg:relative lg:translate-x-0",
+        isRTL ? "right-0" : "left-0",
+        isOpen 
+          ? "translate-x-0" 
+          : isRTL 
+            ? "translate-x-full" 
+            : "-translate-x-full"
       )}>
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="p-6 border-b border-border">
-            <h2 className="text-lg font-semibold text-foreground">
-              {language.code === 'ar' ? 'نظام إدارة المحتوى' : 'Content Management'}
-            </h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              {language.code === 'ar' ? 'مدعوم بالذكاء الاصطناعي' : 'AI-Powered'}
-            </p>
+          <div className={cn("p-4 border-b border-border", isRTL && "text-right")}>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-accent to-primary rounded-lg flex items-center justify-center">
+                <Sparkles className="w-4 h-4 text-white" />
+              </div>
+              <div className="flex-1">
+                <h2 className="text-base font-bold text-foreground">
+                  {isArabic ? 'سبق الذكية' : 'Sabq Althakiyah'}
+                </h2>
+                <p className="text-xs text-muted-foreground">
+                  {isArabic ? 'نظام إدارة محتوى ذكي' : 'AI-Powered CMS'}
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-2">
-            {filteredItems.map((item) => (
-              <Button
-                key={item.id}
-                variant={activeView === item.id ? "secondary" : "ghost"}
-                className={cn(
-                  "w-full justify-start h-10",
-                  language.direction === 'rtl' && "justify-end flex-row-reverse"
-                )}
-                onClick={() => {
-                  onViewChange(item.id);
-                  onClose();
-                }}
-              >
-                <item.icon size={18} />
-                <span className={cn(
-                  "flex-1",
-                  language.direction === 'rtl' ? "text-right mr-3" : "text-left ml-3"
-                )}>
-                  {item.label}
-                </span>
-                {item.badge && (
-                  <Badge variant="secondary" className="text-xs">
-                    {item.badge}
-                  </Badge>
-                )}
-              </Button>
-            ))}
+          <nav className="flex-1 p-3 space-y-4 overflow-y-auto">
+            {/* Core Items */}
+            {renderMenuSection(coreItems)}
+            
+            <Separator />
+            
+            {/* Content Management */}
+            {renderMenuSection(contentItems, isArabic ? 'إدارة المحتوى' : 'Content')}
+            
+            <Separator />
+            
+            {/* AI & Analytics */}
+            {renderMenuSection(aiAnalyticsItems, isArabic ? 'التحليلات والذكاء الاصطناعي' : 'AI & Analytics')}
+            
+            <Separator />
+            
+            {/* Management */}
+            {renderMenuSection(managementItems, isArabic ? 'الإدارة' : 'Management')}
           </nav>
 
+          {/* User Info */}
+          <div className="p-3 border-t border-border">
+            <div className={cn("flex items-center gap-2 p-2 rounded-lg bg-muted/50", isRTL && "flex-row-reverse")}>
+              <div className="w-6 h-6 bg-accent rounded-full flex items-center justify-center">
+                <span className="text-xs font-bold text-accent-foreground">
+                  {user?.name?.charAt(0) || user?.nameAr?.charAt(0) || 'U'}
+                </span>
+              </div>
+              <div className={cn("flex-1 min-w-0", isRTL && "text-right")}>
+                <p className="text-xs font-medium truncate">
+                  {isArabic ? user?.nameAr : user?.name}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {user?.role === 'admin' ? (isArabic ? 'مدير' : 'Administrator') :
+                   user?.role === 'editor-in-chief' ? (isArabic ? 'رئيس تحرير' : 'Editor-in-Chief') :
+                   user?.role === 'section-editor' ? (isArabic ? 'محرر قسم' : 'Section Editor') :
+                   user?.role === 'journalist' ? (isArabic ? 'صحفي' : 'Journalist') :
+                   user?.role === 'opinion-writer' ? (isArabic ? 'كاتب رأي' : 'Opinion Writer') :
+                   user?.role === 'analyst' ? (isArabic ? 'محلل' : 'Analyst') : user?.role}
+                </p>
+              </div>
+              <Globe 
+                className="w-4 h-4 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" 
+                title={isArabic ? 'تغيير اللغة' : 'Switch Language'}
+              />
+            </div>
+          </div>
+
           {/* Footer */}
-          <div className="p-4 border-t border-border">
-            <div className="text-xs text-muted-foreground text-center">
-              NewsFlow v1.0
+          <div className="p-3 border-t border-border">
+            <div className={cn("text-xs text-muted-foreground", isRTL ? "text-right" : "text-center")}>
+              {isArabic ? 'سبق الذكية v1.0' : 'Sabq Althakiyah v1.0'}
             </div>
           </div>
         </div>

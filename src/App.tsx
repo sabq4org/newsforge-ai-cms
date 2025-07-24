@@ -4,20 +4,22 @@ import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
-import { Dashboard } from '@/components/dashboard/Dashboard';
+import { RoleBasedDashboard } from '@/components/dashboard/RoleBasedDashboard';
 import { AdvancedAnalytics, RealTimeAnalytics, PerformanceInsights } from '@/components/analytics';
 import { ArticleList } from '@/components/articles/ArticleList';
 import { ArticleEditor } from '@/components/editor/ArticleEditor';
+import { AIOptimizationEngine } from '@/components/optimization/AIOptimizationEngine';
+import { ABTestingFramework } from '@/components/optimization/ABTestingFramework';
 import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
 import { mockArticles } from '@/lib/mockData';
 
 function AppContent() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user, canAccess } = useAuth();
   const [activeView, setActiveView] = useState('dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState<Article | undefined>();
-  const [articles, setArticles] = useKV<Article[]>('newsflow-articles', mockArticles);
+  const [articles, setArticles] = useKV<Article[]>('sabq-articles', mockArticles);
 
   if (!isAuthenticated) {
     return <LoginForm />;
@@ -46,7 +48,29 @@ function AppContent() {
         updated[existingIndex] = { ...updated[existingIndex], ...articleData } as Article;
         return updated;
       } else {
-        return [...currentArticles, articleData as Article];
+        // Create new article
+        const newArticle: Article = {
+          id: `article_${Date.now()}`,
+          author: user!,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          status: 'draft',
+          language: 'ar',
+          priority: 'normal',
+          analytics: {
+            views: 0,
+            uniqueViews: 0,
+            likes: 0,
+            shares: 0,
+            comments: 0,
+            readTime: 0,
+            scrollDepth: 0,
+            bounceRate: 0,
+            clickThroughRate: 0
+          },
+          ...articleData
+        } as Article;
+        return [...currentArticles, newArticle];
       }
     });
     
@@ -57,7 +81,8 @@ function AppContent() {
   const renderContent = () => {
     switch (activeView) {
       case 'dashboard':
-        return <Dashboard onNavigate={handleViewChange} />;
+        return <RoleBasedDashboard onNavigate={handleViewChange} />;
+      
       case 'articles':
         return (
           <ArticleList 
@@ -65,6 +90,7 @@ function AppContent() {
             onCreateNew={handleCreateNew}
           />
         );
+      
       case 'create-article':
       case 'editor':
         return (
@@ -73,49 +99,123 @@ function AppContent() {
             onSave={handleSaveArticle}
           />
         );
+      
       case 'analytics':
         return <AdvancedAnalytics onNavigate={handleViewChange} />;
+      
       case 'realtime':
         return <RealTimeAnalytics />;
+      
       case 'insights':
         return <PerformanceInsights />;
+      
+      case 'ai-optimization':
+        if (editingArticle) {
+          return (
+            <AIOptimizationEngine
+              articleId={editingArticle.id}
+              title={editingArticle.title}
+              content={editingArticle.content}
+              category={editingArticle.category.name}
+              onOptimizationApplied={(optimization) => {
+                // Handle optimization application
+                console.log('Optimization applied:', optimization);
+              }}
+            />
+          );
+        }
+        return (
+          <div className="text-center py-12">
+            <h2 className="text-xl font-semibold">AI Optimization Engine</h2>
+            <p className="text-muted-foreground mt-2">Select an article to optimize</p>
+          </div>
+        );
+      
+      case 'ab-testing':
+        if (editingArticle) {
+          return (
+            <ABTestingFramework
+              articleId={editingArticle.id}
+              currentTitle={editingArticle.title}
+              currentSummary={editingArticle.excerpt}
+              currentThumbnail={editingArticle.featuredImage}
+            />
+          );
+        }
+        return (
+          <div className="text-center py-12">
+            <h2 className="text-xl font-semibold">A/B Testing Framework</h2>
+            <p className="text-muted-foreground mt-2">Select an article to test</p>
+          </div>
+        );
+      
       case 'categories':
         return (
           <div className="text-center py-12">
-            <h2 className="text-xl font-semibold">Categories Management</h2>
-            <p className="text-muted-foreground mt-2">Coming soon...</p>
+            <h2 className="text-xl font-semibold">إدارة الفئات</h2>
+            <p className="text-muted-foreground mt-2">قريباً...</p>
           </div>
         );
+      
       case 'tags':
         return (
           <div className="text-center py-12">
-            <h2 className="text-xl font-semibold">Tags Management</h2>
-            <p className="text-muted-foreground mt-2">Coming soon...</p>
+            <h2 className="text-xl font-semibold">إدارة العلامات</h2>
+            <p className="text-muted-foreground mt-2">قريباً...</p>
           </div>
         );
+      
       case 'users':
+        if (!canAccess('user-management')) {
+          return (
+            <div className="text-center py-12">
+              <h2 className="text-xl font-semibold">غير مصرح</h2>
+              <p className="text-muted-foreground mt-2">ليس لديك صلاحية للوصول لهذه الصفحة</p>
+            </div>
+          );
+        }
         return (
           <div className="text-center py-12">
-            <h2 className="text-xl font-semibold">User Management</h2>
-            <p className="text-muted-foreground mt-2">Coming soon...</p>
+            <h2 className="text-xl font-semibold">إدارة المستخدمين</h2>
+            <p className="text-muted-foreground mt-2">قريباً...</p>
           </div>
         );
+      
       case 'settings':
         return (
           <div className="text-center py-12">
-            <h2 className="text-xl font-semibold">Settings</h2>
-            <p className="text-muted-foreground mt-2">Coming soon...</p>
+            <h2 className="text-xl font-semibold">الإعدادات</h2>
+            <p className="text-muted-foreground mt-2">قريباً...</p>
           </div>
         );
+      
       case 'scheduled':
         return (
           <ArticleList 
             onEditArticle={handleEditArticle}
             onCreateNew={handleCreateNew}
+            filter="scheduled"
           />
         );
+      
+      case 'moderation':
+        if (!canAccess('moderation')) {
+          return (
+            <div className="text-center py-12">
+              <h2 className="text-xl font-semibold">غير مصرح</h2>
+              <p className="text-muted-foreground mt-2">ليس لديك صلاحية للوصول لهذه الصفحة</p>
+            </div>
+          );
+        }
+        return (
+          <div className="text-center py-12">
+            <h2 className="text-xl font-semibold">إدارة المراجعة</h2>
+            <p className="text-muted-foreground mt-2">قريباً...</p>
+          </div>
+        );
+      
       default:
-        return <Dashboard />;
+        return <RoleBasedDashboard onNavigate={handleViewChange} />;
     }
   };
 

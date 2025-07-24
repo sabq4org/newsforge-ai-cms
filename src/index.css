@@ -27,34 +27,65 @@
     direction: ltr;
     text-align: left;
   }
+
+  /* Arabic typography improvements */
+  html[dir="rtl"] * {
+    font-feature-settings: 'liga' 1, 'calt' 1, 'kern' 1;
+  }
+
+  /* RTL-specific adjustments */
+  html[dir="rtl"] .rtl-flip {
+    transform: scaleX(-1);
+  }
+
+  /* Arabic number support */
+  .arabic-numerals {
+    font-variant-numeric: normal;
+    direction: ltr;
+    unicode-bidi: embed;
+  }
 }
 
 :root {
-  /* Editorial color scheme based on PRD */
+  /* Sabq Althakiyah editorial color scheme */
   --background: oklch(1 0 0);
   --foreground: oklch(0.15 0 0);
   --card: oklch(0.98 0 0);
   --card-foreground: oklch(0.15 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.15 0 0);
+  
+  /* Deep navy blue for trust and professionalism */
   --primary: oklch(0.25 0.08 250);
   --primary-foreground: oklch(1 0 0);
+  
+  /* Warm grays for neutral content areas */
   --secondary: oklch(0.9 0 0);
   --secondary-foreground: oklch(0.2 0 0);
   --muted: oklch(0.95 0 0);
   --muted-foreground: oklch(0.45 0 0);
+  
+  /* Golden amber for AI features and highlights */
   --accent: oklch(0.65 0.15 45);
   --accent-foreground: oklch(1 0 0);
+  
+  /* Error/warning colors */
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(1 0 0);
+  
+  /* UI element colors */
   --border: oklch(0.9 0 0);
   --input: oklch(0.9 0 0);
   --ring: oklch(0.25 0.08 250);
+  
+  /* Chart colors for analytics */
   --chart-1: oklch(0.25 0.08 250);
   --chart-2: oklch(0.65 0.15 45);
   --chart-3: oklch(0.45 0.12 200);
   --chart-4: oklch(0.55 0.18 30);
   --chart-5: oklch(0.35 0.15 280);
+  
+  /* Border radius for consistent shape language */
   --radius: 0.5rem;
 }
 

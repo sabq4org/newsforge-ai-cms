@@ -1,151 +1,127 @@
-# AI-Powered Performance Optimization Engine PRD
+# Sabq Althakiyah - AI-Powered Arabic Digital Newsroom CMS
 
 ## Core Purpose & Success
-- **Mission Statement**: Create an intelligent content optimization platform that leverages AI to predict, test, and improve article performance before and after publication.
-- **Success Indicators**: 
-  - 25% improvement in average article engagement rates
-  - 40% reduction in content optimization time for editors
-  - 90% accuracy in performance predictions for published content
-- **Experience Qualities**: Intelligent, Predictive, Empowering
+
+**Mission Statement**: Create an intelligent, modular content management system that empowers Arabic digital newsrooms with AI-driven insights, multi-role collaboration, and data-driven publishing to deliver engaging content to modern Arabic audiences.
+
+**Success Indicators**: 
+- Increased article engagement rates through AI optimization
+- Reduced editorial workflow time by 40%
+- Enhanced content performance through predictive analytics
+- Seamless multi-role collaboration and approval workflows
+
+**Experience Qualities**: Professional, Intelligent, Empowering
 
 ## Project Classification & Approach
-- **Complexity Level**: Complex Application (advanced AI functionality, predictive analytics, real-time testing)
-- **Primary User Activity**: Creating and Optimizing content with AI assistance
 
-## Core Problem Analysis
-Current content management lacks predictive insights and optimization guidance, leading to:
-- Unpredictable article performance
-- Manual A/B testing processes
-- Limited data-driven content decisions
-- Missed optimization opportunities
+**Complexity Level**: Complex Application (advanced functionality, multi-role accounts, AI integration)
 
-## User Context
-Editors and content creators need real-time, AI-powered insights to:
-- Predict article success before publishing
-- Test different content variations efficiently
-- Receive actionable optimization recommendations
-- Make data-driven editorial decisions
+**Primary User Activity**: Creating, Collaborating, Analyzing, Publishing
 
-## Critical Path
-1. Editor creates/edits article → 2. AI analyzes content & predicts performance → 3. Editor reviews optimization suggestions → 4. A/B tests are configured → 5. Real-time performance tracking → 6. AI recommends winning variations
+## Thought Process for Feature Selection
 
-## Key Moments
-1. **Predictive Insight Moment**: When AI reveals expected performance score and optimization opportunities
-2. **A/B Testing Setup**: Seamless configuration of content variations with automated tracking
-3. **AI Recommendation Acceptance**: Editor applies AI-suggested improvements with one-click actions
+**Core Problem Analysis**: Arabic newsrooms need modern tools that understand both language nuances and cultural context while providing AI-powered insights for competitive digital publishing.
+
+**User Context**: Multi-role editorial teams working in fast-paced news cycles with varying technical expertise, requiring intuitive interfaces that support Arabic content creation and RTL workflows.
+
+**Critical Path**: Content Creation → AI Enhancement → Editorial Review → Scheduled Publishing → Performance Analytics → Optimization Loop
+
+**Key Moments**: 
+1. AI-assisted content creation and optimization
+2. Role-based editorial workflow and approval
+3. Real-time analytics and performance insights
 
 ## Essential Features
 
-### 📊 Predictive Analytics Module
-- **Functionality**: Analyzes article metadata, content patterns, and historical performance to forecast reach
-- **Purpose**: Enable data-driven publishing decisions and optimal timing
-- **Success Criteria**: 85%+ accuracy in performance predictions within first week of publication
+### 1. Multi-Role User Management
+- **Functionality**: Role-based access control (Admin, Editor-in-Chief, Section Editor, Journalist, Opinion Writer, Analyst)
+- **Purpose**: Secure workflow management with appropriate permissions
+- **Success Criteria**: Users can only access features relevant to their role
 
-### 🧪 A/B Testing Framework
-- **Functionality**: Multi-variant testing for headlines, summaries, thumbnails with automated winner selection
-- **Purpose**: Optimize content variations based on real user engagement data
-- **Success Criteria**: 15% average improvement in click-through rates from winning variations
+### 2. AI-Powered Content Assistant
+- **Functionality**: OpenAI integration for title generation, summarization, tone optimization
+- **Purpose**: Enhance content quality and engagement potential
+- **Success Criteria**: 80% of editors use AI suggestions, improved engagement metrics
 
-### 🤖 AI-Driven Optimization Assistant
-- **Functionality**: NLP-powered content analysis with contextual improvement recommendations
-- **Purpose**: Provide actionable, specific suggestions to enhance content performance
-- **Success Criteria**: 80% of AI recommendations adopted by editors, 20% improvement in optimized content performance
+### 3. Advanced Analytics Engine
+- **Functionality**: Article performance tracking, reader behavior analysis, predictive modeling
+- **Purpose**: Data-driven content decisions and performance optimization
+- **Success Criteria**: Clear correlation between AI predictions and actual performance
+
+### 4. A/B Testing Framework
+- **Functionality**: Test multiple headlines, images, summaries with automatic winner selection
+- **Purpose**: Optimize content performance through experimentation
+- **Success Criteria**: Measurable improvement in click-through rates
+
+### 5. Intelligent Publishing Scheduler
+- **Functionality**: Time-slot optimization, breaking news override, calendar interface
+- **Purpose**: Maximize content reach through optimal timing
+- **Success Criteria**: Increased engagement during scheduled time slots
+
+### 6. RTL-First Arabic Support
+- **Functionality**: Complete Arabic language support with RTL layout
+- **Purpose**: Native Arabic content creation experience
+- **Success Criteria**: Seamless Arabic content workflow
 
 ## Design Direction
 
 ### Visual Tone & Identity
-- **Emotional Response**: Confidence-inspiring, professional, cutting-edge intelligence
-- **Design Personality**: Sophisticated, data-driven, trustworthy, forward-thinking
-- **Visual Metaphors**: Neural networks, data visualization, predictive graphs, optimization flows
-- **Simplicity Spectrum**: Rich interface with intelligent progressive disclosure
+**Emotional Response**: Professional confidence, technological sophistication, cultural authenticity
+**Design Personality**: Modern, clean, trustworthy, innovative yet respectful of Arabic design traditions
+**Visual Metaphors**: News flow, digital ink, connected networks, intelligent assistance
+**Simplicity Spectrum**: Clean minimal interface with rich functionality accessible on demand
 
 ### Color Strategy
-- **Color Scheme Type**: Analogous with strategic accent colors
-- **Primary Color**: Deep editorial blue (oklch(0.25 0.08 250)) - conveying trust and intelligence
-- **Secondary Colors**: Neutral grays for data backgrounds and supporting elements
-- **Accent Color**: Performance orange (oklch(0.65 0.15 45)) - highlighting predictions and optimizations
-- **Color Psychology**: 
-  - Blue conveys trust, intelligence, and reliability
-  - Orange creates urgency and highlights actionable insights
-  - Greens indicate positive performance and successful optimizations
-  - Reds signal attention-needed areas and performance warnings
-- **Color Accessibility**: All combinations maintain WCAG AA 4.5:1 contrast ratios
-- **Foreground/Background Pairings**:
-  - White backgrounds (oklch(1 0 0)) with dark text (oklch(0.15 0 0))
-  - Primary blue backgrounds with white text
-  - Card backgrounds (oklch(0.98 0 0)) with primary text
-  - Muted backgrounds (oklch(0.95 0 0)) with muted-foreground text (oklch(0.45 0 0))
+**Color Scheme Type**: Custom palette combining modern digital aesthetics with Arabic cultural sensitivity
+**Primary Color**: Deep navy blue (oklch(0.25 0.08 250)) - conveying trust and professionalism
+**Secondary Colors**: Warm grays for neutral backgrounds and content areas
+**Accent Color**: Golden amber (oklch(0.65 0.15 45)) - highlighting important actions and AI features
+**Color Psychology**: Blue builds trust essential for news, amber adds warmth and intelligence cues
+**Color Accessibility**: All combinations exceed WCAG AA standards (4.5:1 contrast minimum)
 
 ### Typography System
-- **Font Pairing Strategy**: Inter for interface elements, Amiri for Arabic content
-- **Typographic Hierarchy**: 
-  - Headlines: 24-32px, semibold
-  - Subheadings: 18-20px, medium
-  - Body: 14-16px, regular
-  - Captions: 12-14px, regular
-- **Font Personality**: Modern, clean, highly legible, professional
-- **Readability Focus**: 1.5 line height, optimal character count per line (45-75 characters)
-- **Typography Consistency**: Consistent spacing ratios (1.25x scale) across all text elements
-- **Which fonts**: Inter (primary interface), Amiri (Arabic support)
-- **Legibility Check**: Both fonts tested across all sizes and weights for optimal readability
+**Font Pairing Strategy**: Inter for Latin text, Amiri for Arabic content
+**Typographic Hierarchy**: Clear 6-level hierarchy from large headlines to small metadata
+**Font Personality**: Amiri brings cultural authenticity while Inter ensures international readability
+**Readability Focus**: Optimized line heights (1.6x) and spacing for Arabic text flow
+**Which fonts**: Inter (400, 500, 600, 700) and Amiri (400, 700) from Google Fonts
+**Legibility Check**: Both fonts tested extensively for Arabic newsroom content
 
 ### Visual Hierarchy & Layout
-- **Attention Direction**: AI insights prominently featured, progressive disclosure of advanced features
-- **White Space Philosophy**: Generous spacing around complex data to reduce cognitive load
-- **Grid System**: 12-column responsive grid with consistent 24px base spacing unit
-- **Responsive Approach**: Mobile-first design with thoughtful information prioritization
-- **Content Density**: Balanced information richness with scannable layouts
-
-### Animations
-- **Purposeful Meaning**: Smooth transitions communicate AI processing, data updates, and state changes
-- **Hierarchy of Movement**: 
-  - Immediate feedback (100ms) for user interactions
-  - Data transitions (300ms) for chart updates and score changes
-  - Modal/panel animations (400ms) for contextual overlays
-- **Contextual Appropriateness**: Subtle, professional animations that enhance rather than distract
+**Attention Direction**: AI suggestions highlighted with accent colors, critical actions prominently placed
+**White Space Philosophy**: Generous spacing around content blocks, respecting Arabic reading patterns
+**Grid System**: 24-column responsive grid accommodating both LTR and RTL layouts
+**Responsive Approach**: Mobile-first with progressive enhancement for editorial desktop workflows
 
 ### UI Elements & Component Selection
-- **Component Usage**: 
-  - Cards for AI insights and predictions
-  - Progress indicators for optimization scores
-  - Interactive charts for A/B test results
-  - Floating action buttons for quick AI actions
-  - Tooltips for contextual help
-- **Component Customization**: 
-  - Custom progress rings for performance scores
-  - Specialized chart components for analytics
-  - AI-themed iconography and indicators
-- **Component States**: Comprehensive states for all interactive elements including loading states for AI processing
-- **Icon Selection**: Phosphor icons with custom AI and analytics-specific icons
-- **Component Hierarchy**: Primary actions (AI recommendations), secondary (manual adjustments), tertiary (advanced options)
-- **Spacing System**: 8px base unit with 16px, 24px, 32px, 48px for component spacing
-- **Mobile Adaptation**: Collapsible panels, swipeable charts, touch-optimized controls
+**Component Usage**: 
+- Cards for article previews and analytics widgets
+- Dialogs for AI content generation and A/B test creation
+- Tabs for role-based navigation sections
+- Data tables for analytics and user management
 
-### Visual Consistency Framework
-- **Design System Approach**: Component-based with AI-specific design tokens
-- **Style Guide Elements**: AI insight cards, prediction indicators, optimization buttons, test result displays
-- **Visual Rhythm**: Consistent spacing and proportions across all AI features
-- **Brand Alignment**: Professional, intelligent, forward-thinking aesthetic
+**Component Customization**: 
+- RTL-aware layouts for all interactive elements
+- Arabic-optimized form inputs and text areas
+- Custom charts for Arabic-labeled analytics
 
-### Accessibility & Readability
-- **Contrast Goal**: WCAG AA compliance minimum, AAA preferred for critical AI insights
-- **Screen Reader Support**: Comprehensive aria-labels for complex data visualizations
-- **Keyboard Navigation**: Full keyboard accessibility for all AI features
-- **RTL Support**: Complete right-to-left layout support with Arabic language context
+**Icon Selection**: Phosphor icons for universal actions, custom icons for AI features
+
+### Animations
+**Purposeful Meaning**: Subtle transitions reinforce content flow and AI processing states
+**Hierarchy of Movement**: AI suggestions slide in gently, critical alerts pulse subtly
+**Contextual Appropriateness**: Professional motion design suitable for news environment
 
 ## Edge Cases & Problem Scenarios
-- **AI Service Downtime**: Graceful degradation with cached predictions and manual overrides
-- **Insufficient Historical Data**: Clear communication about prediction confidence levels
-- **Multiple A/B Tests**: Conflict resolution and statistical significance requirements
-- **Arabic Content Analysis**: Specialized NLP handling for Arabic language nuances
+- **Multi-language Content**: Handling mixed Arabic-English content in single articles
+- **Breaking News Override**: Emergency publishing that bypasses normal workflow
+- **AI Service Outages**: Graceful degradation when AI features are unavailable
+- **High Traffic Events**: Performance during major news events
 
 ## Implementation Considerations
-- **Scalability Needs**: Modular architecture allowing independent scaling of AI services
-- **Testing Focus**: AI prediction accuracy, A/B test statistical validity, performance optimization impact
-- **Critical Questions**: 
-  - How to maintain prediction accuracy across different content types?
-  - What's the minimum data threshold for reliable A/B testing?
-  - How to balance AI automation with editorial control?
+**Scalability Needs**: Modular architecture supporting additional languages and regions
+**Testing Focus**: AI prediction accuracy, RTL layout consistency, role permission security
+**Critical Questions**: How to balance AI assistance with editorial independence
 
 ## Reflection
-This approach uniquely combines predictive analytics, automated testing, and AI-powered optimization in a cohesive editorial workflow. The system empowers editors with intelligent insights while maintaining full creative control. The modular design ensures scalability and allows for continuous improvement of AI capabilities based on real-world performance data.
+This approach uniquely combines Arabic cultural understanding with cutting-edge AI technology, creating a newsroom tool that enhances rather than replaces editorial expertise. The modular design ensures the system can grow with changing newsroom needs while maintaining the professional standards essential for credible journalism.
