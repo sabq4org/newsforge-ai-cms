@@ -210,7 +210,7 @@ export function CategoryAnalytics() {
 
   const exportData = () => {
     const csvData = performanceData.map(data => ({
-      'التصنيف': data.category.nameAr,
+      'التصنيف': data.category?.nameAr || 'غير محدد',
       'عدد المقالات': data.articlesCount,
       'إجمالي المشاهدات': data.totalViews,
       'إجمالي التفاعل': data.totalEngagement,
@@ -567,12 +567,12 @@ export function CategoryAnalytics() {
                   </thead>
                   <tbody>
                     {sortedData.filter(data => data && data.category).map((data) => (
-                      <tr key={data.category.id} className="border-b hover:bg-muted/50">
+                      <tr key={data.category?.id || 'unknown'} className="border-b hover:bg-muted/50">
                         <td className="p-2">
                           <div className="flex items-center gap-2">
-                            <span className="text-lg">{data.category.icon}</span>
+                            <span className="text-lg">{data.category?.icon || '📰'}</span>
                             <div>
-                              <span className="font-medium">{data.category.nameAr}</span>
+                              <span className="font-medium">{data.category?.nameAr || 'غير محدد'}</span>
                               <Badge 
                                 variant="secondary" 
                                 className="mr-2"
@@ -581,7 +581,7 @@ export function CategoryAnalytics() {
                                   color: data.category?.color || '#6b7280'
                                 }}
                               >
-                                {data.category.slug}
+                                {data.category?.slug || 'عام'}
                               </Badge>
                             </div>
                           </div>
@@ -615,7 +615,7 @@ export function CategoryAnalytics() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => setSelectedCategory(data.category.id)}
+                            onClick={() => setSelectedCategory(data.category?.id || 'unknown')}
                             className="text-xs"
                           >
                             {data.topArticle ? data.topArticle.title.substring(0, 30) + '...' : 'لا توجد مقالات'}

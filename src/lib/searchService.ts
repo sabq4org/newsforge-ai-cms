@@ -245,8 +245,8 @@ export class SearchService {
           score,
           highlights,
           metadata: {
-            author: article.author.name,
-            category: article.category.name,
+            author: article.author?.name || 'غير محدد',
+            category: article.category?.name || 'غير محدد',
             createdAt: article.createdAt,
             status: article.status,
             language: article.language,
@@ -365,8 +365,10 @@ export class SearchService {
     });
     
     // Category match
-    score += this.calculateTextMatch(article.category.name, queryTerms) * 1.2;
-    if (article.category.nameAr) {
+    if (article.category?.name) {
+      score += this.calculateTextMatch(article.category.name, queryTerms) * 1.2;
+    }
+    if (article.category?.nameAr) {
       score += this.calculateTextMatch(article.category.nameAr, queryTerms) * 1.2;
     }
     
@@ -428,8 +430,12 @@ export class SearchService {
         });
         
         // Add category
-        suggestions.add(article.category.name);
-        if (article.category.nameAr) suggestions.add(article.category.nameAr);
+        if (article.category?.name) {
+          suggestions.add(article.category.name);
+        }
+        if (article.category?.nameAr) {
+          suggestions.add(article.category.nameAr);
+        }
       }
     });
     
@@ -471,7 +477,7 @@ export class SearchService {
   }
 
   private matchesFilters(article: Article, filters: SearchQuery['filters']): boolean {
-    if (filters.category && article.category.id !== filters.category) return false;
+    if (filters.category && article.category?.id !== filters.category) return false;
     if (filters.author && article.author.id !== filters.author) return false;
     if (filters.language && filters.language !== 'both' && article.language !== filters.language) return false;
     if (filters.status && article.status !== filters.status) return false;

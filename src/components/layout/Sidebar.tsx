@@ -28,7 +28,7 @@ import {
   Wrench,
   Microphone,
   FileAudio,
-  ChartLine
+  ChartLineUp
 } from '@phosphor-icons/react';
 
 interface SidebarProps {
@@ -90,7 +90,7 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
     {
       id: 'category-statistics',
       label: isArabic ? 'إحصائيات التصنيفات' : 'Category Statistics',
-      icon: ChartLine,
+      icon: ChartLineUp,
       show: hasPermission('view', 'analytics')
     },
     {

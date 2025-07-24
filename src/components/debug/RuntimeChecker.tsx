@@ -23,13 +23,13 @@ export function RuntimeChecker() {
 
       // Check for missing imports
       try {
-        // Check if ChartLine is available from phosphor icons
+        // Check if ChartLineUp is available from phosphor icons
         import('@phosphor-icons/react').then((icons) => {
-          if (!icons.ChartLine) {
+          if (!icons.ChartLineUp) {
             setErrors(prev => [...prev, {
               type: 'import',
               severity: 'high',
-              message: 'ChartLine icon not found in @phosphor-icons/react',
+              message: 'ChartLineUp icon not found in @phosphor-icons/react',
               source: 'PhosphorIcons',
               timestamp: new Date()
             }]);
@@ -230,7 +230,7 @@ export function RuntimeChecker() {
                       </div>
                       <p className="text-sm font-medium mb-1">{error.message}</p>
                       <p className="text-xs text-muted-foreground">
-                        {error.timestamp.toLocaleString('ar-SA')}
+                        {error.timestamp ? error.timestamp.toLocaleString('ar-SA') : 'وقت غير محدد'}
                       </p>
                     </div>
                   </div>

@@ -166,7 +166,7 @@ function AppContent() {
               articleId={editingArticle.id}
               title={editingArticle.title}
               content={editingArticle.content}
-              category={editingArticle.category.name}
+              category={editingArticle.category?.name || 'عام'}
               onOptimizationApplied={(optimization) => {
                 // Handle optimization application
                 console.log('Optimization applied:', optimization);

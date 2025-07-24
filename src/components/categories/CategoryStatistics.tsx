@@ -38,7 +38,7 @@ import {
   Calendar,
   Users,
   Target,
-  ChartLine,
+  ChartLineUp,
   FileText,
   Clock
 } from '@phosphor-icons/react';
