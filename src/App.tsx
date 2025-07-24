@@ -27,6 +27,8 @@ import { AudioEditor, AudioLibrary, AudioAnalytics } from '@/components/audio';
 import { SystemAnalysis, ComprehensiveAnalysisEngine } from '@/components/analysis';
 import { AISearch, ComprehensiveSearch } from '@/components/search';
 import { AIRecommendationEngine } from '@/components/recommendations/AIRecommendationEngine';
+import { MachineLearningEngine } from '@/components/recommendations/MachineLearningEngine';
+import { SmartRecommendationSystem } from '@/components/recommendations/SmartRecommendationSystem';
 import { PersonalizedRecommendations } from '@/components/recommendations/PersonalizedRecommendations';
 import { PersonalizedFeedEngine } from '@/components/recommendations/PersonalizedFeedEngine';
 import { RecommendationEvaluation, RecommendationInsights, RecommendationDashboard, RecommendationSystemOverview } from '@/components/recommendations';
@@ -264,6 +266,40 @@ function AppContent() {
           />
         );
       
+      case 'smart-recommendation-system':
+        return memberUser ? (
+          <SmartRecommendationSystem
+            userId={memberUser.id}
+            articles={articles}
+            onArticleSelect={handleEditArticle}
+          />
+        ) : (
+          <div className="text-center py-12">
+            <h2 className="text-xl font-semibold">نظام التوصيات الذكي المتطور</h2>
+            <p className="text-muted-foreground mt-2">يرجى تسجيل الدخول للوصول للنظام الذكي</p>
+            <Button className="mt-4" onClick={() => setShowAuthModal(true)}>
+              تسجيل الدخول
+            </Button>
+          </div>
+        );
+
+      case 'machine-learning-engine':
+        return memberUser ? (
+          <MachineLearningEngine
+            userId={memberUser.id}
+            articles={articles}
+            onArticleSelect={handleEditArticle}
+          />
+        ) : (
+          <div className="text-center py-12">
+            <h2 className="text-xl font-semibold">محرك التعلم الآلي</h2>
+            <p className="text-muted-foreground mt-2">يرجى تسجيل الدخول للوصول لمحرك التعلم الآلي</p>
+            <Button className="mt-4" onClick={() => setShowAuthModal(true)}>
+              تسجيل الدخول
+            </Button>
+          </div>
+        );
+
       case 'recommendations':
         return (
           <AIRecommendationEngine

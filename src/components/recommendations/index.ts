@@ -1,5 +1,7 @@
 export { PersonalizedRecommendations } from './PersonalizedRecommendations';
 export { PersonalizedFeedEngine } from './PersonalizedFeedEngine';
+export { MachineLearningEngine } from './MachineLearningEngine';
+export { SmartRecommendationSystem } from './SmartRecommendationSystem';
 export { AIRecommendationEngine } from './AIRecommendationEngine';
 export { RecommendationEvaluation } from './RecommendationEvaluation';
 export { RecommendationInsights } from './RecommendationInsights';

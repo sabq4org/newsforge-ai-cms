@@ -32,7 +32,8 @@ import {
   Coffee,
   Drop,
   Bell,
-  BellRinging
+  BellRinging,
+  Cpu
 } from '@phosphor-icons/react';
 
 interface SidebarProps {
@@ -190,6 +191,20 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       icon: Medal, // Using Medal instead of Award to fix runtime error
       show: canAccess('ai-tools'),
       badge: isArabic ? 'ذكي' : 'AI'
+    },
+    {
+      id: 'smart-recommendation-system',
+      label: isArabic ? 'النظام الذكي المتطور' : 'Advanced Smart System',
+      icon: Brain,
+      show: canAccess('ai-tools'),
+      badge: isArabic ? 'متطور' : 'Advanced'
+    },
+    {
+      id: 'machine-learning-engine',
+      label: isArabic ? 'محرك التعلم الآلي' : 'Machine Learning Engine',
+      icon: Cpu,
+      show: canAccess('ai-tools'),
+      badge: isArabic ? 'ذكي' : 'ML'
     },
     {
       id: 'personalized-recommendations',
