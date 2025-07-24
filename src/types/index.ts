@@ -662,3 +662,65 @@ export interface CollaborativePermissions {
   assignedAt: Date;
   expiresAt?: Date;
 }
+
+// Audio Editor Types
+export interface AudioSegment {
+  id: string;
+  text: string;
+  startTime: number;
+  duration: number;
+  voice: string;
+  speed: number;
+  pitch: number;
+  volume: number;
+  pause: {
+    before: number;
+    after: number;
+  };
+  effects: {
+    fade: { in: number; out: number };
+    echo: number;
+    reverb: number;
+    noise: boolean;
+  };
+  type: 'text' | 'intro' | 'outro' | 'transition' | 'music' | 'sfx';
+  isLocked: boolean;
+  audioUrl?: string;
+  optimizedText?: string;
+  recordedAt?: Date;
+}
+
+export interface AudioProject {
+  id: string;
+  name: string;
+  articleId: string;
+  article: Article;
+  segments: AudioSegment[];
+  globalSettings: {
+    outputFormat: 'mp3' | 'wav' | 'aac';
+    sampleRate: 22050 | 44100 | 48000;
+    bitrate: 128 | 192 | 256 | 320;
+    normalize: boolean;
+    limitPeaks: boolean;
+    backgroundMusic: {
+      enabled: boolean;
+      url?: string;
+      volume: number;
+      fadeIn: number;
+      fadeOut: number;
+    };
+  };
+  metadata: {
+    title: string;
+    author: string;
+    description: string;
+    language: 'ar' | 'en';
+    genre: string;
+    thumbnail?: string;
+  };
+  status: 'draft' | 'processing' | 'completed' | 'failed';
+  createdAt: Date;
+  updatedAt: Date;
+  outputUrl?: string;
+  waveformData?: number[];
+}

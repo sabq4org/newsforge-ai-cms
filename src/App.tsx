@@ -16,6 +16,7 @@ import { ABTestingFramework } from '@/components/optimization/ABTestingFramework
 import { TypographySettings } from '@/components/settings/TypographySettings';
 import { TypographyShowcase } from '@/components/showcase/TypographyShowcase';
 import { MediaUpload, MediaGenerator } from '@/components/media';
+import { AudioEditor, AudioLibrary, AudioAnalytics } from '@/components/audio';
 import { SystemAnalysis } from '@/components/analysis/SystemAnalysis';
 import { AISearch } from '@/components/search/AISearch';
 import { AIRecommendationEngine } from '@/components/recommendations/AIRecommendationEngine';
@@ -202,6 +203,48 @@ function AppContent() {
       
       case 'media-generator':
         return <MediaGenerator articles={articles} selectedArticle={editingArticle} />;
+      
+      case 'audio-editor':
+        return (
+          <AudioEditor 
+            article={editingArticle}
+            onSave={(project) => {
+              console.log('Audio project saved:', project);
+              toast.success('تم حفظ مشروع البودكاست');
+            }}
+            onExport={(project) => {
+              console.log('Audio project exported:', project);
+              toast.success('تم تصدير البودكاست بنجاح');
+            }}
+          />
+        );
+      
+      case 'audio-library':
+        return (
+          <AudioLibrary 
+            onEditProject={(project) => {
+              setEditingArticle(project.article);
+              setActiveView('audio-editor');
+            }}
+            onCreateProject={(article) => {
+              if (article) {
+                setEditingArticle(article);
+              }
+              setActiveView('audio-editor');
+            }}
+          />
+        );
+      
+      case 'audio-analytics':
+        return (
+          <AudioAnalytics 
+            projects={[]} // In real implementation, would pass actual audio projects
+            onProjectSelect={(project) => {
+              setEditingArticle(project.article);
+              setActiveView('audio-editor');
+            }}
+          />
+        );
       
       case 'loyalty':
         return <LoyaltySystem articles={articles} currentUser={user} />;

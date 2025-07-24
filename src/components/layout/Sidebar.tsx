@@ -24,7 +24,9 @@ import {
   Code,
   Trophy,
   GitMerge,
-  Wrench
+  Wrench,
+  Microphone,
+  FileAudio
 } from '@phosphor-icons/react';
 
 interface SidebarProps {
@@ -100,6 +102,24 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       label: isArabic ? 'مولد الوسائط' : 'Media Generator',
       icon: Sparkles,
       show: hasPermission('create', 'articles')
+    },
+    {
+      id: 'audio-editor',
+      label: isArabic ? 'محرر البودكاست' : 'Audio Editor',
+      icon: Microphone,
+      show: hasPermission('create', 'articles')
+    },
+    {
+      id: 'audio-library',
+      label: isArabic ? 'مكتبة البودكاست' : 'Audio Library',
+      icon: FileAudio,
+      show: hasPermission('create', 'articles')
+    },
+    {
+      id: 'audio-analytics',
+      label: isArabic ? 'تحليلات البودكاست' : 'Audio Analytics',
+      icon: BarChart3,
+      show: hasPermission('read', 'analytics')
     },
     {
       id: 'scheduling',
