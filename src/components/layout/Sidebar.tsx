@@ -33,7 +33,7 @@ import {
   Drop,
   Bell,
   BellRinging,
-  Medal // Using Medal as a fallback for Award
+  Medal
 } from '@phosphor-icons/react';
 
 interface SidebarProps {
