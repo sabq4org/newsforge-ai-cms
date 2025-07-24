@@ -1,181 +1,134 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, ComposedChart, Area, AreaChart, ReferenceLine } from 'recharts';
-import { TrendingUp, TrendingDown, Users, Eye, Heart, Share2, MessageCircle, Clock, CalendarIcon, Filter, Download } from '@phosphor-icons/react';
+import { Progress } from '@/components/ui/progress';
+import { 
+  BarChart3,
+  TrendingUp,
+  Eye,
+  Heart,
+  Share2,
+  MessageCircle,
+  Clock,
+  Users,
+  Target,
+  Filter,
+  Calendar,
+  Download,
+  RefreshCw,
+  Activity,
+  Zap,
+  Brain
+} from '@phosphor-icons/react';
 import { useKV } from '@github/spark/hooks';
-import { Article, Category } from '@/types';
+import { Article } from '@/types';
 import { mockArticles, mockCategories } from '@/lib/mockData';
-import { normalizeArticles } from '@/lib/utils';
 
-interface CategoryPerformanceData {
-  category: Category;
-  articlesCount: number;
+interface CategoryPerformance {
+  categoryId: string;
+  categoryName: string;
   totalViews: number;
   totalEngagement: number;
-  averageReadTime: number;
-  bounceRate: number;
-  topArticle: Article | null;
-  trending: 'up' | 'down' | 'stable';
+  articlesCount: number;
+  avgViewsPerArticle: number;
+  avgEngagementRate: number;
   growthRate: number;
-  engagementRate: number;
-  publishingFrequency: number;
-  readerRetention: number;
-  shareabilityScore: number;
-  timeOfDayPerformance: { hour: number; views: number; engagement: number }[];
-  weeklyTrends: { week: string; views: number; engagement: number; articles: number }[];
-  authorContribution: { authorName: string; articles: number; avgViews: number }[];
+  topArticles: Article[];
 }
 
-interface TimeRange {
-  label: string;
-  value: string;
-  days: number;
+interface EngagementTrend {
+  date: string;
+  views: number;
+  likes: number;
+  shares: number;
+  comments: number;
+  engagement: number;
 }
 
-const timeRanges: TimeRange[] = [
-  { label: 'آخر 7 أيام', value: '7d', days: 7 },
-  { label: 'آخر 30 يوم', value: '30d', days: 30 },
-  { label: 'آخر 90 يوم', value: '90d', days: 90 },
-  { label: 'آخر 365 يوم', value: '1y', days: 365 },
-];
+interface CategoryAnalyticsProps {
+  articles?: Article[];
+  onCategorySelect?: (categoryId: string) => void;
+  onArticleSelect?: (article: Article) => void;
+}
 
-const COLORS = ['#1e40af', '#059669', '#dc2626', '#7c3aed', '#f59e0b', '#10b981', '#0891b2', '#3b82f6', '#ef4444', '#8b5cf6'];
-
-export function CategoryAnalytics() {
-  const [rawArticles] = useKV<Article[]>('sabq-articles', mockArticles);
-  const articles = normalizeArticles(rawArticles);
-  const [categories] = useKV<Category[]>('sabq-categories', mockCategories);
-  const [selectedTimeRange, setSelectedTimeRange] = useState('30d');
+export function CategoryAnalytics({ 
+  articles = mockArticles,
+  onCategorySelect,
+  onArticleSelect 
+}: CategoryAnalyticsProps) {
+  const [categoryPerformance, setCategoryPerformance] = useKV<CategoryPerformance[]>('category-performance', []);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [sortBy, setSortBy] = useState<'views' | 'engagement' | 'articles'>('views');
+  const [selectedTimeframe, setSelectedTimeframe] = useState('week');
+  const [sortBy, setSortBy] = useState('views');
+  const [isLoading, setIsLoading] = useState(false);
 
-  // محاكاة بيانات الأداء المتقدمة
-  const generatePerformanceData = (category: Category): CategoryPerformanceData => {
-    const categoryArticles = articles.filter(article => 
-      article.category && article.category.id === category.id
-    );
-    const publishedArticles = categoryArticles.filter(article => article.status === 'published');
+  // Calculate performance metrics for each category
+  const calculateCategoryPerformance = () => {
+    setIsLoading(true);
     
-    const totalViews = publishedArticles.reduce((sum, article) => sum + article.analytics.views, 0);
-    const totalEngagement = publishedArticles.reduce((sum, article) => 
-      sum + article.analytics.likes + article.analytics.shares + article.analytics.comments, 0);
-    const avgReadTime = publishedArticles.length > 0 
-      ? publishedArticles.reduce((sum, article) => sum + article.analytics.readTime, 0) / publishedArticles.length 
-      : 0;
-    const avgBounceRate = publishedArticles.length > 0
-      ? publishedArticles.reduce((sum, article) => sum + article.analytics.bounceRate, 0) / publishedArticles.length
-      : 0;
+    try {
+      const categoryStats: { [categoryId: string]: CategoryPerformance } = {};
+      
+      // Initialize categories
+      mockCategories.forEach(category => {
+        categoryStats[category.id] = {
+          categoryId: category.id,
+          categoryName: category.name,
+          totalViews: 0,
+          totalEngagement: 0,
+          articlesCount: 0,
+          avgViewsPerArticle: 0,
+          avgEngagementRate: 0,
+          growthRate: 0,
+          topArticles: []
+        };
+      });
 
-    const topArticle = publishedArticles.sort((a, b) => b.analytics.views - a.analytics.views)[0] || null;
+      // Aggregate article data by category
+      articles.filter(a => a.status === 'published').forEach(article => {
+        const categoryId = article.category?.id;
+        if (!categoryId || !categoryStats[categoryId]) return;
 
-    // محاكاة البيانات المتقدمة
-    const growthRate = Math.random() * 40 - 20; // -20% to +20%
-    const engagementRate = totalViews > 0 ? (totalEngagement / totalViews) * 100 : 0;
-    const publishingFrequency = categoryArticles.length / 30; // articles per day (assuming 30 days)
-    const readerRetention = 60 + Math.random() * 30; // 60-90%
-    const shareabilityScore = Math.min(100, (totalEngagement / Math.max(1, publishedArticles.length)) * 2);
+        const views = article.analytics?.views || 0;
+        const engagement = (article.analytics?.likes || 0) + 
+                          (article.analytics?.shares || 0) + 
+                          (article.analytics?.comments || 0);
 
-    // بيانات الأداء حسب الوقت
-    const timeOfDayPerformance = Array.from({ length: 24 }, (_, hour) => ({
-      hour,
-      views: Math.floor(Math.random() * 1000) + 100,
-      engagement: Math.floor(Math.random() * 100) + 10
-    }));
+        categoryStats[categoryId].totalViews += views;
+        categoryStats[categoryId].totalEngagement += engagement;
+        categoryStats[categoryId].articlesCount++;
+        categoryStats[categoryId].topArticles.push(article);
+      });
 
-    // اتجاهات أسبوعية
-    const weeklyTrends = Array.from({ length: 8 }, (_, i) => {
-      const weekDate = new Date();
-      weekDate.setDate(weekDate.getDate() - (i * 7));
-      return {
-        week: weekDate.toLocaleDateString('ar-SA'),
-        views: Math.floor(Math.random() * 5000) + 1000,
-        engagement: Math.floor(Math.random() * 500) + 100,
-        articles: Math.floor(Math.random() * 10) + 1
-      };
-    }).reverse();
-
-    // مساهمة المؤلفين
-    const authorContribution = Array.from(new Set(
-      categoryArticles
-        .filter(a => a.author && a.author.name)
-        .map(a => a.author.name)
-    )).map(authorName => {
-      const authorArticles = categoryArticles.filter(a => a.author && a.author.name === authorName);
-      const avgViews = authorArticles.reduce((sum, a) => sum + (a.analytics?.views || 0), 0) / authorArticles.length || 0;
-      return {
-        authorName,
-        articles: authorArticles.length,
-        avgViews: Math.floor(avgViews)
-      };
-    });
-
-    return {
-      category,
-      articlesCount: categoryArticles.length,
-      totalViews,
-      totalEngagement,
-      averageReadTime: Math.floor(avgReadTime),
-      bounceRate: Math.floor(avgBounceRate),
-      topArticle,
-      trending: growthRate > 5 ? 'up' : growthRate < -5 ? 'down' : 'stable',
-      growthRate: Math.floor(growthRate * 10) / 10,
-      engagementRate: Math.floor(engagementRate * 10) / 10,
-      publishingFrequency: Math.floor(publishingFrequency * 10) / 10,
-      readerRetention: Math.floor(readerRetention),
-      shareabilityScore: Math.floor(shareabilityScore),
-      timeOfDayPerformance,
-      weeklyTrends,
-      authorContribution
-    };
-  };
-
-  const performanceData = useMemo(() => {
-    // Ensure categories is an array and contains valid category objects
-    if (!Array.isArray(categories) || categories.length === 0) {
-      console.warn('CategoryAnalytics: No valid categories found');
-      return [];
-    }
-    
-    return categories
-      .filter(category => category && typeof category === 'object' && category.id)
-      .map(category => {
-        try {
-          return generatePerformanceData(category);
-        } catch (error) {
-          console.error('Error generating performance data for category:', category.id, error);
-          // Return minimal valid data structure
-          return {
-            category: {
-              ...category,
-              color: category.color || '#6b7280'
-            },
-            articlesCount: 0,
-            totalViews: 0,
-            totalEngagement: 0,
-            averageReadTime: 0,
-            bounceRate: 0,
-            topArticle: null,
-            trending: 'stable' as const,
-            growthRate: 0,
-            engagementRate: 0,
-            publishingFrequency: 0,
-            readerRetention: 0,
-            shareabilityScore: 0,
-            timeOfDayPerformance: [],
-            weeklyTrends: [],
-            authorContribution: []
-          };
+      // Calculate derived metrics
+      Object.values(categoryStats).forEach(category => {
+        if (category.articlesCount > 0) {
+          category.avgViewsPerArticle = category.totalViews / category.articlesCount;
+          category.avgEngagementRate = category.totalViews > 0 
+            ? (category.totalEngagement / category.totalViews) * 100 
+            : 0;
+          category.growthRate = Math.random() * 40 - 20; // Mock growth rate
+          
+          // Sort top articles by views
+          category.topArticles.sort((a, b) => (b.analytics?.views || 0) - (a.analytics?.views || 0));
+          category.topArticles = category.topArticles.slice(0, 5);
         }
       });
-  }, [articles, categories]);
 
-  const sortedData = useMemo(() => {
-    return [...performanceData].sort((a, b) => {
+      setCategoryPerformance(Object.values(categoryStats));
+    } catch (error) {
+      console.error('Error calculating category performance:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Get sorted categories based on selected sort criteria
+  const getSortedCategories = () => {
+    return [...categoryPerformance].sort((a, b) => {
       switch (sortBy) {
         case 'views':
           return b.totalViews - a.totalViews;
@@ -183,677 +136,376 @@ export function CategoryAnalytics() {
           return b.totalEngagement - a.totalEngagement;
         case 'articles':
           return b.articlesCount - a.articlesCount;
+        case 'growth':
+          return b.growthRate - a.growthRate;
         default:
-          return 0;
+          return b.totalViews - a.totalViews;
       }
     });
-  }, [performanceData, sortBy]);
-
-  const selectedCategoryData = selectedCategory === 'all' 
-    ? null 
-    : performanceData.find(d => d && d.category && d.category.id === selectedCategory) || null;
-
-  const overallStats = useMemo(() => {
-    const total = performanceData.reduce((acc, data) => ({
-      views: acc.views + data.totalViews,
-      engagement: acc.engagement + data.totalEngagement,
-      articles: acc.articles + data.articlesCount,
-      avgReadTime: acc.avgReadTime + data.averageReadTime
-    }), { views: 0, engagement: 0, articles: 0, avgReadTime: 0 });
-
-    return {
-      ...total,
-      avgReadTime: Math.floor(total.avgReadTime / performanceData.length),
-      engagementRate: total.views > 0 ? (total.engagement / total.views) * 100 : 0
-    };
-  }, [performanceData]);
-
-  const exportData = () => {
-    const csvData = performanceData.map(data => ({
-      'التصنيف': data.category?.nameAr || 'غير محدد',
-      'عدد المقالات': data.articlesCount,
-      'إجمالي المشاهدات': data.totalViews,
-      'إجمالي التفاعل': data.totalEngagement,
-      'معدل القراءة (ثانية)': data.averageReadTime,
-      'معدل الارتداد %': data.bounceRate,
-      'معدل النمو %': data.growthRate,
-      'معدل التفاعل %': data.engagementRate,
-      'تكرار النشر': data.publishingFrequency,
-      'الاحتفاظ بالقراء %': data.readerRetention,
-      'نقاط القابلية للمشاركة': data.shareabilityScore
-    }));
-
-    const csv = [
-      Object.keys(csvData[0]).join(','),
-      ...csvData.map(row => Object.values(row).join(','))
-    ].join('\n');
-
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `category-analytics-${new Date().toISOString().split('T')[0]}.csv`;
-    link.click();
   };
 
-  const TrendIcon = ({ trend }: { trend: 'up' | 'down' | 'stable' }) => {
-    switch (trend) {
-      case 'up':
-        return <TrendingUp className="h-4 w-4 text-green-500" />;
-      case 'down':
-        return <TrendingDown className="h-4 w-4 text-red-500" />;
-      default:
-        return <div className="h-4 w-4 bg-gray-400 rounded-full" />;
+  // Get category details
+  const getSelectedCategoryData = () => {
+    if (selectedCategory === 'all') {
+      return {
+        name: 'جميع التصنيفات',
+        totalViews: categoryPerformance.reduce((sum, cat) => sum + cat.totalViews, 0),
+        totalEngagement: categoryPerformance.reduce((sum, cat) => sum + cat.totalEngagement, 0),
+        totalArticles: categoryPerformance.reduce((sum, cat) => sum + cat.articlesCount, 0),
+        avgEngagementRate: categoryPerformance.length > 0 
+          ? categoryPerformance.reduce((sum, cat) => sum + cat.avgEngagementRate, 0) / categoryPerformance.length
+          : 0
+      };
     }
+    
+    const category = categoryPerformance.find(cat => cat.categoryId === selectedCategory);
+    return category ? {
+      name: category.categoryName,
+      totalViews: category.totalViews,
+      totalEngagement: category.totalEngagement,
+      totalArticles: category.articlesCount,
+      avgEngagementRate: category.avgEngagementRate
+    } : null;
   };
+
+  // Generate engagement trends (mock data)
+  const generateEngagementTrends = (): EngagementTrend[] => {
+    const trends: EngagementTrend[] = [];
+    const days = selectedTimeframe === 'week' ? 7 : selectedTimeframe === 'month' ? 30 : 7;
+    
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
+      const views = Math.floor(Math.random() * 1000) + 200;
+      const likes = Math.floor(views * 0.1 * Math.random());
+      const shares = Math.floor(views * 0.03 * Math.random());
+      const comments = Math.floor(views * 0.02 * Math.random());
+      
+      trends.push({
+        date: date.toLocaleDateString('ar-SA'),
+        views,
+        likes,
+        shares,
+        comments,
+        engagement: likes + shares + comments
+      });
+    }
+    
+    return trends;
+  };
+
+  useEffect(() => {
+    calculateCategoryPerformance();
+  }, [articles, selectedTimeframe]);
+
+  const sortedCategories = getSortedCategories();
+  const selectedCategoryData = getSelectedCategoryData();
+  const engagementTrends = generateEngagementTrends();
 
   return (
     <div className="space-y-6" dir="rtl">
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">إحصائيات التصنيفات</h1>
-          <p className="text-muted-foreground">متابعة شاملة لأداء جميع التصنيفات</p>
+          <h1 className="text-3xl font-bold">تحليلات التصنيفات</h1>
+          <p className="text-muted-foreground mt-1">
+            أداء تفصيلي لكل تصنيف ومقارنة شاملة
+          </p>
         </div>
         
-        <div className="flex flex-wrap gap-2">
-          <Select value={selectedTimeRange} onValueChange={setSelectedTimeRange}>
-            <SelectTrigger className="w-[150px]">
+        <div className="flex items-center gap-3">
+          <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
+            <SelectTrigger className="w-32">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {timeRanges.map(range => (
-                <SelectItem key={range.value} value={range.value}>
-                  {range.label}
-                </SelectItem>
-              ))}
+              <SelectItem value="week">أسبوع</SelectItem>
+              <SelectItem value="month">شهر</SelectItem>
+              <SelectItem value="quarter">ربع سنة</SelectItem>
             </SelectContent>
           </Select>
           
-          <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-            <SelectTrigger className="w-[150px]">
+          <Select value={sortBy} onValueChange={setSortBy}>
+            <SelectTrigger className="w-40">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="views">حسب المشاهدات</SelectItem>
-              <SelectItem value="engagement">حسب التفاعل</SelectItem>
-              <SelectItem value="articles">حسب عدد المقالات</SelectItem>
+              <SelectItem value="views">المشاهدات</SelectItem>
+              <SelectItem value="engagement">التفاعل</SelectItem>
+              <SelectItem value="articles">عدد المقالات</SelectItem>
+              <SelectItem value="growth">النمو</SelectItem>
             </SelectContent>
           </Select>
           
-          <Button onClick={exportData} variant="outline" size="sm">
-            <Download className="h-4 w-4 mr-2" />
-            تصدير البيانات
+          <Button 
+            onClick={calculateCategoryPerformance} 
+            disabled={isLoading}
+            variant="outline"
+          >
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                تحديث...
+              </div>
+            ) : (
+              <>
+                <RefreshCw size={16} className="ml-1" />
+                تحديث
+              </>
+            )}
           </Button>
         </div>
       </div>
 
-      {/* إحصائيات عامة */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">إجمالي المشاهدات</p>
-                <p className="text-2xl font-bold">{overallStats.views.toLocaleString()}</p>
+      {/* Summary Cards */}
+      {selectedCategoryData && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">إجمالي المشاهدات</p>
+                  <p className="text-2xl font-bold">{selectedCategoryData.totalViews.toLocaleString()}</p>
+                </div>
+                <Eye size={24} className="text-primary" />
               </div>
-              <Eye className="h-8 w-8 text-blue-500" />
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">إجمالي التفاعل</p>
+                  <p className="text-2xl font-bold">{selectedCategoryData.totalEngagement.toLocaleString()}</p>
+                </div>
+                <Heart size={24} className="text-red-500" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">عدد المقالات</p>
+                  <p className="text-2xl font-bold">{selectedCategoryData.totalArticles}</p>
+                </div>
+                <BarChart3 size={24} className="text-blue-500" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">معدل التفاعل</p>
+                  <p className="text-2xl font-bold">{selectedCategoryData.avgEngagementRate.toFixed(1)}%</p>
+                </div>
+                <TrendingUp size={24} className="text-green-500" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Category Performance Table */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Target size={20} />
+              أداء التصنيفات
+            </CardTitle>
+            <CardDescription>
+              مقارنة شاملة لجميع التصنيفات
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {sortedCategories.map(category => (
+                <div 
+                  key={category.categoryId}
+                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
+                  onClick={() => {
+                    setSelectedCategory(category.categoryId);
+                    onCategorySelect?.(category.categoryId);
+                  }}
+                >
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h4 className="font-medium">{category.categoryName}</h4>
+                      <Badge variant={category.growthRate > 0 ? 'default' : 'secondary'}>
+                        {category.growthRate > 0 ? '↗' : '↘'} {Math.abs(category.growthRate).toFixed(1)}%
+                      </Badge>
+                    </div>
+                    
+                    <div className="grid grid-cols-3 gap-4 text-sm text-muted-foreground">
+                      <div>
+                        <span className="flex items-center gap-1">
+                          <Eye size={12} />
+                          {category.totalViews.toLocaleString()}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="flex items-center gap-1">
+                          <Heart size={12} />
+                          {category.totalEngagement.toLocaleString()}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="flex items-center gap-1">
+                          <BarChart3 size={12} />
+                          {category.articlesCount} مقال
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-2">
+                      <Progress value={Math.min((category.avgEngagementRate / 10) * 100, 100)} className="h-2" />
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
-        
+
+        {/* Engagement Trends Chart */}
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">إجمالي التفاعل</p>
-                <p className="text-2xl font-bold">{overallStats.engagement.toLocaleString()}</p>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Activity size={20} />
+              اتجاه التفاعل
+            </CardTitle>
+            <CardDescription>
+              تطور التفاعل خلال الفترة المحددة
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {/* Simple line chart representation */}
+              <div className="grid grid-cols-7 gap-1 h-32">
+                {engagementTrends.map((trend, index) => {
+                  const maxEngagement = Math.max(...engagementTrends.map(t => t.engagement));
+                  const height = (trend.engagement / maxEngagement) * 100;
+                  
+                  return (
+                    <div key={index} className="flex flex-col justify-end items-center">
+                      <div 
+                        className="w-full bg-primary rounded-t transition-all duration-300 hover:bg-primary/80"
+                        style={{ height: `${height}%` }}
+                        title={`${trend.date}: ${trend.engagement} تفاعل`}
+                      />
+                      <span className="text-xs text-muted-foreground mt-1 rotate-45 origin-bottom-left">
+                        {trend.date.split('/')[0]}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
-              <Heart className="h-8 w-8 text-red-500" />
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">إجمالي المقالات</p>
-                <p className="text-2xl font-bold">{overallStats.articles}</p>
+              
+              {/* Legend */}
+              <div className="flex items-center justify-center gap-4 text-xs">
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 bg-primary rounded" />
+                  <span>إجمالي التفاعل</span>
+                </div>
               </div>
-              <Users className="h-8 w-8 text-green-500" />
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">معدل التفاعل</p>
-                <p className="text-2xl font-bold">{overallStats.engagementRate.toFixed(1)}%</p>
+              
+              {/* Metrics breakdown */}
+              <div className="grid grid-cols-2 gap-4 pt-4 border-t">
+                <div className="text-center">
+                  <div className="text-lg font-semibold">
+                    {engagementTrends.reduce((sum, t) => sum + t.views, 0).toLocaleString()}
+                  </div>
+                  <div className="text-xs text-muted-foreground">مشاهدات</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-semibold">
+                    {engagementTrends.reduce((sum, t) => sum + t.engagement, 0).toLocaleString()}
+                  </div>
+                  <div className="text-xs text-muted-foreground">تفاعلات</div>
+                </div>
               </div>
-              <Share2 className="h-8 w-8 text-purple-500" />
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <Tabs value={selectedCategory === 'all' ? 'overview' : 'detailed'} className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="overview" onClick={() => setSelectedCategory('all')}>
-            نظرة عامة
-          </TabsTrigger>
-          <TabsTrigger value="detailed">
-            تفاصيل التصنيف
-          </TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="overview" className="space-y-6">
-          {/* مخطط أداء التصنيفات */}
-          <Card>
-            <CardHeader>
-              <CardTitle>أداء التصنيفات - مقارنة شاملة</CardTitle>
-              <CardDescription>
-                مقارنة المشاهدات والتفاعل لجميع التصنيفات
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={400}>
-                <BarChart data={sortedData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    dataKey="category.nameAr" 
-                    tick={{ fontSize: 12 }}
-                    angle={-45}
-                    textAnchor="end"
-                    height={80}
-                  />
-                  <YAxis />
-                  <Tooltip 
-                    labelFormatter={(label) => `التصنيف: ${label}`}
-                    formatter={(value: any, name: string) => [
-                      typeof value === 'number' ? value.toLocaleString() : value,
-                      name === 'totalViews' ? 'المشاهدات' : 
-                      name === 'totalEngagement' ? 'التفاعل' : 
-                      name === 'articlesCount' ? 'المقالات' : name
-                    ]}
-                  />
-                  <Bar dataKey="totalViews" fill="#3b82f6" name="المشاهدات" />
-                  <Bar dataKey="totalEngagement" fill="#10b981" name="التفاعل" />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-
-          {/* توزيع المشاهدات */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>توزيع المشاهدات</CardTitle>
-                <CardDescription>نسبة المشاهدات لكل تصنيف</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={sortedData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ category, percent }) => `${category.nameAr} ${(percent * 100).toFixed(0)}%`}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="totalViews"
-                    >
-                      {sortedData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip formatter={(value: any) => [value.toLocaleString(), 'المشاهدات']} />
-                  </PieChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>عدد المقالات</CardTitle>
-                <CardDescription>توزيع المقالات حسب التصنيف</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={sortedData.slice(0, 6)}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis 
-                      dataKey="category.nameAr" 
-                      tick={{ fontSize: 10 }}
-                      angle={-45}
-                      textAnchor="end"
-                      height={60}
-                    />
-                    <YAxis />
-                    <Tooltip 
-                      formatter={(value: any) => [value, 'عدد المقالات']}
-                      labelFormatter={(label) => `التصنيف: ${label}`}
-                    />
-                    <Bar dataKey="articlesCount" fill="#f59e0b" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>معدلات التفاعل</CardTitle>
-                <CardDescription>معدل التفاعل بالنسبة للمشاهدات</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <AreaChart data={sortedData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis 
-                      dataKey="category.nameAr" 
-                      tick={{ fontSize: 10 }}
-                      angle={-45}
-                      textAnchor="end"
-                      height={60}
-                    />
-                    <YAxis />
-                    <Tooltip 
-                      formatter={(value: any) => [`${value}%`, 'معدل التفاعل']}
-                      labelFormatter={(label) => `التصنيف: ${label}`}
-                    />
-                    <Area 
-                      type="monotone" 
-                      dataKey="engagementRate" 
-                      stroke="#10b981" 
-                      fill="#10b981" 
-                      fillOpacity={0.6}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>مقارنة الأداء الشامل</CardTitle>
-                <CardDescription>مقارنة جميع المؤشرات لأهم التصنيفات</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={sortedData.slice(0, 5)}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis 
-                      dataKey="category.nameAr" 
-                      tick={{ fontSize: 10 }}
-                    />
-                    <YAxis />
-                    <Tooltip 
-                      formatter={(value: any, name: string) => [
-                        value.toFixed(1),
-                        name === 'engagementRate' ? 'معدل التفاعل %' : 
-                        name === 'readerRetention' ? 'الاحتفاظ بالقراء %' :
-                        name === 'shareabilityScore' ? 'نقاط المشاركة' : name
-                      ]}
-                      labelFormatter={(label) => `التصنيف: ${label}`}
-                    />
-                    <Line type="monotone" dataKey="engagementRate" stroke="#3b82f6" strokeWidth={2} name="معدل التفاعل" />
-                    <Line type="monotone" dataKey="readerRetention" stroke="#10b981" strokeWidth={2} name="الاحتفاظ بالقراء" />
-                    <Line type="monotone" dataKey="shareabilityScore" stroke="#f59e0b" strokeWidth={2} name="نقاط المشاركة" />
-                  </LineChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>معدلات التفاعل</CardTitle>
-                <CardDescription>معدل التفاعل بالنسبة للمشاهدات</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <AreaChart data={sortedData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis 
-                      dataKey="category.nameAr" 
-                      tick={{ fontSize: 10 }}
-                      angle={-45}
-                      textAnchor="end"
-                      height={60}
-                    />
-                    <YAxis />
-                    <Tooltip 
-                      formatter={(value: any) => [`${value}%`, 'معدل التفاعل']}
-                      labelFormatter={(label) => `التصنيف: ${label}`}
-                    />
-                    <Area 
-                      type="monotone" 
-                      dataKey="engagementRate" 
-                      stroke="#10b981" 
-                      fill="#10b981" 
-                      fillOpacity={0.6}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* جدول التصنيفات التفصيلي */}
-          <Card>
-            <CardHeader>
-              <CardTitle>تفاصيل أداء التصنيفات</CardTitle>
-              <CardDescription>جدول شامل لجميع المؤشرات</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-right p-2">التصنيف</th>
-                      <th className="text-right p-2">المقالات</th>
-                      <th className="text-right p-2">المشاهدات</th>
-                      <th className="text-right p-2">التفاعل</th>
-                      <th className="text-right p-2">معدل التفاعل</th>
-                      <th className="text-right p-2">وقت القراءة</th>
-                      <th className="text-right p-2">معدل الارتداد</th>
-                      <th className="text-right p-2">النمو</th>
-                      <th className="text-right p-2">أفضل مقال</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {sortedData.filter(data => data && data.category).map((data) => (
-                      <tr key={data.category?.id || 'unknown'} className="border-b hover:bg-muted/50">
-                        <td className="p-2">
-                          <div className="flex items-center gap-2">
-                            <span className="text-lg">{data.category?.icon || '📰'}</span>
-                            <div>
-                              <span className="font-medium">{data.category?.nameAr || 'غير محدد'}</span>
-                              <Badge 
-                                variant="secondary" 
-                                className="mr-2"
-                                style={{ 
-                                  backgroundColor: data.category?.color ? data.category.color + '20' : '#6b728020',
-                                  color: data.category?.color || '#6b7280'
-                                }}
-                              >
-                                {data.category?.slug || 'عام'}
-                              </Badge>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="p-2 font-medium">{data.articlesCount}</td>
-                        <td className="p-2 font-medium">{data.totalViews.toLocaleString()}</td>
-                        <td className="p-2 font-medium">{data.totalEngagement.toLocaleString()}</td>
-                        <td className="p-2">
-                          <span className="font-medium">{data.engagementRate.toFixed(1)}%</span>
-                        </td>
-                        <td className="p-2">{Math.floor(data.averageReadTime / 60)}:{(data.averageReadTime % 60).toString().padStart(2, '0')}</td>
-                        <td className="p-2">
-                          <div className="flex items-center gap-2">
-                            <Progress value={data.bounceRate} className="w-12 h-2" />
-                            <span className="text-xs">{data.bounceRate}%</span>
-                          </div>
-                        </td>
-                        <td className="p-2">
-                          <div className="flex items-center gap-1">
-                            <TrendIcon trend={data.trending} />
-                            <span className={`text-sm font-medium ${
-                              data.trending === 'up' ? 'text-green-600' : 
-                              data.trending === 'down' ? 'text-red-600' : 
-                              'text-gray-600'
-                            }`}>
-                              {data.growthRate > 0 ? '+' : ''}{data.growthRate}%
-                            </span>
-                          </div>
-                        </td>
-                        <td className="p-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setSelectedCategory(data.category?.id || 'unknown')}
-                            className="text-xs"
-                          >
-                            {data.topArticle ? data.topArticle.title.substring(0, 30) + '...' : 'لا توجد مقالات'}
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="detailed" className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-bold">تفاصيل التصنيف</h2>
-              <p className="text-muted-foreground">اختر تصنيفاً لعرض التفاصيل المتقدمة</p>
+      {/* Top Articles by Category */}
+      {selectedCategory !== 'all' && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp size={20} />
+              أفضل المقالات - {categoryPerformance.find(c => c.categoryId === selectedCategory)?.categoryName}
+            </CardTitle>
+            <CardDescription>
+              المقالات الأكثر أداءً في هذا التصنيف
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {categoryPerformance
+                .find(c => c.categoryId === selectedCategory)
+                ?.topArticles.slice(0, 5).map((article, index) => (
+                <div 
+                  key={article.id}
+                  className="flex items-start gap-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
+                  onClick={() => onArticleSelect?.(article)}
+                >
+                  <Badge variant="secondary" className="w-8 h-8 rounded-full p-0 flex items-center justify-center">
+                    {index + 1}
+                  </Badge>
+                  
+                  <div className="flex-1">
+                    <h4 className="font-medium line-clamp-2 mb-2">{article.title}</h4>
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <Eye size={12} />
+                        {article.analytics?.views || 0}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Heart size={12} />
+                        {article.analytics?.likes || 0}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Share2 size={12} />
+                        {article.analytics?.shares || 0}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Clock size={12} />
+                        {new Date(article.createdAt).toLocaleDateString('ar-SA')}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-            
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="اختر تصنيفاً" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map(category => (
-                  <SelectItem key={category.id} value={category.id}>
-                    <div className="flex items-center gap-2">
-                      <span>{category.icon}</span>
-                      {category.nameAr}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          </CardContent>
+        </Card>
+      )}
 
-          {selectedCategoryData && selectedCategoryData.category ? (
-            <>
-              {/* بطاقة معلومات التصنيف المختار */}
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{selectedCategoryData.category.icon}</span>
-                    <div>
-                      <CardTitle className="text-xl">{selectedCategoryData.category.nameAr}</CardTitle>
-                      <CardDescription>{selectedCategoryData.category.description}</CardDescription>
-                    </div>
-                    <Badge 
-                      variant="secondary"
-                      style={{ 
-                        backgroundColor: selectedCategoryData.category?.color ? selectedCategoryData.category.color + '20' : '#6b728020',
-                        color: selectedCategoryData.category?.color || '#6b7280'
-                      }}
-                    >
-                      {selectedCategoryData.category.slug}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-blue-600">{selectedCategoryData.totalViews.toLocaleString()}</p>
-                      <p className="text-sm text-muted-foreground">إجمالي المشاهدات</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-green-600">{selectedCategoryData.totalEngagement.toLocaleString()}</p>
-                      <p className="text-sm text-muted-foreground">إجمالي التفاعل</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-purple-600">{selectedCategoryData.articlesCount}</p>
-                      <p className="text-sm text-muted-foreground">عدد المقالات</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-orange-600">{selectedCategoryData.engagementRate.toFixed(1)}%</p>
-                      <p className="text-sm text-muted-foreground">معدل التفاعل</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* مؤشرات الأداء المتقدمة */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-muted-foreground">الاحتفاظ بالقراء</p>
-                        <p className="text-xl font-bold">{selectedCategoryData.readerRetention}%</p>
-                      </div>
-                      <Users className="h-8 w-8 text-blue-500" />
-                    </div>
-                    <Progress value={selectedCategoryData.readerRetention} className="mt-2" />
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-muted-foreground">نقاط المشاركة</p>
-                        <p className="text-xl font-bold">{selectedCategoryData.shareabilityScore}</p>
-                      </div>
-                      <Share2 className="h-8 w-8 text-green-500" />
-                    </div>
-                    <Progress value={selectedCategoryData.shareabilityScore} className="mt-2" />
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-muted-foreground">تكرار النشر</p>
-                        <p className="text-xl font-bold">{selectedCategoryData.publishingFrequency}</p>
-                        <p className="text-xs text-muted-foreground">مقالة/يوم</p>
-                      </div>
-                      <CalendarIcon className="h-8 w-8 text-purple-500" />
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-muted-foreground">متوسط وقت القراءة</p>
-                        <p className="text-xl font-bold">{Math.floor(selectedCategoryData.averageReadTime / 60)}:{(selectedCategoryData.averageReadTime % 60).toString().padStart(2, '0')}</p>
-                      </div>
-                      <Clock className="h-8 w-8 text-orange-500" />
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* الاتجاهات الأسبوعية */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>الاتجاهات الأسبوعية</CardTitle>
-                  <CardDescription>تطور الأداء على مدار الأسابيع الماضية</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={selectedCategoryData.weeklyTrends}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="week" />
-                      <YAxis />
-                      <Tooltip 
-                        labelFormatter={(label) => `الأسبوع: ${label}`}
-                        formatter={(value: any, name: string) => [
-                          value.toLocaleString(),
-                          name === 'views' ? 'المشاهدات' : 
-                          name === 'engagement' ? 'التفاعل' : 
-                          name === 'articles' ? 'المقالات' : name
-                        ]}
-                      />
-                      <Line type="monotone" dataKey="views" stroke="#3b82f6" strokeWidth={2} name="المشاهدات" />
-                      <Line type="monotone" dataKey="engagement" stroke="#10b981" strokeWidth={2} name="التفاعل" />
-                      <Line type="monotone" dataKey="articles" stroke="#f59e0b" strokeWidth={2} name="المقالات" />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-
-              {/* أداء المؤلفين */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>مساهمة المؤلفين</CardTitle>
-                  <CardDescription>أداء المؤلفين في هذا التصنيف</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {selectedCategoryData.authorContribution.map((author, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-semibold text-sm">
-                            {author.authorName.charAt(0)}
-                          </div>
-                          <div>
-                            <p className="font-medium">{author.authorName}</p>
-                            <p className="text-sm text-muted-foreground">{author.articles} مقالة</p>
-                          </div>
-                        </div>
-                        <div className="text-left">
-                          <p className="font-medium">{author.avgViews.toLocaleString()}</p>
-                          <p className="text-sm text-muted-foreground">متوسط المشاهدات</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* أداء حسب الوقت */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>أداء حسب الوقت</CardTitle>
-                  <CardDescription>توزيع المشاهدات والتفاعل على مدار اليوم</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <AreaChart data={selectedCategoryData.timeOfDayPerformance}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis 
-                        dataKey="hour" 
-                        tickFormatter={(hour) => `${hour}:00`}
-                      />
-                      <YAxis />
-                      <Tooltip 
-                        labelFormatter={(hour) => `الساعة: ${hour}:00`}
-                        formatter={(value: any, name: string) => [
-                          value.toLocaleString(),
-                          name === 'views' ? 'المشاهدات' : 'التفاعل'
-                        ]}
-                      />
-                      <Area type="monotone" dataKey="views" stackId="1" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.6} />
-                      <Area type="monotone" dataKey="engagement" stackId="2" stroke="#10b981" fill="#10b981" fillOpacity={0.6} />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            </>
-          ) : (
-            <Card>
-              <CardContent className="p-12 text-center">
-                <Filter className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">اختر تصنيفاً</h3>
-                <p className="text-muted-foreground">
-                  يرجى اختيار تصنيف من القائمة أعلاه لعرض التحليلات التفصيلية
-                </p>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-      </Tabs>
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Button variant="outline" className="h-auto p-4 flex-col items-start">
+          <Download size={20} className="mb-2" />
+          <span className="font-medium">تصدير التقرير</span>
+          <span className="text-sm text-muted-foreground">حفظ البيانات كملف Excel</span>
+        </Button>
+        
+        <Button variant="outline" className="h-auto p-4 flex-col items-start">
+          <Brain size={20} className="mb-2" />
+          <span className="font-medium">توصيات ذكية</span>
+          <span className="text-sm text-muted-foreground">اقتراحات لتحسين الأداء</span>
+        </Button>
+        
+        <Button variant="outline" className="h-auto p-4 flex-col items-start">
+          <Zap size={20} className="mb-2" />
+          <span className="font-medium">تحليل تلقائي</span>
+          <span className="text-sm text-muted-foreground">جدولة تقارير دورية</span>
+        </Button>
+      </div>
     </div>
   );
 }
-
-export default CategoryAnalytics;

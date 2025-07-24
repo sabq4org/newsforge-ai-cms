@@ -182,6 +182,20 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       show: hasPermission('read', 'analytics')
     },
     {
+      id: 'advanced-analytics',
+      label: isArabic ? 'التحليلات المتقدمة' : 'Advanced Analytics',
+      icon: Brain,
+      show: hasPermission('read', 'analytics'),
+      badge: isArabic ? 'ذكي' : 'AI'
+    },
+    {
+      id: 'personalized-recommendations',
+      label: isArabic ? 'التوصيات المخصصة' : 'Personalized Recommendations',
+      icon: Sparkles,
+      show: hasPermission('read', 'analytics'),
+      badge: isArabic ? 'جديد' : 'New'
+    },
+    {
       id: 'category-analytics',
       label: isArabic ? 'إحصائيات التصنيفات' : 'Category Analytics',
       icon: TrendingUp,

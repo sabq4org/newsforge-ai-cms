@@ -21,6 +21,7 @@ import { AudioEditor, AudioLibrary, AudioAnalytics } from '@/components/audio';
 import { SystemAnalysis, ComprehensiveAnalysisEngine } from '@/components/analysis';
 import { AISearch, ComprehensiveSearch } from '@/components/search';
 import { AIRecommendationEngine } from '@/components/recommendations/AIRecommendationEngine';
+import { PersonalizedRecommendations } from '@/components/recommendations/PersonalizedRecommendations';
 import { ContentModeration } from '@/components/moderation/ContentModeration';
 import { SchedulingCalendar } from '@/components/scheduling';
 import { CategoryManager, CategoryStatistics, ComprehensiveCategoryManager } from '@/components/categories';
@@ -154,6 +155,15 @@ function AppContent() {
       
       case 'realtime':
         return <RealTimeAnalytics />;
+      
+      case 'personalized-recommendations':
+        return (
+          <PersonalizedRecommendations
+            currentUser={user}
+            articles={articles}
+            onArticleSelect={handleEditArticle}
+          />
+        );
       
       case 'recommendations':
         return (

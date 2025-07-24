@@ -1,591 +1,523 @@
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
-  ChartContainer, 
-  ChartTooltip, 
-  ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent
-} from '@/components/ui/chart';
-import { 
-  LineChart, 
-  Line, 
-  AreaChart, 
-  Area, 
-  BarChart, 
-  Bar, 
-  PieChart, 
-  Pie, 
-  Cell,
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  ResponsiveContainer 
-} from 'recharts';
-import { useAuth } from '@/contexts/AuthContext';
-import { mockAnalytics } from '@/lib/mockData';
-import { 
-  Eye, 
-  Heart, 
-  ShareNetwork, 
-  FileText, 
-  TrendUp, 
-  TrendDown, 
-  Calendar,
-  Users,
-  DeviceMobile,
-  Desktop,
-  DeviceTablet,
-  Clock,
-  Target,
-  Globe
+  TrendingUp, 
+  Users, 
+  Clock, 
+  Target, 
+  BarChart3,
+  Lightbulb,
+  Sparkles,
+  Brain,
+  Eye,
+  Heart,
+  Share2,
+  MessageCircle,
+  BookOpen,
+  Filter,
+  ArrowRight
 } from '@phosphor-icons/react';
+import { useKV } from '@github/spark/hooks';
+import { Article, User } from '@/types';
+import { mockArticles } from '@/lib/mockData';
 
-const chartConfig = {
-  views: {
-    label: "Views",
-    color: "hsl(var(--chart-1))",
-  },
-  uniqueVisitors: {
-    label: "Unique Visitors", 
-    color: "hsl(var(--chart-2))",
-  },
-  likes: {
-    label: "Likes",
-    color: "hsl(var(--chart-1))",
-  },
-  shares: {
-    label: "Shares",
-    color: "hsl(var(--chart-2))",
-  },
-  comments: {
-    label: "Comments",
-    color: "hsl(var(--chart-3))",
-  },
-};
-
-interface AdvancedAnalyticsProps {
-  onNavigate?: (view: string) => void;
+interface ContentInsight {
+  type: 'engagement' | 'timing' | 'category' | 'length' | 'style';
+  title: string;
+  description: string;
+  recommendation: string;
+  priority: 'high' | 'medium' | 'low';
+  impact: number;
+  articles?: string[];
 }
 
-export function AdvancedAnalytics({ onNavigate }: AdvancedAnalyticsProps) {
-  const { language, hasPermission } = useAuth();
-  const [timeRange, setTimeRange] = useState('7d');
-  const [activeMetric, setActiveMetric] = useState('views');
-  const analytics = mockAnalytics;
+interface AdvancedAnalyticsProps {
+  articles?: Article[];
+  onNavigate?: (view: string) => void;
+  onArticleSelect?: (article: Article) => void;
+}
 
-  if (!hasPermission('view-analytics')) {
-    return (
-      <div className="text-center py-12">
-        <h2 className="text-xl font-semibold">
-          {language.code === 'ar' ? 'غير مصرح' : 'Access Denied'}
-        </h2>
-        <p className="text-muted-foreground mt-2">
-          {language.code === 'ar' ? 'ليس لديك صلاحية لعرض التحليلات' : 'You do not have permission to view analytics'}
-        </p>
-      </div>
-    );
-  }
+export function AdvancedAnalytics({ 
+  articles = mockArticles, 
+  onNavigate,
+  onArticleSelect 
+}: AdvancedAnalyticsProps) {
+  const [insights, setInsights] = useKV<ContentInsight[]>('content-insights', []);
+  const [selectedTimeframe, setSelectedTimeframe] = useState('week');
+  const [isGeneratingInsights, setIsGeneratingInsights] = useState(false);
 
-  const deviceIcons = {
-    Mobile: DeviceMobile,
-    Desktop: Desktop,
-    Tablet: DeviceTablet
+  // Generate AI-powered content insights
+  const generateContentInsights = async () => {
+    setIsGeneratingInsights(true);
+    
+    try {
+      const newInsights: ContentInsight[] = [];
+      
+      // Analyze engagement patterns
+      const engagementAnalysis = analyzeEngagementPatterns();
+      newInsights.push(...engagementAnalysis);
+      
+      // Analyze timing patterns
+      const timingAnalysis = analyzeTimingPatterns();
+      newInsights.push(...timingAnalysis);
+      
+      // Analyze category performance
+      const categoryAnalysis = analyzeCategoryPerformance();
+      newInsights.push(...categoryAnalysis);
+      
+      // Analyze content length optimization
+      const lengthAnalysis = analyzeContentLength();
+      newInsights.push(...lengthAnalysis);
+      
+      // Sort by priority and impact
+      newInsights.sort((a, b) => {
+        const priorityWeight = { high: 3, medium: 2, low: 1 };
+        return (priorityWeight[b.priority] * b.impact) - (priorityWeight[a.priority] * a.impact);
+      });
+      
+      setInsights(newInsights);
+    } catch (error) {
+      console.error('Error generating insights:', error);
+    } finally {
+      setIsGeneratingInsights(false);
+    }
   };
 
-  // Enhanced KPI cards with more metrics
-  const kpiCards = [
-    {
-      title: language.code === 'ar' ? 'إجمالي المشاهدات' : 'Total Views',
-      value: analytics.totalViews.toLocaleString(),
-      change: '+12.5%',
-      icon: Eye,
-      color: 'text-blue-600',
-      trend: 'up'
-    },
-    {
-      title: language.code === 'ar' ? 'معدل التفاعل' : 'Engagement Rate',
-      value: '7.2%',
-      change: '+2.1%',
-      icon: Heart,
-      color: 'text-red-600',
-      trend: 'up'
-    },
-    {
-      title: language.code === 'ar' ? 'متوسط وقت القراءة' : 'Avg. Reading Time',
-      value: `${Math.floor(analytics.readingTime.averageTime / 60)}:${String(analytics.readingTime.averageTime % 60).padStart(2, '0')}`,
-      change: '+8.3%',
-      icon: Clock,
-      color: 'text-green-600',
-      trend: 'up'
-    },
-    {
-      title: language.code === 'ar' ? 'معدل الارتداد' : 'Bounce Rate',
-      value: `${analytics.readingTime.bounceRate}%`,
-      change: '-3.2%',
-      icon: Target,
-      color: 'text-orange-600',
-      trend: 'down'
+  // Analyze engagement patterns
+  const analyzeEngagementPatterns = (): ContentInsight[] => {
+    const insights: ContentInsight[] = [];
+    
+    // Calculate average engagement metrics
+    const publishedArticles = articles.filter(a => a.status === 'published');
+    const avgViews = publishedArticles.reduce((sum, a) => sum + (a.analytics?.views || 0), 0) / publishedArticles.length;
+    const avgLikes = publishedArticles.reduce((sum, a) => sum + (a.analytics?.likes || 0), 0) / publishedArticles.length;
+    const avgShares = publishedArticles.reduce((sum, a) => sum + (a.analytics?.shares || 0), 0) / publishedArticles.length;
+    
+    // Find top performing articles
+    const topArticles = publishedArticles
+      .sort((a, b) => (b.analytics?.views || 0) - (a.analytics?.views || 0))
+      .slice(0, 5);
+    
+    // Find underperforming articles
+    const underperformingArticles = publishedArticles
+      .filter(a => (a.analytics?.views || 0) < avgViews * 0.5)
+      .slice(0, 3);
+
+    if (topArticles.length > 0) {
+      insights.push({
+        type: 'engagement',
+        title: 'مقالات عالية الأداء',
+        description: `${topArticles.length} مقالات تحقق نتائج استثنائية في التفاعل`,
+        recommendation: 'استخدم نفس أسلوب وتوقيت هذه المقالات في المحتوى القادم',
+        priority: 'high',
+        impact: 85,
+        articles: topArticles.map(a => a.id)
+      });
     }
-  ];
+
+    if (underperformingArticles.length > 0) {
+      insights.push({
+        type: 'engagement',
+        title: 'مقالات تحتاج تحسين',
+        description: `${underperformingArticles.length} مقالات أداؤها أقل من المتوسط`,
+        recommendation: 'راجع العناوين والمحتوى وأعد صياغتها أو روّج لها أكثر',
+        priority: 'medium',
+        impact: 65,
+        articles: underperformingArticles.map(a => a.id)
+      });
+    }
+
+    return insights;
+  };
+
+  // Analyze timing patterns
+  const analyzeTimingPatterns = (): ContentInsight[] => {
+    const insights: ContentInsight[] = [];
+    
+    // Group articles by hour of publication
+    const hourlyPerformance: { [hour: number]: { count: number; avgViews: number; articles: Article[] } } = {};
+    
+    articles.filter(a => a.status === 'published').forEach(article => {
+      const hour = new Date(article.createdAt).getHours();
+      if (!hourlyPerformance[hour]) {
+        hourlyPerformance[hour] = { count: 0, avgViews: 0, articles: [] };
+      }
+      hourlyPerformance[hour].count++;
+      hourlyPerformance[hour].avgViews += article.analytics?.views || 0;
+      hourlyPerformance[hour].articles.push(article);
+    });
+
+    // Calculate averages and find best times
+    const hourlyStats = Object.entries(hourlyPerformance).map(([hour, data]) => ({
+      hour: parseInt(hour),
+      avgViews: data.avgViews / data.count,
+      count: data.count,
+      articles: data.articles
+    })).sort((a, b) => b.avgViews - a.avgViews);
+
+    if (hourlyStats.length > 0) {
+      const bestHour = hourlyStats[0];
+      const timeRange = `${bestHour.hour}:00 - ${bestHour.hour + 1}:00`;
+      
+      insights.push({
+        type: 'timing',
+        title: 'أفضل وقت للنشر',
+        description: `الساعة ${timeRange} تحقق أعلى معدل مشاهدة (${Math.round(bestHour.avgViews)} مشاهدة متوسط)`,
+        recommendation: 'ركز على النشر في هذا التوقيت لزيادة الوصول',
+        priority: 'high',
+        impact: 80,
+        articles: bestHour.articles.slice(0, 3).map(a => a.id)
+      });
+    }
+
+    return insights;
+  };
+
+  // Analyze category performance
+  const analyzeCategoryPerformance = (): ContentInsight[] => {
+    const insights: ContentInsight[] = [];
+    
+    // Group by category
+    const categoryPerformance: { [category: string]: { views: number; engagement: number; count: number; articles: Article[] } } = {};
+    
+    articles.filter(a => a.status === 'published').forEach(article => {
+      const categoryName = article.category?.name || 'غير مصنف';
+      if (!categoryPerformance[categoryName]) {
+        categoryPerformance[categoryName] = { views: 0, engagement: 0, count: 0, articles: [] };
+      }
+      
+      const views = article.analytics?.views || 0;
+      const engagement = (article.analytics?.likes || 0) + (article.analytics?.shares || 0) + (article.analytics?.comments || 0);
+      
+      categoryPerformance[categoryName].views += views;
+      categoryPerformance[categoryName].engagement += engagement;
+      categoryPerformance[categoryName].count++;
+      categoryPerformance[categoryName].articles.push(article);
+    });
+
+    // Find best and worst performing categories
+    const categoryStats = Object.entries(categoryPerformance)
+      .map(([category, data]) => ({
+        category,
+        avgViews: data.views / data.count,
+        avgEngagement: data.engagement / data.count,
+        count: data.count,
+        articles: data.articles
+      }))
+      .sort((a, b) => b.avgViews - a.avgViews);
+
+    if (categoryStats.length > 0) {
+      const bestCategory = categoryStats[0];
+      const worstCategory = categoryStats[categoryStats.length - 1];
+      
+      insights.push({
+        type: 'category',
+        title: `قسم "${bestCategory.category}" الأكثر جذباً`,
+        description: `يحقق معدل ${Math.round(bestCategory.avgViews)} مشاهدة و ${Math.round(bestCategory.avgEngagement)} تفاعل`,
+        recommendation: 'زد من المحتوى في هذا القسم واستثمر في تطويره أكثر',
+        priority: 'high',
+        impact: 90,
+        articles: bestCategory.articles.slice(0, 3).map(a => a.id)
+      });
+
+      if (worstCategory.avgViews < bestCategory.avgViews * 0.3) {
+        insights.push({
+          type: 'category',
+          title: `قسم "${worstCategory.category}" يحتاج انتباه`,
+          description: `أداء أقل من المتوقع مع ${Math.round(worstCategory.avgViews)} مشاهدة متوسط`,
+          recommendation: 'راجع استراتيجية المحتوى لهذا القسم أو أعد النظر في أهميته',
+          priority: 'medium',
+          impact: 60
+        });
+      }
+    }
+
+    return insights;
+  };
+
+  // Analyze content length optimization
+  const analyzeContentLength = (): ContentInsight[] => {
+    const insights: ContentInsight[] = [];
+    
+    // Group articles by content length
+    const publishedArticles = articles.filter(a => a.status === 'published');
+    const lengthGroups = {
+      short: publishedArticles.filter(a => a.content.length < 1000),
+      medium: publishedArticles.filter(a => a.content.length >= 1000 && a.content.length < 3000),
+      long: publishedArticles.filter(a => a.content.length >= 3000)
+    };
+
+    // Calculate performance for each group
+    const lengthPerformance = Object.entries(lengthGroups).map(([length, articles]) => {
+      const avgViews = articles.reduce((sum, a) => sum + (a.analytics?.views || 0), 0) / articles.length || 0;
+      const avgReadTime = articles.reduce((sum, a) => sum + (a.analytics?.readTime || 0), 0) / articles.length || 0;
+      return { length, avgViews, avgReadTime, count: articles.length, articles };
+    }).filter(group => group.count > 0);
+
+    const bestPerforming = lengthPerformance.sort((a, b) => b.avgViews - a.avgViews)[0];
+    
+    if (bestPerforming) {
+      const lengthLabels = { short: 'قصيرة', medium: 'متوسطة', long: 'طويلة' };
+      const lengthLabel = lengthLabels[bestPerforming.length as keyof typeof lengthLabels];
+      
+      insights.push({
+        type: 'length',
+        title: `المقالات ${lengthLabel} تحقق أفضل النتائج`,
+        description: `معدل ${Math.round(bestPerforming.avgViews)} مشاهدة و ${Math.round(bestPerforming.avgReadTime)} ثانية قراءة`,
+        recommendation: `ركز على إنتاج مقالات ${lengthLabel} لتحقيق أفضل تفاعل`,
+        priority: 'medium',
+        impact: 70
+      });
+    }
+
+    return insights;
+  };
+
+  // Get analytics summary
+  const getAnalyticsSummary = () => {
+    const publishedArticles = articles.filter(a => a.status === 'published');
+    const totalViews = publishedArticles.reduce((sum, a) => sum + (a.analytics?.views || 0), 0);
+    const totalEngagement = publishedArticles.reduce((sum, a) => 
+      sum + (a.analytics?.likes || 0) + (a.analytics?.shares || 0) + (a.analytics?.comments || 0), 0);
+    const avgReadTime = publishedArticles.reduce((sum, a) => sum + (a.analytics?.readTime || 0), 0) / publishedArticles.length || 0;
+    
+    return {
+      totalViews,
+      totalEngagement,
+      avgReadTime: Math.round(avgReadTime),
+      totalArticles: publishedArticles.length,
+      engagementRate: publishedArticles.length > 0 ? totalEngagement / totalViews * 100 : 0
+    };
+  };
+
+  useEffect(() => {
+    generateContentInsights();
+  }, [articles, selectedTimeframe]);
+
+  const summary = getAnalyticsSummary();
+
+  const renderInsightCard = (insight: ContentInsight) => {
+    const priorityColors = {
+      high: 'destructive',
+      medium: 'accent',
+      low: 'secondary'
+    };
+
+    const typeIcons = {
+      engagement: TrendingUp,
+      timing: Clock,
+      category: Target,
+      length: BookOpen,
+      style: Sparkles
+    };
+
+    const Icon = typeIcons[insight.type];
+
+    return (
+      <Card key={`${insight.type}-${insight.title}`} className="h-full">
+        <CardHeader className="pb-3">
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-2">
+              <Icon size={20} className="text-primary" />
+              <CardTitle className="text-lg">{insight.title}</CardTitle>
+            </div>
+            <div className="flex items-center gap-2">
+              <Badge variant={priorityColors[insight.priority] as any}>
+                {insight.priority === 'high' ? 'عالي' : insight.priority === 'medium' ? 'متوسط' : 'منخفض'}
+              </Badge>
+              <div className="text-right">
+                <div className="text-sm font-medium">{insight.impact}%</div>
+                <div className="text-xs text-muted-foreground">تأثير</div>
+              </div>
+            </div>
+          </div>
+        </CardHeader>
+        
+        <CardContent className="space-y-4">
+          <CardDescription className="text-sm leading-relaxed">
+            {insight.description}
+          </CardDescription>
+          
+          <div className="bg-accent/10 p-3 rounded-lg">
+            <div className="flex items-start gap-2">
+              <Lightbulb size={16} className="text-accent mt-0.5 flex-shrink-0" />
+              <p className="text-sm text-accent-foreground">
+                {insight.recommendation}
+              </p>
+            </div>
+          </div>
+          
+          {insight.articles && insight.articles.length > 0 && (
+            <div className="space-y-2">
+              <h4 className="text-sm font-medium">مقالات ذات صلة:</h4>
+              <div className="space-y-1">
+                {insight.articles.slice(0, 2).map(articleId => {
+                  const article = articles.find(a => a.id === articleId);
+                  return article ? (
+                    <div 
+                      key={articleId}
+                      className="flex items-center justify-between p-2 bg-muted/50 rounded text-sm cursor-pointer hover:bg-muted/70 transition-colors"
+                      onClick={() => onArticleSelect?.(article)}
+                    >
+                      <span className="flex-1 line-clamp-1">{article.title}</span>
+                      <ArrowRight size={14} className="text-muted-foreground" />
+                    </div>
+                  ) : null;
+                })}
+              </div>
+            </div>
+          )}
+          
+          <Progress value={insight.impact} className="h-2" />
+        </CardContent>
+      </Card>
+    );
+  };
 
   return (
-    <div className="space-y-6">
-      {/* Header with Controls */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+    <div className="space-y-6" dir="rtl">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">
-            {language.code === 'ar' ? 'التحليلات المتقدمة' : 'Advanced Analytics'}
-          </h1>
+          <h1 className="text-3xl font-bold">التحليلات المتقدمة</h1>
           <p className="text-muted-foreground mt-1">
-            {language.code === 'ar' 
-              ? 'تحليل شامل لأداء المحتوى وسلوك المستخدمين' 
-              : 'Comprehensive insights into content performance and user behavior'}
+            رؤى ذكية لتحسين أداء المحتوى والوصول
           </p>
         </div>
         
-        <div className="flex items-center gap-3">
-          <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger className="w-32">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="7d">{language.code === 'ar' ? '7 أيام' : '7 Days'}</SelectItem>
-              <SelectItem value="30d">{language.code === 'ar' ? '30 يوم' : '30 Days'}</SelectItem>
-              <SelectItem value="90d">{language.code === 'ar' ? '90 يوم' : '90 Days'}</SelectItem>
-            </SelectContent>
-          </Select>
-          
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => onNavigate?.('insights')}
-          >
-            <Calendar className="w-4 h-4 mr-2" />
-            {language.code === 'ar' ? 'رؤى الأداء' : 'Performance Insights'}
-          </Button>
-        </div>
+        <Button 
+          onClick={generateContentInsights} 
+          disabled={isGeneratingInsights}
+        >
+          {isGeneratingInsights ? (
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              جاري التحليل...
+            </div>
+          ) : (
+            <>
+              <Brain size={16} className="ml-1" />
+              تحديث الرؤى
+            </>
+          )}
+        </Button>
       </div>
 
-      {/* Enhanced KPI Cards */}
+      {/* Analytics Summary */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {kpiCards.map((kpi, index) => (
-          <Card key={index} className="relative overflow-hidden">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-muted-foreground">
-                    {kpi.title}
-                  </p>
-                  <p className="text-2xl font-bold">
-                    {kpi.value}
-                  </p>
-                  <div className="flex items-center gap-1">
-                    {kpi.trend === 'up' ? (
-                      <TrendUp size={14} className="text-green-600" />
-                    ) : (
-                      <TrendDown size={14} className="text-red-600" />
-                    )}
-                    <span className={`text-xs font-medium ${kpi.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
-                      {kpi.change}
-                    </span>
-                  </div>
-                </div>
-                <div className={`p-3 rounded-full bg-muted ${kpi.color}`}>
-                  <kpi.icon size={24} />
-                </div>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">إجمالي المشاهدات</p>
+                <p className="text-2xl font-bold">{summary.totalViews.toLocaleString()}</p>
               </div>
-            </CardContent>
-          </Card>
-        ))}
+              <Eye size={24} className="text-primary" />
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">إجمالي التفاعل</p>
+                <p className="text-2xl font-bold">{summary.totalEngagement.toLocaleString()}</p>
+              </div>
+              <Heart size={24} className="text-accent" />
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">متوسط وقت القراءة</p>
+                <p className="text-2xl font-bold">{summary.avgReadTime}ث</p>
+              </div>
+              <Clock size={24} className="text-muted-foreground" />
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">معدل التفاعل</p>
+                <p className="text-2xl font-bold">{summary.engagementRate.toFixed(1)}%</p>
+              </div>
+              <BarChart3 size={24} className="text-green-500" />
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Analytics Tabs */}
-      <Tabs defaultValue="traffic" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="traffic">
-            {language.code === 'ar' ? 'حركة المرور' : 'Traffic'}
-          </TabsTrigger>
-          <TabsTrigger value="engagement">
-            {language.code === 'ar' ? 'التفاعل' : 'Engagement'}
-          </TabsTrigger>
-          <TabsTrigger value="content">
-            {language.code === 'ar' ? 'المحتوى' : 'Content'}
-          </TabsTrigger>
-          <TabsTrigger value="audience">
-            {language.code === 'ar' ? 'الجمهور' : 'Audience'}
-          </TabsTrigger>
-          <TabsTrigger value="performance">
-            {language.code === 'ar' ? 'الأداء' : 'Performance'}
-          </TabsTrigger>
-        </TabsList>
+      {/* Content Insights */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Sparkles size={20} />
+            رؤى المحتوى الذكية
+          </CardTitle>
+          <CardDescription>
+            تحليلات مدعومة بالذكاء الاصطناعي لتحسين استراتيجية المحتوى
+          </CardDescription>
+        </CardHeader>
+      </Card>
 
-        {/* Traffic Analytics */}
-        <TabsContent value="traffic" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Views Over Time Chart */}
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendUp size={20} />
-                  {language.code === 'ar' ? 'المشاهدات عبر الزمن' : 'Views Over Time'}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ChartContainer config={chartConfig} className="h-[300px]">
-                  <AreaChart data={analytics.viewsOverTime}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Area 
-                      type="monotone" 
-                      dataKey="views" 
-                      stackId="1"
-                      stroke="var(--color-views)" 
-                      fill="var(--color-views)" 
-                      fillOpacity={0.6}
-                    />
-                    <Area 
-                      type="monotone" 
-                      dataKey="uniqueVisitors" 
-                      stackId="2"
-                      stroke="var(--color-uniqueVisitors)" 
-                      fill="var(--color-uniqueVisitors)" 
-                      fillOpacity={0.6}
-                    />
-                    <ChartLegend content={<ChartLegendContent />} />
-                  </AreaChart>
-                </ChartContainer>
-              </CardContent>
-            </Card>
+      {insights.length > 0 ? (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {insights.map(renderInsightCard)}
+        </div>
+      ) : (
+        <Card className="text-center py-12">
+          <CardContent>
+            <Brain size={48} className="mx-auto text-muted-foreground mb-4" />
+            <h3 className="text-lg font-semibold mb-2">جاري تحليل البيانات</h3>
+            <p className="text-muted-foreground">
+              يتم الآن تحليل أداء المحتوى لتقديم رؤى مخصصة
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
-            {/* Traffic Sources */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Globe size={20} />
-                  {language.code === 'ar' ? 'مصادر الزيارات' : 'Traffic Sources'}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {analytics.trafficSources.map((source) => (
-                    <div key={source.source} className="space-y-2">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="font-medium">{source.source}</span>
-                        <span className="text-muted-foreground">{source.percentage}%</span>
-                      </div>
-                      <Progress value={source.percentage} className="h-2" />
-                      <p className="text-xs text-muted-foreground">
-                        {source.visitors.toLocaleString()} {language.code === 'ar' ? 'زائر' : 'visitors'}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        {/* Engagement Analytics */}
-        <TabsContent value="engagement" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Engagement Over Time */}
-            <Card>
-              <CardHeader>
-                <CardTitle>
-                  {language.code === 'ar' ? 'التفاعل عبر الزمن' : 'Engagement Over Time'}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ChartContainer config={chartConfig} className="h-[300px]">
-                  <LineChart data={analytics.engagementOverTime}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Line 
-                      type="monotone" 
-                      dataKey="likes" 
-                      stroke="var(--color-likes)" 
-                      strokeWidth={2} 
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="shares" 
-                      stroke="var(--color-shares)" 
-                      strokeWidth={2} 
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="comments" 
-                      stroke="var(--color-comments)" 
-                      strokeWidth={2} 
-                    />
-                    <ChartLegend content={<ChartLegendContent />} />
-                  </LineChart>
-                </ChartContainer>
-              </CardContent>
-            </Card>
-
-            {/* Reading Metrics */}
-            <Card>
-              <CardHeader>
-                <CardTitle>
-                  {language.code === 'ar' ? 'مقاييس القراءة' : 'Reading Metrics'}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-primary mb-2">
-                      {Math.floor(analytics.readingTime.averageTime / 60)}:{String(analytics.readingTime.averageTime % 60).padStart(2, '0')}
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {language.code === 'ar' ? 'متوسط وقت القراءة' : 'Average Reading Time'}
-                    </p>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium">
-                          {language.code === 'ar' ? 'معدل الإكمال' : 'Completion Rate'}
-                        </span>
-                        <span className="text-sm text-muted-foreground">
-                          {analytics.readingTime.completionRate}%
-                        </span>
-                      </div>
-                      <Progress value={analytics.readingTime.completionRate} className="h-2" />
-                    </div>
-                    
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium">
-                          {language.code === 'ar' ? 'معدل الارتداد' : 'Bounce Rate'}
-                        </span>
-                        <span className="text-sm text-muted-foreground">
-                          {analytics.readingTime.bounceRate}%
-                        </span>
-                      </div>
-                      <Progress value={analytics.readingTime.bounceRate} className="h-2" />
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        {/* Content Performance */}
-        <TabsContent value="content" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Category Performance */}
-            <Card>
-              <CardHeader>
-                <CardTitle>
-                  {language.code === 'ar' ? 'أداء الفئات' : 'Category Performance'}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ChartContainer config={chartConfig} className="h-[300px]">
-                  <BarChart data={analytics.categoryPerformance}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="category" />
-                    <YAxis />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Bar dataKey="views" fill="var(--color-views)" />
-                  </BarChart>
-                </ChartContainer>
-              </CardContent>
-            </Card>
-
-            {/* Author Performance */}
-            <Card>
-              <CardHeader>
-                <CardTitle>
-                  {language.code === 'ar' ? 'أداء الكُتاب' : 'Author Performance'}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {analytics.authorPerformance.map((author, index) => (
-                    <div key={author.authorId} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div>
-                        <p className="font-medium">{author.authorName}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {author.totalArticles} {language.code === 'ar' ? 'مقال' : 'articles'} • {author.totalViews.toLocaleString()} {language.code === 'ar' ? 'مشاهدة' : 'views'}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <Badge variant="outline">
-                          {author.avgEngagement}% {language.code === 'ar' ? 'تفاعل' : 'engagement'}
-                        </Badge>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        {/* Audience Analytics */}
-        <TabsContent value="audience" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Device Breakdown */}
-            <Card>
-              <CardHeader>
-                <CardTitle>
-                  {language.code === 'ar' ? 'توزيع الأجهزة' : 'Device Breakdown'}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {analytics.deviceBreakdown.map((device) => {
-                    const IconComponent = deviceIcons[device.device as keyof typeof deviceIcons];
-                    return (
-                      <div key={device.device} className="flex items-center justify-between p-4 border rounded-lg">
-                        <div className="flex items-center gap-3">
-                          <div className="p-2 bg-muted rounded-lg">
-                            <IconComponent size={20} />
-                          </div>
-                          <div>
-                            <p className="font-medium">{device.device}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {device.users.toLocaleString()} {language.code === 'ar' ? 'مستخدم' : 'users'}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-lg font-bold">{device.percentage}%</p>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Top Articles */}
-            <Card>
-              <CardHeader>
-                <CardTitle>
-                  {language.code === 'ar' ? 'أفضل المقالات' : 'Top Performing Articles'}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {analytics.topArticles.map((article, index) => (
-                    <div key={article.id} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="flex-1">
-                        <p className="font-medium text-sm line-clamp-2">{article.title}</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {article.views.toLocaleString()} {language.code === 'ar' ? 'مشاهدة' : 'views'}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="text-xs">
-                          #{index + 1}
-                        </Badge>
-                        {article.trend === 'up' && <TrendUp size={16} className="text-green-600" />}
-                        {article.trend === 'down' && <TrendDown size={16} className="text-red-600" />}
-                        {article.trend === 'stable' && <div className="w-4 h-4 bg-gray-400 rounded-full" />}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        {/* Performance Overview */}
-        <TabsContent value="performance" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Performance Summary */}
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle>
-                  {language.code === 'ar' ? 'ملخص الأداء' : 'Performance Summary'}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="text-center p-4 border rounded-lg">
-                    <div className="text-2xl font-bold text-primary mb-1">
-                      {(analytics.totalViews / analytics.totalArticles).toFixed(0)}
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      {language.code === 'ar' ? 'مشاهدة/مقال' : 'Views/Article'}
-                    </p>
-                  </div>
-                  
-                  <div className="text-center p-4 border rounded-lg">
-                    <div className="text-2xl font-bold text-green-600 mb-1">
-                      {((analytics.engagement.likes + analytics.engagement.shares + analytics.engagement.comments) / analytics.totalViews * 100).toFixed(1)}%
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      {language.code === 'ar' ? 'معدل التفاعل' : 'Engagement Rate'}
-                    </p>
-                  </div>
-                  
-                  <div className="text-center p-4 border rounded-lg">
-                    <div className="text-2xl font-bold text-orange-600 mb-1">
-                      {analytics.publishedToday}
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      {language.code === 'ar' ? 'منشور اليوم' : 'Published Today'}
-                    </p>
-                  </div>
-                  
-                  <div className="text-center p-4 border rounded-lg">
-                    <div className="text-2xl font-bold text-blue-600 mb-1">
-                      {analytics.totalArticles.toLocaleString()}
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      {language.code === 'ar' ? 'إجمالي المقالات' : 'Total Articles'}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Quick Actions */}
-            <Card>
-              <CardHeader>
-                <CardTitle>
-                  {language.code === 'ar' ? 'إجراءات سريعة' : 'Quick Actions'}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <Button variant="outline" className="w-full justify-start">
-                    <FileText className="w-4 h-4 mr-2" />
-                    {language.code === 'ar' ? 'تقرير مفصل' : 'Detailed Report'}
-                  </Button>
-                  
-                  <Button variant="outline" className="w-full justify-start">
-                    <Calendar className="w-4 h-4 mr-2" />
-                    {language.code === 'ar' ? 'جدولة تقرير' : 'Schedule Report'}
-                  </Button>
-                  
-                  <Button variant="outline" className="w-full justify-start">
-                    <ShareNetwork className="w-4 h-4 mr-2" />
-                    {language.code === 'ar' ? 'تصدير البيانات' : 'Export Data'}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-      </Tabs>
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Button 
+          variant="outline" 
+          className="h-auto p-4 flex-col items-start"
+          onClick={() => onNavigate?.('recommendations')}
+        >
+          <Target size={20} className="mb-2" />
+          <span className="font-medium">نظام التوصيات</span>
+          <span className="text-sm text-muted-foreground">محتوى مخصص للقراء</span>
+        </Button>
+        
+        <Button 
+          variant="outline" 
+          className="h-auto p-4 flex-col items-start"
+          onClick={() => onNavigate?.('category-analytics')}
+        >
+          <BarChart3 size={20} className="mb-2" />
+          <span className="font-medium">تحليلات الأقسام</span>
+          <span className="text-sm text-muted-foreground">أداء كل قسم تفصيلياً</span>
+        </Button>
+        
+        <Button 
+          variant="outline" 
+          className="h-auto p-4 flex-col items-start"
+          onClick={() => onNavigate?.('realtime')}
+        >
+          <TrendingUp size={20} className="mb-2" />
+          <span className="font-medium">التحليلات المباشرة</span>
+          <span className="text-sm text-muted-foreground">متابعة الأداء لحظياً</span>
+        </Button>
+      </div>
     </div>
   );
 }
