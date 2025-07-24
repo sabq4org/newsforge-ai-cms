@@ -22,6 +22,7 @@ import {
 import { useKV } from '@github/spark/hooks';
 import { toast } from 'sonner';
 import { UserPreferences } from '@/types/membership';
+import sabqLogoOfficial from '@/assets/images/sabq-logo-official.svg';
 
 interface RegisterFormProps {
   onRegister: (userData: any) => void;
@@ -177,6 +178,14 @@ export function RegisterForm({ onRegister, onSwitchToLogin }: RegisterFormProps)
     <div className="min-h-screen bg-gradient-to-br from-primary/5 to-accent/5 flex items-center justify-center p-4" dir="rtl">
       <Card className="w-full max-w-2xl">
         <CardHeader className="text-center">
+          {/* Official Sabq Logo */}
+          <div className="flex justify-center mb-4">
+            <img 
+              src={sabqLogoOfficial} 
+              alt="شعار سبق الذكية"
+              className="h-12 w-auto object-contain"
+            />
+          </div>
           <CardTitle className="text-2xl font-bold text-primary">
             انضم إلى سبق الذكية
           </CardTitle>

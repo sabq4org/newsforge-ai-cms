@@ -16,6 +16,7 @@ import {
   Headphones
 } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
+import sabqLogoOfficial from '@/assets/images/sabq-logo-official.svg';
 
 interface PublicFooterProps {
   currentLanguage: 'ar' | 'en';
@@ -203,16 +204,13 @@ export function PublicFooter({
           {/* Brand & Description */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <Lightning className="w-6 h-6 text-primary-foreground" />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-foreground">
-                  {isRTL ? 'سبق الذكية' : 'Sabq Althakiyah'}
-                </h3>
-                <p className="text-xs text-muted-foreground">
-                  {isRTL ? 'صحافة ذكية' : 'Smart Journalism'}
-                </p>
+              {/* Official Sabq Logo */}
+              <div className="flex items-center">
+                <img 
+                  src={sabqLogoOfficial} 
+                  alt={isRTL ? "شعار سبق الذكية" : "Sabq Althakiyah Logo"}
+                  className="h-8 w-auto object-contain"
+                />
               </div>
             </div>
             <p className="text-sm text-muted-foreground mb-4 leading-relaxed">

@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAuth } from '@/contexts/AuthContext';
 import { Newspaper, Globe } from '@phosphor-icons/react';
 import { toast } from 'sonner';
+import sabqLogoOfficial from '@/assets/images/sabq-logo-official.svg';
 
 export function LoginForm() {
   const [email, setEmail] = useState('');
@@ -43,8 +44,12 @@ export function LoginForm() {
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
           <div className="flex items-center justify-center gap-2 mb-4">
-            <Newspaper size={32} className="text-primary" />
-            <h1 className="text-2xl font-bold text-primary font-arabic">سبق الذكية</h1>
+            {/* Official Sabq Logo */}
+            <img 
+              src={sabqLogoOfficial} 
+              alt={language.code === 'ar' ? "شعار سبق الذكية" : "Sabq Althakiyah Logo"}
+              className="h-16 w-auto object-contain"
+            />
           </div>
           <h2 className="text-xl font-semibold font-arabic">
             {language.code === 'ar' ? 'تسجيل الدخول' : 'Sign In'}

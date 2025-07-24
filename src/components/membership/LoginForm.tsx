@@ -16,6 +16,7 @@ import {
   Warning
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
+import sabqLogoOfficial from '@/assets/images/sabq-logo-official.svg';
 
 interface LoginFormProps {
   onLogin: (userData: any) => void;
@@ -113,6 +114,14 @@ export function LoginForm({ onLogin, onSwitchToRegister, onForgotPassword }: Log
     <div className="min-h-screen bg-gradient-to-br from-primary/5 to-accent/5 flex items-center justify-center p-4" dir="rtl">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
+          {/* Official Sabq Logo */}
+          <div className="flex justify-center mb-4">
+            <img 
+              src={sabqLogoOfficial} 
+              alt="شعار سبق الذكية"
+              className="h-12 w-auto object-contain"
+            />
+          </div>
           <CardTitle className="text-2xl font-bold text-primary">
             تسجيل الدخول
           </CardTitle>

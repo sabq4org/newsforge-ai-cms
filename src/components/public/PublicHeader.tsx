@@ -16,6 +16,7 @@ import {
 } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
 import { mockCategories } from '@/lib/mockData';
+import sabqLogoOfficial from '@/assets/images/sabq-logo-official.svg';
 
 interface PublicHeaderProps {
   currentLanguage: 'ar' | 'en';
@@ -107,10 +108,15 @@ export function PublicHeader({
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <Lightning className="w-6 h-6 text-primary-foreground" />
+            {/* Official Sabq Logo */}
+            <div className="flex items-center">
+              <img 
+                src={sabqLogoOfficial} 
+                alt={isRTL ? "شعار سبق الذكية" : "Sabq Althakiyah Logo"}
+                className="h-12 w-auto object-contain"
+              />
             </div>
-            <div className="flex flex-col">
+            <div className="hidden sm:flex flex-col">
               <h1 className="text-xl font-bold text-foreground">
                 {isRTL ? 'سبق الذكية' : 'Sabq Althakiyah'}
               </h1>

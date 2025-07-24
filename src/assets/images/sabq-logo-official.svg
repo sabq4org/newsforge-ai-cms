@@ -1,0 +1,47 @@
+<svg width="400" height="200" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="400" height="200" fill="white"/>
+  
+  <!-- Arabic Text: صحيفة سبق الإلكترونية -->
+  <text x="200" y="175" text-anchor="middle" font-family="IBM Plex Sans Arabic, Arial" font-size="14" font-weight="500" fill="#6b7280" dir="rtl">
+    صحيفة سبق الإلكترونية
+  </text>
+  
+  <!-- English Text: SABQ ONLINE NEWSPAPER -->
+  <text x="200" y="190" text-anchor="middle" font-family="Inter, Arial" font-size="10" font-weight="400" fill="#9ca3af" letter-spacing="2px">
+    SABQ ONLINE NEWSPAPER
+  </text>
+  
+  <!-- SABQ.org text -->
+  <text x="320" y="30" font-family="Inter, Arial" font-size="16" font-weight="300" fill="#6b7280">
+    SABQ.org
+  </text>
+  <text x="320" y="45" font-family="Inter, Arial" font-size="10" font-weight="400" fill="#9ca3af">
+    Online Newspaper
+  </text>
+  
+  <!-- Stylized Arabic letters: سبق with improved design -->
+  <!-- Letter س (seen) - first part -->
+  <path d="M30 60 Q50 40 90 60 Q130 80 150 60 L150 90 Q130 110 90 90 Q50 70 30 90 Z" fill="#60a5fa" opacity="0.9"/>
+  <path d="M30 90 Q50 110 90 90 Q130 70 150 90 L150 120 Q130 140 90 120 Q50 100 30 120 Z" fill="#60a5fa"/>
+  
+  <!-- Letter ب (baa) - enhanced with dot -->
+  <path d="M170 60 Q190 40 230 60 Q270 80 310 60 L310 90 Q290 110 250 90 Q210 70 190 90 L190 150 Q210 170 250 150 Q290 130 310 150 L310 160 Q270 180 230 160 Q190 140 170 160 Z" fill="#3b82f6"/>
+  <!-- Dot for ب -->
+  <circle cx="220" cy="120" r="6" fill="#3b82f6"/>
+  
+  <!-- Letter ق (qaaf) - enhanced design -->
+  <path d="M330 60 Q350 40 380 60 L380 120 Q360 140 340 120 L340 90 Q360 70 380 90 L380 110 Q360 130 340 110 Z" fill="#1d4ed8"/>
+  <!-- Qaaf distinctive feature -->
+  <circle cx="350" cy="140" r="8" fill="#1d4ed8"/>
+  <path d="M345 148 L355 148" stroke="#1d4ed8" stroke-width="2"/>
+  
+  <!-- Decorative geometric elements -->
+  <circle cx="50" cy="25" r="12" fill="#9ca3af" opacity="0.7"/>
+  <rect x="35" y="130" width="25" height="25" rx="3" fill="#9ca3af" opacity="0.8"/>
+  <circle cx="60" cy="155" r="10" fill="#60a5fa" opacity="0.6"/>
+  
+  <!-- Modern accent lines -->
+  <line x1="20" y1="50" x2="380" y2="50" stroke="#e5e7eb" stroke-width="1"/>
+  <line x1="20" y1="165" x2="380" y2="165" stroke="#e5e7eb" stroke-width="1"/>
+</svg>

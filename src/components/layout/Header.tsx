@@ -26,6 +26,7 @@ import {
   Brain
 } from '@phosphor-icons/react';
 import { UserProfile } from '@/types/membership';
+import sabqLogoOfficial from '@/assets/images/sabq-logo-official.svg';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -95,10 +96,15 @@ export function Header({
         </Button>
         
         <div className={cn("flex items-center gap-3", isRTL && "flex-row-reverse")}>
-          <div className="w-8 h-8 bg-gradient-to-br from-accent to-primary rounded-lg flex items-center justify-center">
-            <Sparkles className="w-4 h-4 text-white" />
+          {/* Official Sabq Logo */}
+          <div className="flex items-center">
+            <img 
+              src={sabqLogoOfficial} 
+              alt={isArabic ? "شعار سبق الذكية" : "Sabq Althakiyah Logo"}
+              className="h-10 w-auto object-contain"
+            />
           </div>
-          <div className={cn("hidden sm:block font-arabic", isRTL && "text-right")}>
+          <div className={cn("hidden lg:block font-arabic", isRTL && "text-right")}>
             <h1 className="text-lg font-bold text-primary font-arabic">
               {isArabic ? 'سبق الذكية' : 'Sabq Althakiyah'}
             </h1>
