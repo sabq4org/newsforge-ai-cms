@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Toaster } from '@/components/ui/sonner';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { CollaborativeProvider } from '@/contexts/CollaborativeContext';
+import { CollaborativeManager } from '@/components/collaborative';
 import { TypographyProvider } from '@/contexts/TypographyContext';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { Header } from '@/components/layout/Header';
@@ -14,11 +15,15 @@ import { AIOptimizationEngine } from '@/components/optimization/AIOptimizationEn
 import { ABTestingFramework } from '@/components/optimization/ABTestingFramework';
 import { TypographySettings } from '@/components/settings/TypographySettings';
 import { TypographyShowcase } from '@/components/showcase/TypographyShowcase';
-import { MediaUpload } from '@/components/media/MediaUpload';
+import { MediaUpload, MediaGenerator } from '@/components/media';
 import { SystemAnalysis } from '@/components/analysis/SystemAnalysis';
 import { AISearch } from '@/components/search/AISearch';
 import { AIRecommendationEngine } from '@/components/recommendations/AIRecommendationEngine';
 import { ContentModeration } from '@/components/moderation/ContentModeration';
+import { SchedulingCalendar } from '@/components/scheduling';
+import { CategoryManager } from '@/components/categories';
+import { LoyaltySystem } from '@/components/loyalty';
+import { SystemMaintenance } from '@/components/maintenance';
 import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
 import { mockArticles, mockCategories, mockMediaFiles } from '@/lib/mockData';
@@ -186,20 +191,26 @@ function AppContent() {
         );
       
       case 'categories':
-        return (
-          <div className="text-center py-12">
-            <h2 className="text-xl font-semibold">إدارة الفئات</h2>
-            <p className="text-muted-foreground mt-2">قريباً...</p>
-          </div>
-        );
+        return <CategoryManager onCategoryUpdate={(cats) => console.log('Categories updated:', cats)} />;
       
       case 'tags':
-        return (
-          <div className="text-center py-12">
-            <h2 className="text-xl font-semibold">إدارة العلامات</h2>
-            <p className="text-muted-foreground mt-2">قريباً...</p>
-          </div>
-        );
+        return <CategoryManager onCategoryUpdate={(cats) => console.log('Categories updated:', cats)} />;
+      
+      case 'scheduling':
+      case 'calendar':
+        return <SchedulingCalendar articles={articles} onScheduleCreated={(schedule) => console.log('Schedule created:', schedule)} />;
+      
+      case 'media-generator':
+        return <MediaGenerator articles={articles} selectedArticle={editingArticle} />;
+      
+      case 'loyalty':
+        return <LoyaltySystem articles={articles} currentUser={user} />;
+
+      case 'collaborative':
+        return <CollaborativeManager article={editingArticle} onConflictResolved={(resolution) => console.log('Conflict resolved:', resolution)} />;
+
+      case 'system-maintenance':
+        return <SystemMaintenance />;
       
       case 'users':
         if (!canAccess('user-management')) {

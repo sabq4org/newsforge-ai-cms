@@ -21,7 +21,10 @@ import {
   Sparkles,
   Globe,
   Images,
-  Code
+  Code,
+  Trophy,
+  GitMerge,
+  Wrench
 } from '@phosphor-icons/react';
 
 interface SidebarProps {
@@ -91,6 +94,18 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       label: isArabic ? 'مكتبة الوسائط' : 'Media Library',
       icon: Images,
       show: hasPermission('create', 'articles')
+    },
+    {
+      id: 'media-generator',
+      label: isArabic ? 'مولد الوسائط' : 'Media Generator',
+      icon: Sparkles,
+      show: hasPermission('create', 'articles')
+    },
+    {
+      id: 'scheduling',
+      label: isArabic ? 'جدولة النشر' : 'Publishing Schedule',
+      icon: Calendar,
+      show: hasPermission('schedule', 'articles')
     }
   ];
 
@@ -131,6 +146,12 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       label: isArabic ? 'اختبار A/B' : 'A/B Testing',
       icon: TestTube,
       show: canAccess('ab-testing')
+    },
+    {
+      id: 'collaborative',
+      label: isArabic ? 'التعاون المباشر' : 'Live Collaboration',
+      icon: GitMerge,
+      show: canAccess('collaboration')
     }
   ];
 
@@ -153,6 +174,18 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       id: 'system-analysis',
       label: isArabic ? 'تحليل النظام' : 'System Analysis',
       icon: Code,
+      show: canAccess('user-management')
+    },
+    {
+      id: 'loyalty',
+      label: isArabic ? 'نظام الولاء' : 'Loyalty System',
+      icon: Trophy,
+      show: true
+    },
+    {
+      id: 'system-maintenance',
+      label: isArabic ? 'صيانة النظام' : 'System Maintenance',
+      icon: Wrench,
       show: canAccess('user-management')
     },
     {

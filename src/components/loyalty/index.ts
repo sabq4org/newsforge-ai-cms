@@ -1,0 +1,1 @@
+export { LoyaltySystem } from './LoyaltySystem';
