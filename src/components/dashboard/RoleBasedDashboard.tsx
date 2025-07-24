@@ -377,7 +377,8 @@ export function RoleBasedDashboard({ onNavigate }: RoleBasedDashboardProps) {
                           const date = activity.timestamp instanceof Date 
                             ? activity.timestamp 
                             : new Date(activity.timestamp);
-                          return isNaN(date.getTime()) ? '' : date.toLocaleDateString(isArabic ? 'ar-SA' : 'en-US');
+                          if (isNaN(date.getTime())) return '';
+                          return date.toLocaleDateString(isArabic ? 'ar-SA' : 'en-US');
                         } catch (error) {
                           console.warn('Invalid timestamp:', activity.timestamp);
                           return '';

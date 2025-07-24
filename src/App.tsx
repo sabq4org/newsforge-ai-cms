@@ -14,9 +14,11 @@ import { AIOptimizationEngine } from '@/components/optimization/AIOptimizationEn
 import { ABTestingFramework } from '@/components/optimization/ABTestingFramework';
 import { TypographySettings } from '@/components/settings/TypographySettings';
 import { TypographyShowcase } from '@/components/showcase/TypographyShowcase';
+import { MediaUpload } from '@/components/media/MediaUpload';
+import { SystemAnalysis } from '@/components/analysis/SystemAnalysis';
 import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
-import { mockArticles, mockCategories } from '@/lib/mockData';
+import { mockArticles, mockCategories, mockMediaFiles } from '@/lib/mockData';
 import { normalizeArticles } from '@/lib/utils';
 
 function AppContent() {
@@ -26,6 +28,9 @@ function AppContent() {
   const [editingArticle, setEditingArticle] = useState<Article | undefined>();
   const [rawArticles, setRawArticles] = useKV<Article[]>('sabq-articles', mockArticles);
   const articles = normalizeArticles(rawArticles);
+  
+  // Initialize media files
+  const [mediaFiles, setMediaFiles] = useKV('sabq-media-files', mockMediaFiles);
   
   const setArticles = (updater: (currentArticles: Article[]) => Article[]) => {
     setRawArticles(currentArticles => {
@@ -205,6 +210,12 @@ function AppContent() {
       
       case 'typography-demo':
         return <TypographyShowcase />;
+      
+      case 'media':
+        return <MediaUpload />;
+      
+      case 'system-analysis':
+        return <SystemAnalysis />;
       
       case 'scheduled':
         return (

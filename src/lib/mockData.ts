@@ -1,4 +1,4 @@
-import { User, Article, Category, Tag, Analytics, PredictiveAnalytics, ContentAnalysis, AIOptimization, Permission } from '@/types';
+import { User, Article, Category, Tag, Analytics, PredictiveAnalytics, ContentAnalysis, AIOptimization, Permission, MediaFile } from '@/types';
 
 // Mock data for Sabq Althakiyah development
 export const mockUsers: User[] = [
@@ -396,3 +396,186 @@ export const mockAnalytics: Analytics = {
     completionRate: 68.7 // percentage
   }
 };
+
+// Mock Media Files for development
+export const mockMediaFiles: MediaFile[] = [
+  {
+    id: 'media_1',
+    filename: 'breaking-news-hero-2024-01-15-abc123.jpg',
+    originalName: 'breaking-news-hero.jpg',
+    mimeType: 'image/jpeg',
+    size: 2457600, // 2.4MB
+    url: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1920&h=1080&fit=crop',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=300&h=200&fit=crop',
+    alt: 'Breaking news coverage with reporters',
+    altAr: 'تغطية الأخبار العاجلة مع المراسلين',
+    caption: 'Live breaking news coverage from the field',
+    captionAr: 'تغطية مباشرة للأخبار العاجلة من الميدان',
+    uploadedBy: '1',
+    uploadedAt: new Date('2024-01-15T10:30:00Z'),
+    metadata: {
+      width: 1920,
+      height: 1080,
+      format: 'jpeg',
+      colorProfile: 'sRGB',
+      hasTransparency: false,
+      orientation: 1,
+      isOptimized: true,
+      originalSize: 3200000,
+      compressedSize: 2457600,
+      compressionRatio: 23.2
+    },
+    optimizations: [
+      {
+        id: 'opt_1_webp',
+        type: 'format-convert',
+        status: 'completed',
+        originalUrl: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1920&h=1080&fit=crop',
+        optimizedUrl: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1920&h=1080&fit=crop&fm=webp',
+        settings: {
+          width: 1920,
+          height: 1080,
+          quality: 85,
+          format: 'webp',
+          progressive: true
+        },
+        sizeBefore: 3200000,
+        sizeAfter: 1890000,
+        compressionRatio: 40.9,
+        createdAt: new Date('2024-01-15T10:30:30Z'),
+        completedAt: new Date('2024-01-15T10:30:35Z')
+      }
+    ],
+    tags: ['breaking-news', 'journalism', 'live-coverage'],
+    folder: 'news-images',
+    usage: [
+      {
+        articleId: 'article_1',
+        articleTitle: 'AI Revolution in Journalism',
+        usageType: 'featured',
+        usedAt: new Date('2024-01-15T11:00:00Z'),
+        usedBy: '1'
+      }
+    ]
+  },
+  {
+    id: 'media_2',
+    filename: 'tech-innovation-2024-01-14-def456.jpg',
+    originalName: 'tech-innovation.jpg',
+    mimeType: 'image/jpeg',
+    size: 1876500,
+    url: 'https://images.unsplash.com/photo-1488229297570-58520851e868?w=1600&h=900&fit=crop',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1488229297570-58520851e868?w=300&h=200&fit=crop',
+    alt: 'Modern technology and innovation concept',
+    altAr: 'مفهوم التكنولوجيا والابتكار الحديث',
+    uploadedBy: '2',
+    uploadedAt: new Date('2024-01-14T16:45:00Z'),
+    metadata: {
+      width: 1600,
+      height: 900,
+      format: 'jpeg',
+      isOptimized: true,
+      originalSize: 2340000,
+      compressedSize: 1876500,
+      compressionRatio: 19.8
+    },
+    optimizations: [],
+    tags: ['technology', 'innovation', 'digital'],
+    folder: 'technology',
+    usage: []
+  },
+  {
+    id: 'media_3',
+    filename: 'sports-championship-video-2024-01-13-ghi789.mp4',
+    originalName: 'sports-championship.mp4',
+    mimeType: 'video/mp4',
+    size: 45672000, // 45.6MB
+    url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=300&h=200&fit=crop',
+    alt: 'Championship highlights video',
+    altAr: 'فيديو ملخص البطولة',
+    caption: 'Key moments from the championship final',
+    captionAr: 'اللحظات المهمة من نهائي البطولة',
+    uploadedBy: '3',
+    uploadedAt: new Date('2024-01-13T14:20:00Z'),
+    metadata: {
+      width: 1280,
+      height: 720,
+      duration: 120, // 2 minutes
+      format: 'mp4',
+      isOptimized: false,
+      originalSize: 45672000
+    },
+    optimizations: [],
+    tags: ['sports', 'championship', 'highlights', 'video'],
+    folder: 'sports-videos',
+    usage: []
+  },
+  {
+    id: 'media_4',
+    filename: 'news-report-audio-2024-01-12-jkl012.mp3',
+    originalName: 'news-report.mp3',
+    mimeType: 'audio/mp3',
+    size: 8765432,
+    url: 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3',
+    alt: 'Audio news report',
+    altAr: 'تقرير إخباري صوتي',
+    uploadedBy: '4',
+    uploadedAt: new Date('2024-01-12T09:15:00Z'),
+    metadata: {
+      duration: 180, // 3 minutes
+      format: 'mp3',
+      isOptimized: false,
+      originalSize: 8765432
+    },
+    optimizations: [],
+    tags: ['audio', 'news', 'report', 'interview'],
+    folder: 'audio-content',
+    usage: []
+  },
+  {
+    id: 'media_5',
+    filename: 'press-release-document-2024-01-11-mno345.pdf',
+    originalName: 'press-release.pdf',
+    mimeType: 'application/pdf',
+    size: 567890,
+    url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+    alt: 'Official press release document',
+    altAr: 'وثيقة البيان الصحفي الرسمي',
+    uploadedBy: '5',
+    uploadedAt: new Date('2024-01-11T13:30:00Z'),
+    metadata: {
+      format: 'pdf',
+      isOptimized: false,
+      originalSize: 567890
+    },
+    optimizations: [],
+    tags: ['document', 'press-release', 'official'],
+    folder: 'documents',
+    usage: []
+  },
+  {
+    id: 'media_6',
+    filename: 'political-conference-gallery-2024-01-10-pqr678.jpg',
+    originalName: 'political-conference-1.jpg',
+    mimeType: 'image/jpeg',
+    size: 3210000,
+    url: 'https://images.unsplash.com/photo-1540910419892-4a36d2c3266c?w=1600&h=1067&fit=crop',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1540910419892-4a36d2c3266c?w=300&h=200&fit=crop',
+    alt: 'Political conference with speakers',
+    altAr: 'مؤتمر سياسي مع المتحدثين',
+    uploadedBy: '6',
+    uploadedAt: new Date('2024-01-10T18:45:00Z'),
+    metadata: {
+      width: 1600,
+      height: 1067,
+      format: 'jpeg',
+      isOptimized: false,
+      originalSize: 3210000
+    },
+    optimizations: [],
+    tags: ['politics', 'conference', 'speakers', 'event'],
+    folder: 'politics',
+    usage: []
+  }
+];

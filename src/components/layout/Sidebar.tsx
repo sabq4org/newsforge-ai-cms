@@ -19,7 +19,9 @@ import {
   TrendingUp,
   Shield,
   Sparkles,
-  Globe
+  Globe,
+  Images,
+  Code
 } from '@phosphor-icons/react';
 
 interface SidebarProps {
@@ -77,6 +79,12 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       label: isArabic ? 'العلامات' : 'Tags',
       icon: Tag,
       show: hasPermission('update', 'tags')
+    },
+    {
+      id: 'media',
+      label: isArabic ? 'مكتبة الوسائط' : 'Media Library',
+      icon: Images,
+      show: hasPermission('create', 'articles')
     }
   ];
 
@@ -128,6 +136,12 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       icon: Shield,
       show: canAccess('moderation'),
       badge: isArabic ? '٢' : '2'
+    },
+    {
+      id: 'system-analysis',
+      label: isArabic ? 'تحليل النظام' : 'System Analysis',
+      icon: Code,
+      show: canAccess('user-management')
     },
     {
       id: 'settings',

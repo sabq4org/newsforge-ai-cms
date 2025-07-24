@@ -229,10 +229,13 @@ export function ArticleList({ onEditArticle, onCreateNew }: ArticleListProps) {
 
               {/* Category & Tags */}
               <div className="flex items-center gap-2 flex-wrap">
-                {article.category && article.category.color && (
+                {article.category && (
                   <Badge 
                     variant="outline" 
-                    style={{ borderColor: article.category.color, color: article.category.color }}
+                    style={{ 
+                      borderColor: article.category.color || '#6b7280', 
+                      color: article.category.color || '#6b7280'
+                    }}
                     className="text-xs"
                   >
                     {language.code === 'ar' ? article.category.nameAr || article.category.name : article.category.name}

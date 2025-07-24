@@ -11,13 +11,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCollaborative } from '@/contexts/CollaborativeContext';
 import { mockCategories, mockTags } from '@/lib/mockData';
-import { Article } from '@/types';
+import { Article, MediaFile } from '@/types';
 import { useKV } from '@github/spark/hooks';
 import { PerformanceOptimizationEngine } from '@/components/optimization';
 import { CollaborativePresence } from '@/components/collaborative/CollaborativePresence';
 import { CollaborativeTextEditor } from '@/components/collaborative/CollaborativeTextEditor';
 import { ConflictResolutionPanel } from '@/components/collaborative/ConflictResolutionPanel';
 import { CollaborativeWorkspace } from '@/components/collaborative/CollaborativeWorkspace';
+import { MediaPicker, MediaGallery } from '@/components/media';
+import { mediaService } from '@/lib/mediaService';
 import { 
   Bold, 
   Italic, 
@@ -32,7 +34,9 @@ import {
   Eye,
   FloppyDisk,
   PaperPlaneTilt,
-  Brain
+  Brain,
+  Images,
+  X
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 
@@ -51,10 +55,64 @@ export function ArticleEditor({ article, onSave }: ArticleEditorProps) {
   const [selectedTags, setSelectedTags] = useState<string[]>(
     article?.tags?.map(tag => tag.id) || []
   );
-  const [featuredImage, setFeaturedImage] = useState(article?.featuredImage || '');
+  const [featuredImage, setFeaturedImage] = useState<MediaFile | null>(null);
+  const [galleryImages, setGalleryImages] = useState<MediaFile[]>([]);
+  const [showFeaturedImagePicker, setShowFeaturedImagePicker] = useState(false);
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const [isPreview, setIsPreview] = useState(false);
   const [activeTab, setActiveTab] = useState('editor');
+  
+  // Initialize media files from saved media
+  const [mediaFiles] = useKV<MediaFile[]>('sabq-media-files', []);
+  
+  // Initialize featured image and gallery from article
+  useEffect(() => {
+    if (article?.featuredImage) {
+      // Find the media file by URL or create a simple reference
+      const mediaFile = mediaFiles.find(m => m.url === article.featuredImage);
+      if (mediaFile) {
+        setFeaturedImage(mediaFile);
+      } else {
+        // Create a temporary media file object for existing image URLs
+        setFeaturedImage({
+          id: 'temp-featured',
+          filename: 'featured-image',
+          originalName: 'Featured Image',
+          mimeType: 'image/jpeg',
+          size: 0,
+          url: article.featuredImage,
+          uploadedBy: 'unknown',
+          uploadedAt: new Date(),
+          metadata: { format: 'jpeg', originalSize: 0, isOptimized: false },
+          optimizations: [],
+          tags: [],
+          usage: []
+        });
+      }
+    }
+    
+    if (article?.galleryImages) {
+      // Convert gallery image URLs to MediaFile objects
+      const gallery = article.galleryImages.map(url => {
+        const mediaFile = mediaFiles.find(m => m.url === url);
+        return mediaFile || {
+          id: `temp-gallery-${url}`,
+          filename: 'gallery-image',
+          originalName: 'Gallery Image',
+          mimeType: 'image/jpeg',
+          size: 0,
+          url,
+          uploadedBy: 'unknown',
+          uploadedAt: new Date(),
+          metadata: { format: 'jpeg', originalSize: 0, isOptimized: false },
+          optimizations: [],
+          tags: [],
+          usage: []
+        };
+      });
+      setGalleryImages(gallery);
+    }
+  }, [article, mediaFiles]);
   
   // Mock conflicts for demonstration
   const [conflicts] = useState([
@@ -67,7 +125,8 @@ export function ArticleEditor({ article, onSave }: ArticleEditorProps) {
     title,
     content,
     excerpt,
-    featuredImage
+    featuredImage: featuredImage?.url,
+    galleryImages: galleryImages.map(img => img.url)
   });
   
   const contentRef = useRef<HTMLTextAreaElement>(null);
@@ -80,9 +139,10 @@ export function ArticleEditor({ article, onSave }: ArticleEditorProps) {
       title,
       content,
       excerpt,
-      featuredImage
+      featuredImage: featuredImage?.url,
+      galleryImages: galleryImages.map(img => img.url)
     }));
-  }, [title, content, excerpt, featuredImage]);
+  }, [title, content, excerpt, featuredImage, galleryImages]);
 
   // Auto-save functionality
   useEffect(() => {
@@ -95,7 +155,8 @@ export function ArticleEditor({ article, onSave }: ArticleEditorProps) {
           excerpt,
           categoryId,
           selectedTags,
-          featuredImage,
+          featuredImage: featuredImage?.url,
+          galleryImages: galleryImages.map(img => img.url),
           updatedAt: new Date()
         };
         
@@ -112,7 +173,7 @@ export function ArticleEditor({ article, onSave }: ArticleEditorProps) {
     }, 2000);
 
     return () => clearTimeout(autoSave);
-  }, [title, content, excerpt, categoryId, selectedTags, featuredImage, article?.id, setDrafts]);
+  }, [title, content, excerpt, categoryId, selectedTags, featuredImage, galleryImages, article?.id, setDrafts]);
 
   const handleFormatText = (format: string) => {
     const textarea = contentRef.current;
@@ -179,7 +240,33 @@ export function ArticleEditor({ article, onSave }: ArticleEditorProps) {
     if (updates.title !== undefined) setTitle(updates.title);
     if (updates.content !== undefined) setContent(updates.content);
     if (updates.excerpt !== undefined) setExcerpt(updates.excerpt);
-    if (updates.featuredImage !== undefined) setFeaturedImage(updates.featuredImage);
+    if (updates.featuredImage !== undefined) {
+      // Find the media file by URL or create a temporary one
+      if (updates.featuredImage) {
+        const mediaFile = mediaFiles.find(m => m.url === updates.featuredImage);
+        if (mediaFile) {
+          setFeaturedImage(mediaFile);
+        } else {
+          // Create temporary media file for external URLs
+          setFeaturedImage({
+            id: 'temp-updated',
+            filename: 'updated-image',
+            originalName: 'Updated Image',
+            mimeType: 'image/jpeg',
+            size: 0,
+            url: updates.featuredImage,
+            uploadedBy: 'optimization',
+            uploadedAt: new Date(),
+            metadata: { format: 'jpeg', originalSize: 0, isOptimized: false },
+            optimizations: [],
+            tags: [],
+            usage: []
+          });
+        }
+      } else {
+        setFeaturedImage(null);
+      }
+    }
   };
 
   const handleSave = (status: 'draft' | 'published' | 'scheduled') => {
@@ -199,7 +286,8 @@ export function ArticleEditor({ article, onSave }: ArticleEditorProps) {
       category: category!,
       tags,
       status,
-      featuredImage,
+      featuredImage: featuredImage?.url,
+      galleryImages: galleryImages.map(img => img.url),
       author: user!,
       createdAt: article?.createdAt || new Date(),
       updatedAt: new Date(),
@@ -501,24 +589,75 @@ export function ArticleEditor({ article, onSave }: ArticleEditorProps) {
                 {language.code === 'ar' ? 'الصورة البارزة' : 'Featured Image'}
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <Input
-                value={featuredImage}
-                onChange={(e) => setFeaturedImage(e.target.value)}
-                placeholder={language.code === 'ar' ? 'رابط الصورة' : 'Image URL'}
-              />
-              {featuredImage && (
-                <div className="mt-2">
-                  <img
-                    src={featuredImage}
-                    alt="Featured"
-                    className="w-full h-32 object-cover rounded-md"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = 'none';
-                    }}
-                  />
+            <CardContent className="space-y-3">
+              {featuredImage ? (
+                <div className="relative">
+                  <div className="aspect-video overflow-hidden rounded-md bg-muted">
+                    <img
+                      src={featuredImage.thumbnailUrl || featuredImage.url}
+                      alt={featuredImage.alt || featuredImage.originalName}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="absolute top-2 right-2">
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      className="h-8 w-8 p-1"
+                      onClick={() => setFeaturedImage(null)}
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <div className="mt-2">
+                    <p className="text-sm font-medium">{featuredImage.originalName}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {featuredImage.metadata.width} × {featuredImage.metadata.height} • {mediaService.formatFileSize(featuredImage.size)}
+                    </p>
+                    {featuredImage.alt && (
+                      <p className="text-xs text-muted-foreground truncate">
+                        {language.code === 'ar' ? featuredImage.altAr || featuredImage.alt : featuredImage.alt}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8 border-2 border-dashed border-muted-foreground/25 rounded-md">
+                  <ImageIcon className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground mb-3">
+                    {language.code === 'ar' ? 'لا توجد صورة بارزة' : 'No featured image selected'}
+                  </p>
                 </div>
               )}
+              <Button
+                variant="outline"
+                onClick={() => setShowFeaturedImagePicker(true)}
+                className="w-full"
+              >
+                <ImageIcon className="w-4 h-4 mr-2" />
+                {featuredImage 
+                  ? (language.code === 'ar' ? 'تغيير الصورة' : 'Change Image')
+                  : (language.code === 'ar' ? 'اختيار صورة' : 'Select Image')
+                }
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Gallery Images */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm">
+                {language.code === 'ar' ? 'معرض الصور' : 'Image Gallery'}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <MediaGallery
+                images={galleryImages}
+                onChange={setGalleryImages}
+                maxImages={8}
+                allowReorder={true}
+                showCaptions={true}
+              />
             </CardContent>
           </Card>
           
@@ -539,6 +678,23 @@ export function ArticleEditor({ article, onSave }: ArticleEditorProps) {
           />
         </TabsContent>
       </Tabs>
+
+      {/* Media Picker for Featured Image */}
+      <MediaPicker
+        open={showFeaturedImagePicker}
+        onOpenChange={setShowFeaturedImagePicker}
+        onSelect={(media) => {
+          setFeaturedImage(Array.isArray(media) ? media[0] : media);
+          setShowFeaturedImagePicker(false);
+        }}
+        multiple={false}
+        allowedTypes={['image']}
+        title={language.code === 'ar' ? 'اختيار الصورة البارزة' : 'Select Featured Image'}
+        description={language.code === 'ar' 
+          ? 'اختر صورة لتكون الصورة البارزة للمقال'
+          : 'Choose an image to be the featured image for this article'
+        }
+      />
     </div>
   );
 }

@@ -383,6 +383,161 @@ export interface CollaborativeSession {
   lockTimeout: number; // seconds
 }
 
+// Media Management Types
+export interface MediaFile {
+  id: string;
+  filename: string;
+  originalName: string;
+  mimeType: string;
+  size: number; // bytes
+  url: string;
+  thumbnailUrl?: string;
+  alt?: string;
+  altAr?: string;
+  caption?: string;
+  captionAr?: string;
+  uploadedBy: string;
+  uploadedAt: Date;
+  metadata: MediaMetadata;
+  optimizations: ImageOptimization[];
+  tags: string[];
+  folder?: string;
+  copyright?: CopyrightInfo;
+  usage: MediaUsage[];
+}
+
+export interface MediaMetadata {
+  width?: number;
+  height?: number;
+  duration?: number; // for video/audio
+  format: string;
+  colorProfile?: string;
+  hasTransparency?: boolean;
+  orientation?: number;
+  location?: GeoLocation;
+  camera?: CameraInfo;
+  isOptimized: boolean;
+  originalSize: number;
+  compressedSize?: number;
+  compressionRatio?: number;
+}
+
+export interface ImageOptimization {
+  id: string;
+  type: 'resize' | 'compress' | 'format-convert' | 'quality-adjust';
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  originalUrl: string;
+  optimizedUrl: string;
+  settings: {
+    width?: number;
+    height?: number;
+    quality?: number;
+    format?: 'webp' | 'avif' | 'jpeg' | 'png';
+    progressive?: boolean;
+    interlaced?: boolean;
+  };
+  sizeBefore: number;
+  sizeAfter: number;
+  compressionRatio: number;
+  createdAt: Date;
+  completedAt?: Date;
+}
+
+export interface GeoLocation {
+  latitude: number;
+  longitude: number;
+  altitude?: number;
+  accuracy?: number;
+}
+
+export interface CameraInfo {
+  make?: string;
+  model?: string;
+  lens?: string;
+  focalLength?: number;
+  aperture?: number;
+  shutterSpeed?: string;
+  iso?: number;
+  flash?: boolean;
+}
+
+export interface CopyrightInfo {
+  owner: string;
+  license: 'cc0' | 'cc-by' | 'cc-by-sa' | 'rights-managed' | 'royalty-free' | 'editorial-use' | 'custom';
+  attribution?: string;
+  restrictions?: string[];
+  expiryDate?: Date;
+  verified: boolean;
+  verifiedBy?: string;
+  verifiedAt?: Date;
+}
+
+export interface MediaUsage {
+  articleId: string;
+  articleTitle: string;
+  usageType: 'featured' | 'gallery' | 'inline' | 'thumbnail';
+  usedAt: Date;
+  usedBy: string;
+}
+
+export interface MediaFolder {
+  id: string;
+  name: string;
+  nameAr?: string;
+  parentId?: string;
+  path: string;
+  createdBy: string;
+  createdAt: Date;
+  permissions: FolderPermission[];
+  isPublic: boolean;
+  color?: string;
+}
+
+export interface FolderPermission {
+  userId: string;
+  role: 'owner' | 'editor' | 'viewer';
+  canUpload: boolean;
+  canDelete: boolean;
+  canMove: boolean;
+  assignedAt: Date;
+}
+
+export interface MediaFilter {
+  type?: 'image' | 'video' | 'audio' | 'document';
+  folder?: string;
+  tags?: string[];
+  dateRange?: {
+    start: Date;
+    end: Date;
+  };
+  sizeRange?: {
+    min: number;
+    max: number;
+  };
+  uploadedBy?: string;
+  search?: string;
+  sortBy?: 'date' | 'name' | 'size' | 'usage';
+  sortOrder?: 'asc' | 'desc';
+  limit?: number;
+  offset?: number;
+}
+
+export interface BulkOperation {
+  id: string;
+  type: 'move' | 'delete' | 'tag' | 'optimize' | 'export';
+  mediaIds: string[];
+  status: 'pending' | 'processing' | 'completed' | 'failed' | 'partial';
+  progress: number; // 0-100
+  results: {
+    successful: number;
+    failed: number;
+    errors: string[];
+  };
+  createdBy: string;
+  createdAt: Date;
+  completedAt?: Date;
+}
+
 export interface CollaborativeUser {
   id: string;
   name: string;
