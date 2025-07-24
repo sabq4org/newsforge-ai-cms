@@ -30,6 +30,7 @@ import { PodcastDemo } from '@/components/demo/PodcastDemo';
 import { ErrorChecker } from '@/components/debug/ErrorChecker';
 import { ErrorBoundary } from '@/components/debug/ErrorBoundary';
 import { RuntimeChecker } from '@/components/debug/RuntimeChecker';
+import { ExternalDataManager, NewsAggregator } from '@/components/external';
 import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
 import { mockArticles, mockCategories, mockMediaFiles } from '@/lib/mockData';
@@ -341,6 +342,12 @@ function AppContent() {
       
       case 'runtime-check':
         return <RuntimeChecker />;
+      
+      case 'external-data':
+        return <ExternalDataManager />;
+      
+      case 'news-aggregator':
+        return <NewsAggregator />;
       
       default:
         return <RoleBasedDashboard onNavigate={handleViewChange} />;

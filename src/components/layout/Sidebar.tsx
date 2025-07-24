@@ -153,6 +153,19 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       show: hasPermission('read', 'analytics')
     },
     {
+      id: 'external-data',
+      label: isArabic ? 'المصادر الخارجية' : 'External Data',
+      icon: Globe,
+      show: hasPermission('create', 'articles'),
+      badge: isArabic ? 'جديد' : 'New'
+    },
+    {
+      id: 'news-aggregator',
+      label: isArabic ? 'مجمع الأخبار' : 'News Aggregator',
+      icon: Globe,
+      show: hasPermission('create', 'articles')
+    },
+    {
       id: 'scheduling',
       label: isArabic ? 'جدولة النشر' : 'Publishing Schedule',
       icon: Calendar,
