@@ -21,11 +21,15 @@ export interface Permission {
 export interface Article {
   id: string;
   title: string;
+  subtitle?: string; // Enhanced: Optional subtitle field (max 250 chars)
   titleAr?: string;
+  subtitleAr?: string; // Enhanced: Arabic subtitle
   content: string;
   contentAr?: string;
   excerpt: string;
   excerptAr?: string;
+  smartSummary?: string; // Enhanced: AI-generated smart summary
+  smartSummaryAr?: string;
   author: User;
   coAuthors?: User[];
   category: Category;
@@ -33,9 +37,24 @@ export interface Article {
   status: 'draft' | 'review' | 'approved' | 'published' | 'scheduled' | 'archived';
   publishedAt?: Date;
   scheduledAt?: Date;
+  publishSettings?: { // Enhanced: Publishing settings
+    publishNow: boolean;
+    scheduledTime?: Date;
+    notifySubscribers: boolean;
+  };
   createdAt: Date;
   updatedAt: Date;
   featuredImage?: string;
+  featuredImageSettings?: { // Enhanced: Image settings
+    altText?: string;
+    caption?: string;
+    cropArea?: {
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+    };
+  };
   galleryImages?: string[];
   audioUrl?: string;
   videoUrl?: string;

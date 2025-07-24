@@ -371,19 +371,10 @@ export function RoleBasedDashboard({ onNavigate }: RoleBasedDashboardProps) {
                       {activity.article}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {activity.user} • {(() => {
-                        try {
-                          if (!activity.timestamp) return '';
-                          const date = activity.timestamp instanceof Date 
-                            ? activity.timestamp 
-                            : new Date(activity.timestamp);
-                          if (isNaN(date.getTime())) return '';
-                          return date.toLocaleDateString(isArabic ? 'ar-SA' : 'en-US');
-                        } catch (error) {
-                          console.warn('Invalid timestamp:', activity.timestamp);
-                          return '';
-                        }
-                      })()}
+                      {activity.user} • {activity.timestamp && activity.timestamp instanceof Date ? 
+                        activity.timestamp.toLocaleDateString(isArabic ? 'ar-SA' : 'en-US') : 
+                        new Date().toLocaleDateString(isArabic ? 'ar-SA' : 'en-US')
+                      }
                     </p>
                   </div>
                   <Badge variant="outline" className="text-xs">

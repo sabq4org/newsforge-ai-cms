@@ -11,7 +11,7 @@ import { Sidebar } from '@/components/layout/Sidebar';
 import { RoleBasedDashboard } from '@/components/dashboard/RoleBasedDashboard';
 import { AdvancedAnalytics, RealTimeAnalytics, PerformanceInsights, CategoryAnalytics } from '@/components/analytics';
 import { ArticleList } from '@/components/articles/ArticleList';
-import { ArticleEditor } from '@/components/editor/ArticleEditor';
+import { EnhancedArticleEditor } from '@/components/editor/EnhancedArticleEditor';
 import { AIOptimizationEngine } from '@/components/optimization/AIOptimizationEngine';
 import { ABTestingFramework } from '@/components/optimization/ABTestingFramework';
 import { TypographySettings } from '@/components/settings/TypographySettings';
@@ -23,7 +23,7 @@ import { AISearch } from '@/components/search/AISearch';
 import { AIRecommendationEngine } from '@/components/recommendations/AIRecommendationEngine';
 import { ContentModeration } from '@/components/moderation/ContentModeration';
 import { SchedulingCalendar } from '@/components/scheduling';
-import { CategoryManager } from '@/components/categories';
+import { CategoryManager, CategoryStatistics } from '@/components/categories';
 import { LoyaltySystem } from '@/components/loyalty';
 import { PodcastDemo } from '@/components/demo/PodcastDemo';
 import { Article } from '@/types';
@@ -128,9 +128,10 @@ function AppContent() {
       case 'create-article':
       case 'editor':
         return (
-          <ArticleEditor 
+          <EnhancedArticleEditor 
             article={editingArticle}
             onSave={handleSaveArticle}
+            onCancel={() => setActiveView('articles')}
           />
         );
       
@@ -194,6 +195,9 @@ function AppContent() {
             <p className="text-muted-foreground mt-2">Select an article to test</p>
           </div>
         );
+      
+      case 'category-statistics':
+        return <CategoryStatistics />;
       
       case 'categories':
         return <CategoryManager onCategoryUpdate={(cats) => console.log('Categories updated:', cats)} />;

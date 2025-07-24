@@ -86,6 +86,12 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       show: hasPermission('update', 'categories')
     },
     {
+      id: 'category-statistics',
+      label: isArabic ? 'إحصائيات التصنيفات' : 'Category Statistics',
+      icon: ChartLine,
+      show: hasPermission('view', 'analytics')
+    },
+    {
       id: 'tags',
       label: isArabic ? 'العلامات' : 'Tags',
       icon: Tag,
