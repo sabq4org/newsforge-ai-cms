@@ -23,7 +23,10 @@ import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { ar, enUS } from 'date-fns/locale';
 import { Article } from '@/types';
+import { UserProfile } from '@/types/membership';
 import { mockArticles, mockCategories } from '@/lib/mockData';
+import { PersonalizedContentBlock } from './PersonalizedContentBlock';
+import { useKV } from '@github/spark/hooks';
 
 interface PublicHomePageProps {
   currentLanguage: 'ar' | 'en';
@@ -31,6 +34,7 @@ interface PublicHomePageProps {
   onSectionClick: (section: string) => void;
   className?: string;
   articles?: Article[];
+  userProfile?: UserProfile | null;
 }
 
 export function PublicHomePage({ 
@@ -38,10 +42,12 @@ export function PublicHomePage({
   onArticleClick, 
   onSectionClick,
   className,
-  articles
+  articles,
+  userProfile
 }: PublicHomePageProps) {
   const isRTL = currentLanguage === 'ar';
   const locale = isRTL ? ar : enUS;
+  const [memberUser] = useKV<UserProfile | null>('current-member-user', null);
 
   // Use provided articles or fallback to mock articles  
   const availableArticles = articles || mockArticles;
@@ -303,6 +309,16 @@ export function PublicHomePage({
           </Card>
         </div>
       </section>
+
+      {/* Personalized Content Block */}
+      {(userProfile || memberUser) && (
+        <PersonalizedContentBlock
+          currentLanguage={currentLanguage}
+          articles={availableArticles}
+          userProfile={userProfile || memberUser}
+          onArticleClick={onArticleClick}
+        />
+      )}
 
       {/* Latest News Section */}
       <section className="py-12 border-b border-border">

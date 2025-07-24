@@ -33,6 +33,7 @@ import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { ar, enUS } from 'date-fns/locale';
 import { Article } from '@/types';
+import { UserProfile } from '@/types/membership';
 import { mockArticles, mockCategories } from '@/lib/mockData';
 import { useKV } from '@github/spark/hooks';
 import { toast } from 'sonner';
@@ -51,6 +52,7 @@ export function PublicInterface({ className, articles }: PublicInterfaceProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredArticles, setFilteredArticles] = useState<Article[]>([]);
+  const [memberUser] = useKV<UserProfile | null>('current-member-user', null);
 
   const isRTL = currentLanguage === 'ar';
   const locale = isRTL ? ar : enUS;
@@ -129,6 +131,7 @@ export function PublicInterface({ className, articles }: PublicInterfaceProps) {
             onArticleClick={handleArticleClick}
             onSectionClick={handleSectionClick}
             articles={articles}
+            userProfile={memberUser}
           />
         );
 
@@ -222,6 +225,7 @@ export function PublicInterface({ className, articles }: PublicInterfaceProps) {
             onArticleClick={handleArticleClick}
             onSectionClick={handleSectionClick}
             articles={articles}
+            userProfile={memberUser}
           />
         );
     }
