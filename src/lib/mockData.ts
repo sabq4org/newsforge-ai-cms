@@ -1,4 +1,4 @@
-import { User, Article, Category, Tag, Analytics } from '@/types';
+import { User, Article, Category, Tag, Analytics, PredictiveAnalytics, ContentAnalysis, AIOptimization } from '@/types';
 
 // Mock data for development
 export const mockUsers: User[] = [

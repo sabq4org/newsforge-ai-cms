@@ -7,10 +7,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { mockCategories, mockTags } from '@/lib/mockData';
 import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
+import { PerformanceOptimizationEngine } from '@/components/optimization';
 import { 
   Bold, 
   Italic, 
@@ -24,7 +26,8 @@ import {
   MagicWand,
   Eye,
   FloppyDisk,
-  PaperPlaneTilt
+  PaperPlaneTilt,
+  Brain
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 
@@ -45,9 +48,30 @@ export function ArticleEditor({ article, onSave }: ArticleEditorProps) {
   const [featuredImage, setFeaturedImage] = useState(article?.featuredImage || '');
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const [isPreview, setIsPreview] = useState(false);
+  const [activeTab, setActiveTab] = useState('editor');
+  
+  // Create a complete article object for optimization engine
+  const [articleData, setArticleData] = useState<Partial<Article>>({
+    ...article,
+    title,
+    content,
+    excerpt,
+    featuredImage
+  });
   
   const contentRef = useRef<HTMLTextAreaElement>(null);
   const [drafts, setDrafts] = useKV<Partial<Article>[]>('newsflow-drafts', []);
+
+  // Update article data when content changes
+  useEffect(() => {
+    setArticleData(prev => ({
+      ...prev,
+      title,
+      content,
+      excerpt,
+      featuredImage
+    }));
+  }, [title, content, excerpt, featuredImage]);
 
   // Auto-save functionality
   useEffect(() => {
@@ -137,6 +161,16 @@ export function ArticleEditor({ article, onSave }: ArticleEditorProps) {
     }
   };
 
+  const handleOptimizationUpdate = (updates: Partial<Article>) => {
+    setArticleData(prev => ({ ...prev, ...updates }));
+    
+    // Update local state if optimization engine updates content
+    if (updates.title !== undefined) setTitle(updates.title);
+    if (updates.content !== undefined) setContent(updates.content);
+    if (updates.excerpt !== undefined) setExcerpt(updates.excerpt);
+    if (updates.featuredImage !== undefined) setFeaturedImage(updates.featuredImage);
+  };
+
   const handleSave = (status: 'draft' | 'published' | 'scheduled') => {
     if (!title.trim()) {
       toast.error(language.code === 'ar' ? 'العنوان مطلوب' : 'Title is required');
@@ -146,7 +180,7 @@ export function ArticleEditor({ article, onSave }: ArticleEditorProps) {
     const category = mockCategories.find(c => c.id === categoryId);
     const tags = mockTags.filter(t => selectedTags.includes(t.id));
 
-    const articleData: Partial<Article> = {
+    const saveData: Partial<Article> = {
       id: article?.id || `article-${Date.now()}`,
       title: title.trim(),
       content,
@@ -158,14 +192,20 @@ export function ArticleEditor({ article, onSave }: ArticleEditorProps) {
       author: user!,
       createdAt: article?.createdAt || new Date(),
       updatedAt: new Date(),
-      analytics: article?.analytics || { views: 0, likes: 0, shares: 0 }
+      analytics: article?.analytics || { views: 0, likes: 0, shares: 0 },
+      // Include optimization data
+      predictiveAnalytics: articleData.predictiveAnalytics,
+      contentAnalysis: articleData.contentAnalysis,
+      abTests: articleData.abTests,
+      aiOptimizations: articleData.aiOptimizations,
+      performanceHistory: articleData.performanceHistory
     };
 
     if (status === 'published') {
-      articleData.publishedAt = new Date();
+      saveData.publishedAt = new Date();
     }
 
-    onSave(articleData);
+    onSave(saveData);
     toast.success(
       status === 'draft' 
         ? (language.code === 'ar' ? 'تم حفظ المسودة' : 'Draft saved')
@@ -184,7 +224,7 @@ export function ArticleEditor({ article, onSave }: ArticleEditorProps) {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className={`max-w-6xl mx-auto space-y-6 ${language.direction === 'rtl' ? 'rtl' : 'ltr'}`}>
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">
           {article 
@@ -196,6 +236,7 @@ export function ArticleEditor({ article, onSave }: ArticleEditorProps) {
           <Button
             variant="outline"
             onClick={() => setIsPreview(!isPreview)}
+            disabled={activeTab !== 'editor'}
           >
             <Eye size={16} />
             {isPreview 
@@ -214,9 +255,22 @@ export function ArticleEditor({ article, onSave }: ArticleEditorProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Main Editor */}
-        <div className="lg:col-span-3 space-y-4">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="editor" className="gap-2">
+            <Eye className="h-4 w-4" />
+            {language.code === 'ar' ? 'المحرر' : 'Editor'}
+          </TabsTrigger>
+          <TabsTrigger value="optimization" className="gap-2">
+            <Brain className="h-4 w-4" />
+            {language.code === 'ar' ? 'التحسين بالذكاء الاصطناعي' : 'AI Optimization'}
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="editor" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            {/* Main Editor */}
+            <div className="lg:col-span-3 space-y-4">
           <Card>
             <CardHeader>
               <CardTitle>
@@ -425,7 +479,16 @@ export function ArticleEditor({ article, onSave }: ArticleEditorProps) {
             </CardContent>
           </Card>
         </div>
-      </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="optimization" className="space-y-6">
+          <PerformanceOptimizationEngine 
+            article={articleData}
+            onArticleUpdate={handleOptimizationUpdate}
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
