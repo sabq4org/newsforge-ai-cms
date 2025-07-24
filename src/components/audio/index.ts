@@ -17,7 +17,7 @@ export { AudioLibraryBrowser } from './AudioLibraryBrowser';
 export { PodcastExporter } from './PodcastExporter';
 
 // Services and Utilities
-export * from '../services/elevenlabs';
+export * from '../../services/elevenlabs';
 
 // Type Definitions
 export interface AudioSegment {

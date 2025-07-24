@@ -56,7 +56,9 @@ export function CategoryAnalytics() {
 
   // محاكاة بيانات الأداء المتقدمة
   const generatePerformanceData = (category: Category): CategoryPerformanceData => {
-    const categoryArticles = articles.filter(article => article.category.id === category.id);
+    const categoryArticles = articles.filter(article => 
+      article.category && article.category.id === category.id
+    );
     const publishedArticles = categoryArticles.filter(article => article.status === 'published');
     
     const totalViews = publishedArticles.reduce((sum, article) => sum + article.analytics.views, 0);

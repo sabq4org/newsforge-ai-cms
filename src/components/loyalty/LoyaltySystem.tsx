@@ -609,9 +609,9 @@ Return article IDs in this format:
                       {earned ? 'محصل عليها' : badgeTemplate.rarity}
                     </Badge>
                     
-                    {earned && (
+                    {earned && earned.unlockedAt && (
                       <p className="text-xs text-muted-foreground mt-2">
-                        {earned.unlockedAt.toLocaleDateString('ar-SA')}
+                        {new Date(earned.unlockedAt).toLocaleDateString('ar-SA')}
                       </p>
                     )}
                   </CardContent>

@@ -321,7 +321,7 @@ export function AudioLibrary({ onEditProject, onCreateProject }: AudioLibraryPro
                         </div>
                         <div>
                           <Label>تاريخ الإنشاء</Label>
-                          <p className="mt-1">{project.createdAt.toLocaleDateString('ar-SA')}</p>
+                          <p className="mt-1">{new Date(project.createdAt).toLocaleDateString('ar-SA')}</p>
                         </div>
                       </div>
                       
@@ -490,7 +490,7 @@ export function AudioLibrary({ onEditProject, onCreateProject }: AudioLibraryPro
           </Badge>
           
           <span className="text-muted-foreground">
-            {project.createdAt.toLocaleDateString('ar-SA')}
+            {new Date(project.createdAt).toLocaleDateString('ar-SA')}
           </span>
         </div>
         

@@ -645,7 +645,7 @@ export function CategoryManager({ onCategoryUpdate }: { onCategoryUpdate: (categ
                     </TableCell>
                     <TableCell>
                       <span className="text-sm text-muted-foreground">
-                        {category.createdAt?.toLocaleDateString('ar-SA')}
+                        {category.createdAt ? new Date(category.createdAt).toLocaleDateString('ar-SA') : ''}
                       </span>
                     </TableCell>
                     <TableCell>

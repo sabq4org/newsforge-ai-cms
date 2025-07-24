@@ -631,7 +631,7 @@ Return structured script with scenes, visuals, and narration.`;
                           </span>
                           <Badge variant="outline">{audio.type}</Badge>
                           <Badge variant="outline">{audio.voice}</Badge>
-                          <span>{audio.createdAt.toLocaleDateString('ar-SA')}</span>
+                          <span>{new Date(audio.createdAt).toLocaleDateString('ar-SA')}</span>
                         </div>
                       </div>
                     </div>
