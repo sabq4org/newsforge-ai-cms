@@ -723,6 +723,150 @@ export interface CollaborativePermissions {
   expiresAt?: Date;
 }
 
+// Daily Smart Doses Types
+export interface DosePhrase {
+  id: string;
+  text: string;
+  textAr: string;
+  category: 'morning' | 'noon' | 'evening' | 'night';
+  type: 'headline' | 'subheadline';
+  tone: 'energetic' | 'informative' | 'calm' | 'analytical';
+  isActive: boolean;
+  usage_count: number;
+  last_used?: Date;
+  createdAt: Date;
+}
+
+export interface DailyDose {
+  id: string;
+  timeSlot: 'morning' | 'noon' | 'evening' | 'night';
+  date: Date;
+  headline: DosePhrase;
+  subheadline: DosePhrase;
+  content: {
+    summary: string;
+    summaryAr: string;
+    articles: string[]; // Article IDs
+    insights: string[];
+    tip?: string;
+    tipAr?: string;
+  };
+  audioContent?: {
+    url: string;
+    duration: number;
+    voice: string;
+    generatedAt: Date;
+  };
+  visualContent?: {
+    backgroundImage?: string;
+    infographic?: string;
+    colors: {
+      primary: string;
+      secondary: string;
+      text: string;
+    };
+  };
+  analytics: {
+    views: number;
+    shares: number;
+    audioPlays: number;
+    averageReadTime: number;
+    engagement: number;
+  };
+  status: 'draft' | 'scheduled' | 'published' | 'archived';
+  generatedBy: 'ai' | 'manual' | 'hybrid';
+  createdAt: Date;
+  publishedAt?: Date;
+  metadata: {
+    aiModel?: string;
+    processingTime?: number;
+    sourceArticles: {
+      id: string;
+      title: string;
+      weight: number; // How much this article influenced the dose
+    }[];
+  };
+}
+
+export interface DoseTemplate {
+  id: string;
+  name: string;
+  nameAr: string;
+  timeSlot: 'morning' | 'noon' | 'evening' | 'night';
+  structure: {
+    includeWeather?: boolean;
+    includeAnalytics?: boolean;
+    includeTrending?: boolean;
+    includePersonalized?: boolean;
+    maxArticles: number;
+    preferredCategories?: string[];
+    tone: 'professional' | 'casual' | 'urgent' | 'calming';
+  };
+  audioSettings: {
+    voice: string;
+    speed: number;
+    includeMusic: boolean;
+    musicVolume?: number;
+  };
+  isDefault: boolean;
+  createdBy: string;
+  createdAt: Date;
+}
+
+export interface DoseSchedule {
+  id: string;
+  timeSlots: {
+    morning: { time: string; enabled: boolean; template?: string };
+    noon: { time: string; enabled: boolean; template?: string };
+    evening: { time: string; enabled: boolean; template?: string };
+    night: { time: string; enabled: boolean; template?: string };
+  };
+  timezone: string;
+  autoGenerate: boolean;
+  moderationRequired: boolean;
+  notificationSettings: {
+    email: boolean;
+    push: boolean;
+    slack?: boolean;
+  };
+  isActive: boolean;
+  createdBy: string;
+  updatedAt: Date;
+}
+
+export interface DoseAnalytics {
+  doseId: string;
+  timeSlot: 'morning' | 'noon' | 'evening' | 'night';
+  date: Date;
+  performance: {
+    totalViews: number;
+    uniqueViews: number;
+    averageReadTime: number;
+    bounceRate: number;
+    shareRate: number;
+    audioCompletionRate: number;
+    clickThroughRate: number;
+  };
+  audienceMetrics: {
+    demographics: {
+      age: Record<string, number>;
+      location: Record<string, number>;
+      device: Record<string, number>;
+    };
+    behaviorPatterns: {
+      preferredTime: string;
+      averageEngagement: number;
+      returnVisitor: boolean;
+    };
+  };
+  contentMetrics: {
+    mostViewedArticle: string;
+    averageScrollDepth: number;
+    popularTags: string[];
+    sentimentScore: number;
+  };
+}
+
 // Audio Editor Types
 export interface AudioSegment {
   id: string;

@@ -25,6 +25,7 @@ import { ContentModeration } from '@/components/moderation/ContentModeration';
 import { SchedulingCalendar } from '@/components/scheduling';
 import { CategoryManager, CategoryStatistics, ComprehensiveCategoryManager } from '@/components/categories';
 import { LoyaltySystem } from '@/components/loyalty';
+import { DailyDosesManager } from '@/components/doses';
 import { PodcastDemo } from '@/components/demo/PodcastDemo';
 import { ErrorChecker } from '@/components/debug/ErrorChecker';
 import { ErrorBoundary } from '@/components/debug/ErrorBoundary';
@@ -204,6 +205,9 @@ function AppContent() {
       
       case 'categories':
         return <ComprehensiveCategoryManager />;
+      
+      case 'daily-doses':
+        return <DailyDosesManager articles={articles} />;
       
       case 'tags':
         return <CategoryManager onCategoryUpdate={(cats) => console.log('Categories updated:', cats)} />;

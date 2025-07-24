@@ -28,7 +28,9 @@ import {
   Wrench,
   Microphone,
   FileAudio,
-  ChartLineUp
+  ChartLineUp,
+  Coffee,
+  Drop
 } from '@phosphor-icons/react';
 
 interface SidebarProps {
@@ -68,6 +70,13 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
 
   // Content management items
   const contentItems = [
+    {
+      id: 'daily-doses',
+      label: isArabic ? 'الجرعات الذكية' : 'Daily Smart Doses',
+      icon: Drop,
+      show: hasPermission('create', 'articles'),
+      badge: isArabic ? 'جديد' : 'New'
+    },
     {
       id: 'search',
       label: isArabic ? 'البحث الذكي' : 'AI Search',
