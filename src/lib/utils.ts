@@ -102,6 +102,8 @@ export function normalizeArticles(articles: Article[]): Article[] {
 
     return article;
   }).filter((article): article is Article => article !== null);
+}
+
 /**
  * Safely format a date with fallback handling
  */
