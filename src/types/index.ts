@@ -73,16 +73,57 @@ export interface Category {
   id: string;
   name: string;
   nameAr?: string;
+  nameEn?: string;
   slug: string;
+  description?: string;
   color: string;
+  icon?: string;
   parentId?: string;
+  isActive?: boolean;
+  sortOrder?: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+  metadata?: {
+    seoTitle?: string;
+    seoDescription?: string;
+    keywords?: string[];
+  };
 }
 
 export interface Tag {
   id: string;
   name: string;
   nameAr?: string;
+  nameEn?: string;
   slug: string;
+  description?: string;
+  color?: string;
+  type?: 'general' | 'location' | 'person' | 'organization' | 'event';
+  isActive?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+  metadata?: {
+    relatedTerms?: string[];
+    popularity?: number;
+  };
+}
+
+export interface Tag {
+  id: string;
+  name: string;
+  nameAr?: string;
+  nameEn?: string;
+  slug: string;
+  description?: string;
+  color?: string;
+  type?: 'general' | 'location' | 'person' | 'organization' | 'event';
+  isActive?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+  metadata?: {
+    relatedTerms?: string[];
+    popularity?: number;
+  };
 }
 
 export interface Analytics {

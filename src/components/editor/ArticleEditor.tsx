@@ -524,14 +524,47 @@ export function ArticleEditor({ article, onSave }: ArticleEditorProps) {
               </CardTitle>
             </CardHeader>
             <CardContent>
+              {/* Selected Category Display */}
+              {categoryId && (
+                <div className="mb-3 p-2 border rounded-md bg-muted/30">
+                  {(() => {
+                    const selectedCategory = mockCategories.find(c => c.id === categoryId);
+                    return selectedCategory ? (
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">{selectedCategory.icon}</span>
+                        <div 
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: selectedCategory.color }}
+                        />
+                        <span className="font-medium text-sm">
+                          {language.code === 'ar' ? selectedCategory.nameAr || selectedCategory.name : selectedCategory.nameEn || selectedCategory.name}
+                        </span>
+                      </div>
+                    ) : null;
+                  })()}
+                </div>
+              )}
+
               <Select value={categoryId} onValueChange={setCategoryId}>
                 <SelectTrigger>
                   <SelectValue placeholder={language.code === 'ar' ? 'اختر تصنيف' : 'Select category'} />
                 </SelectTrigger>
                 <SelectContent>
-                  {mockCategories.map((category) => (
+                  {mockCategories
+                    .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
+                    .filter(category => category.isActive !== false)
+                    .map((category) => (
                     <SelectItem key={category.id} value={category.id}>
-                      {language.code === 'ar' ? category.nameAr : category.name}
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm">{category.icon}</span>
+                        <div 
+                          className="w-2.5 h-2.5 rounded-full"
+                          style={{ backgroundColor: category.color }}
+                        />
+                        <span>
+                          {language.code === 'ar' ? category.nameAr || category.name : category.nameEn || category.name}
+                        </span>
+                      </div>
                     </SelectItem>
                   ))}
                 </SelectContent>

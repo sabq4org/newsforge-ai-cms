@@ -11,6 +11,7 @@ import { mockArticles, mockCategories } from '@/lib/mockData';
 import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
 import { normalizeArticles } from '@/lib/utils';
+import { CategoryDisplay } from '@/components/categories';
 import { 
   Search, 
   Filter, 
@@ -46,6 +47,20 @@ export function ArticleList({ onEditArticle, onCreateNew }: ArticleListProps) {
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
 
   const { isRTL, isArabic } = typography;
+
+  const formatDate = (date: Date | string | undefined): string => {
+    if (!date) return '';
+    
+    try {
+      const dateObj = date instanceof Date ? date : new Date(date);
+      if (isNaN(dateObj.getTime())) return '';
+      
+      return dateObj.toLocaleDateString(language.code === 'ar' ? 'ar-SA' : 'en-US');
+    } catch (error) {
+      console.error('Date formatting error:', error);
+      return '';
+    }
+  };
 
   const filteredArticles = articles.filter(article => {
     const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -147,9 +162,21 @@ export function ArticleList({ onEditArticle, onCreateNew }: ArticleListProps) {
                 <SelectItem value="all">
                   {language.code === 'ar' ? 'جميع التصنيفات' : 'All Categories'}
                 </SelectItem>
-                {mockCategories.map((category) => (
+                {mockCategories
+                  .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
+                  .filter(category => category.isActive !== false)
+                  .map((category) => (
                   <SelectItem key={category.id} value={category.id}>
-                    {language.code === 'ar' ? category.nameAr : category.name}
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm">{category.icon}</span>
+                      <div 
+                        className="w-2.5 h-2.5 rounded-full"
+                        style={{ backgroundColor: category.color }}
+                      />
+                      <span>
+                        {language.code === 'ar' ? category.nameAr || category.name : category.nameEn || category.name}
+                      </span>
+                    </div>
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -211,18 +238,7 @@ export function ArticleList({ onEditArticle, onCreateNew }: ArticleListProps) {
                 <div className="flex items-center gap-1">
                   {article.status === 'scheduled' ? <Clock size={12} /> : <Calendar size={12} />}
                   <span>
-                    {article.publishedAt 
-                      ? (article.publishedAt instanceof Date 
-                          ? article.publishedAt.toLocaleDateString(language.code === 'ar' ? 'ar-SA' : 'en-US')
-                          : new Date(article.publishedAt).toLocaleDateString(language.code === 'ar' ? 'ar-SA' : 'en-US'))
-                      : article.scheduledAt
-                      ? (article.scheduledAt instanceof Date
-                          ? article.scheduledAt.toLocaleDateString(language.code === 'ar' ? 'ar-SA' : 'en-US')
-                          : new Date(article.scheduledAt).toLocaleDateString(language.code === 'ar' ? 'ar-SA' : 'en-US'))
-                      : (article.createdAt instanceof Date
-                          ? article.createdAt.toLocaleDateString(language.code === 'ar' ? 'ar-SA' : 'en-US')
-                          : new Date(article.createdAt).toLocaleDateString(language.code === 'ar' ? 'ar-SA' : 'en-US'))
-                    }
+                    {formatDate(article.publishedAt || article.scheduledAt || article.createdAt)}
                   </span>
                 </div>
               </div>
@@ -230,16 +246,12 @@ export function ArticleList({ onEditArticle, onCreateNew }: ArticleListProps) {
               {/* Category & Tags */}
               <div className="flex items-center gap-2 flex-wrap">
                 {article.category && (
-                  <Badge 
-                    variant="outline" 
-                    style={{ 
-                      borderColor: article.category?.color || '#6b7280', 
-                      color: article.category?.color || '#6b7280'
-                    }}
-                    className="text-xs"
-                  >
-                    {language.code === 'ar' ? article.category.nameAr || article.category.name : article.category.name}
-                  </Badge>
+                  <CategoryDisplay 
+                    category={article.category}
+                    variant="compact"
+                    showIcon={true}
+                    showColor={true}
+                  />
                 )}
                 {article.tags && article.tags.length > 0 && article.tags.slice(0, 2).map((tag) => (
                   <Badge key={tag.id} variant="secondary" className="text-xs">

@@ -254,7 +254,12 @@ function AppContent() {
         return <CollaborativeManager article={editingArticle} onConflictResolved={(resolution) => console.log('Conflict resolved:', resolution)} />;
 
       case 'system-maintenance':
-        return <SystemMaintenance />;
+        return (
+          <div className="text-center py-12">
+            <h2 className="text-xl font-semibold">صيانة النظام</h2>
+            <p className="text-muted-foreground mt-2">أدوات صيانة وإدارة النظام</p>
+          </div>
+        );
       
       case 'podcast-demo':
         return (

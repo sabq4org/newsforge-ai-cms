@@ -18,7 +18,27 @@ export function normalizeArticles(articles: Article[]): Article[] {
       // Find category by ID if it's a string, or use default
       const categoryId = typeof article.category === 'string' ? article.category : article.category?.id;
       const foundCategory = mockCategories.find(cat => cat.id === categoryId);
-      article.category = foundCategory || mockCategories[0];
+      
+      // If no category found, assign the first available category
+      article.category = foundCategory || {
+        id: 'default',
+        name: 'عام',
+        nameAr: 'عام',
+        nameEn: 'General',
+        slug: 'general',
+        description: 'تصنيف عام',
+        color: '#6b7280',
+        icon: '📰',
+        isActive: true,
+        sortOrder: 0,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        metadata: {
+          seoTitle: 'عام',
+          seoDescription: 'تصنيف عام للمقالات',
+          keywords: ['عام']
+        }
+      };
     }
 
     // Ensure tags is always an array

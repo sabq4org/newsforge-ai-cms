@@ -83,16 +83,196 @@ export const mockUsers: User[] = [
 ];
 
 export const mockCategories: Category[] = [
-  { id: '1', name: 'Politics', nameAr: 'السياسة', slug: 'politics', color: '#ef4444' },
-  { id: '2', name: 'Technology', nameAr: 'التكنولوجيا', slug: 'technology', color: '#3b82f6' },
-  { id: '3', name: 'Sports', nameAr: 'الرياضة', slug: 'sports', color: '#10b981' },
-  { id: '4', name: 'Business', nameAr: 'الأعمال', slug: 'business', color: '#f59e0b' },
-  { id: '5', name: 'Culture', nameAr: 'الثقافة', slug: 'culture', color: '#8b5cf6' },
-  { id: '6', name: 'Local News', nameAr: 'الأخبار المحلية', slug: 'local', color: '#06b6d4' },
-  { id: '7', name: 'International', nameAr: 'دولية', slug: 'international', color: '#84cc16' },
-  { id: '8', name: 'Economy', nameAr: 'الاقتصاد', slug: 'economy', color: '#f97316' },
-  { id: '9', name: 'Health', nameAr: 'الصحة', slug: 'health', color: '#ec4899' },
-  { id: '10', name: 'Education', nameAr: 'التعليم', slug: 'education', color: '#6366f1' }
+  {
+    id: '1',
+    name: 'محليات',
+    nameAr: 'محليات',
+    nameEn: 'Local',
+    slug: 'local',
+    description: 'أخبار السعودية والمناطق',
+    color: '#1e40af',
+    icon: '🗺️',
+    isActive: true,
+    sortOrder: 1,
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-01'),
+    metadata: {
+      seoTitle: 'أخبار محلية - سبق الذكية',
+      seoDescription: 'آخر الأخبار المحلية من المملكة العربية السعودية',
+      keywords: ['السعودية', 'محلي', 'أخبار', 'المناطق']
+    }
+  },
+  {
+    id: '2',
+    name: 'العالم',
+    nameAr: 'العالم',
+    nameEn: 'World',
+    slug: 'world',
+    description: 'الشؤون الدولية والتحليلات',
+    color: '#059669',
+    icon: '🌍',
+    isActive: true,
+    sortOrder: 2,
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-01'),
+    metadata: {
+      seoTitle: 'أخبار عالمية - سبق الذكية',
+      seoDescription: 'أحدث الأخبار والتطورات العالمية',
+      keywords: ['عالمي', 'دولي', 'أخبار', 'سياسة']
+    }
+  },
+  {
+    id: '3',
+    name: 'حياتنا',
+    nameAr: 'حياتنا',
+    nameEn: 'Life',
+    slug: 'life',
+    description: 'نمط الحياة، الصحة، والمجتمع',
+    color: '#dc2626',
+    icon: '🌱',
+    isActive: true,
+    sortOrder: 3,
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-01'),
+    metadata: {
+      seoTitle: 'حياتنا - سبق الذكية',
+      seoDescription: 'أخبار ونصائح حول نمط الحياة والصحة والمجتمع',
+      keywords: ['حياة', 'صحة', 'مجتمع', 'نمط حياة']
+    }
+  },
+  {
+    id: '4',
+    name: 'محطات',
+    nameAr: 'محطات',
+    nameEn: 'Stations',
+    slug: 'stations',
+    description: 'ملفات وتقارير خاصة',
+    color: '#7c3aed',
+    icon: '🛤️',
+    isActive: true,
+    sortOrder: 4,
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-01'),
+    metadata: {
+      seoTitle: 'محطات - سبق الذكية',
+      seoDescription: 'تقارير وملفات خاصة من فريق سبق الذكية',
+      keywords: ['تقارير', 'ملفات', 'خاص', 'تحقيقات']
+    }
+  },
+  {
+    id: '5',
+    name: 'رياضة',
+    nameAr: 'رياضة',
+    nameEn: 'Sports',
+    slug: 'sports',
+    description: 'الرياضة محليًا وعالميًا',
+    color: '#10b981',
+    icon: '⚽',
+    isActive: true,
+    sortOrder: 5,
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-01'),
+    metadata: {
+      seoTitle: 'رياضة - سبق الذكية',
+      seoDescription: 'أحدث الأخبار الرياضية محليًا وعالميًا',
+      keywords: ['رياضة', 'كرة قدم', 'دوري', 'بطولات']
+    }
+  },
+  {
+    id: '6',
+    name: 'سياحة',
+    nameAr: 'سياحة',
+    nameEn: 'Tourism',
+    slug: 'tourism',
+    description: 'تقارير ومواقع مميزة',
+    color: '#0891b2',
+    icon: '🧳',
+    isActive: true,
+    sortOrder: 6,
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-01'),
+    metadata: {
+      seoTitle: 'سياحة - سبق الذكية',
+      seoDescription: 'دليلك للأماكن السياحية والوجهات المميزة',
+      keywords: ['سياحة', 'سفر', 'وجهات', 'استكشاف']
+    }
+  },
+  {
+    id: '7',
+    name: 'أعمال',
+    nameAr: 'أعمال',
+    nameEn: 'Business',
+    slug: 'business',
+    description: 'أخبار الاقتصاد والشركات',
+    color: '#f59e0b',
+    icon: '💼',
+    isActive: true,
+    sortOrder: 7,
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-01'),
+    metadata: {
+      seoTitle: 'أعمال - سبق الذكية',
+      seoDescription: 'آخر أخبار الاقتصاد والشركات والاستثمار',
+      keywords: ['أعمال', 'اقتصاد', 'شركات', 'استثمار']
+    }
+  },
+  {
+    id: '8',
+    name: 'تقنية',
+    nameAr: 'تقنية',
+    nameEn: 'Technology',
+    slug: 'technology',
+    description: 'الذكاء الاصطناعي والتكنولوجيا',
+    color: '#3b82f6',
+    icon: '💻',
+    isActive: true,
+    sortOrder: 8,
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-01'),
+    metadata: {
+      seoTitle: 'تقنية - سبق الذكية',
+      seoDescription: 'أحدث التطورات في التقنية والذكاء الاصطناعي',
+      keywords: ['تقنية', 'ذكاء اصطناعي', 'تكنولوجيا', 'ابتكار']
+    }
+  },
+  {
+    id: '9',
+    name: 'سيارات',
+    nameAr: 'سيارات',
+    nameEn: 'Cars',
+    slug: 'cars',
+    description: 'كل ما يتعلق بالسيارات',
+    color: '#ef4444',
+    icon: '🚗',
+    isActive: true,
+    sortOrder: 9,
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-01'),
+    metadata: {
+      seoTitle: 'سيارات - سبق الذكية',
+      seoDescription: 'أخبار السيارات والمركبات الجديدة',
+      keywords: ['سيارات', 'مركبات', 'سباقات', 'تقنيات']
+    }
+  },
+  {
+    id: '10',
+    name: 'ميديا',
+    nameAr: 'ميديا',
+    nameEn: 'Media',
+    slug: 'media',
+    description: 'محتوى رقمي وفيديوهات',
+    color: '#8b5cf6',
+    icon: '🎬',
+    isActive: true,
+    sortOrder: 10,
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-01'),
+    metadata: {
+      seoTitle: 'ميديا - سبق الذكية',
+      seoDescription: 'أحدث المحتوى الرقمي والفيديوهات',
+      keywords: ['ميديا', 'فيديو', 'محتوى', 'رقمي']
+    }
+  }
 ];
 
 export const mockTags: Tag[] = [

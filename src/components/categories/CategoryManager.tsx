@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { CategoryDisplay, CategoryList } from '@/components/categories/CategoryDisplay';
 import { 
   Plus,
   Edit,
@@ -22,7 +23,8 @@ import {
   Search,
   Filter,
   BarChart,
-  Target
+  Target,
+  Eye
 } from '@phosphor-icons/react';
 import { Category, Tag } from '@/types';
 import { useKV } from '@github/spark/hooks';
@@ -73,6 +75,216 @@ export function CategoryManager({ onCategoryUpdate }: CategoryManagerProps) {
       popularity: 0
     }
   });
+
+  // Initialize with predefined Sabq categories
+  const initializeSabqCategories = () => {
+    const sabqCategories: Category[] = [
+      {
+        id: 'cat_local',
+        name: 'محليات',
+        nameAr: 'محليات',
+        nameEn: 'Local',
+        slug: 'local',
+        description: 'أخبار السعودية والمناطق',
+        color: '#1e40af',
+        icon: '🗺️',
+        isActive: true,
+        sortOrder: 1,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        metadata: {
+          seoTitle: 'أخبار محلية - سبق الذكية',
+          seoDescription: 'آخر الأخبار المحلية من المملكة العربية السعودية',
+          keywords: ['السعودية', 'محلي', 'أخبار', 'المناطق']
+        }
+      },
+      {
+        id: 'cat_world',
+        name: 'العالم',
+        nameAr: 'العالم',
+        nameEn: 'World',
+        slug: 'world',
+        description: 'الشؤون الدولية والتحليلات',
+        color: '#059669',
+        icon: '🌍',
+        isActive: true,
+        sortOrder: 2,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        metadata: {
+          seoTitle: 'أخبار عالمية - سبق الذكية',
+          seoDescription: 'أحدث الأخبار والتطورات العالمية',
+          keywords: ['عالمي', 'دولي', 'أخبار', 'سياسة']
+        }
+      },
+      {
+        id: 'cat_life',
+        name: 'حياتنا',
+        nameAr: 'حياتنا',
+        nameEn: 'Life',
+        slug: 'life',
+        description: 'نمط الحياة، الصحة، والمجتمع',
+        color: '#dc2626',
+        icon: '🌱',
+        isActive: true,
+        sortOrder: 3,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        metadata: {
+          seoTitle: 'حياتنا - سبق الذكية',
+          seoDescription: 'أخبار ونصائح حول نمط الحياة والصحة والمجتمع',
+          keywords: ['حياة', 'صحة', 'مجتمع', 'نمط حياة']
+        }
+      },
+      {
+        id: 'cat_stations',
+        name: 'محطات',
+        nameAr: 'محطات',
+        nameEn: 'Stations',
+        slug: 'stations',
+        description: 'ملفات وتقارير خاصة',
+        color: '#7c3aed',
+        icon: '🛤️',
+        isActive: true,
+        sortOrder: 4,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        metadata: {
+          seoTitle: 'محطات - سبق الذكية',
+          seoDescription: 'تقارير وملفات خاصة من فريق سبق الذكية',
+          keywords: ['تقارير', 'ملفات', 'خاص', 'تحقيقات']
+        }
+      },
+      {
+        id: 'cat_sports',
+        name: 'رياضة',
+        nameAr: 'رياضة',
+        nameEn: 'Sports',
+        slug: 'sports',
+        description: 'الرياضة محليًا وعالميًا',
+        color: '#10b981',
+        icon: '⚽',
+        isActive: true,
+        sortOrder: 5,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        metadata: {
+          seoTitle: 'رياضة - سبق الذكية',
+          seoDescription: 'أحدث الأخبار الرياضية محليًا وعالميًا',
+          keywords: ['رياضة', 'كرة قدم', 'دوري', 'بطولات']
+        }
+      },
+      {
+        id: 'cat_tourism',
+        name: 'سياحة',
+        nameAr: 'سياحة',
+        nameEn: 'Tourism',
+        slug: 'tourism',
+        description: 'تقارير ومواقع مميزة',
+        color: '#0891b2',
+        icon: '🧳',
+        isActive: true,
+        sortOrder: 6,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        metadata: {
+          seoTitle: 'سياحة - سبق الذكية',
+          seoDescription: 'دليلك للأماكن السياحية والوجهات المميزة',
+          keywords: ['سياحة', 'سفر', 'وجهات', 'استكشاف']
+        }
+      },
+      {
+        id: 'cat_business',
+        name: 'أعمال',
+        nameAr: 'أعمال',
+        nameEn: 'Business',
+        slug: 'business',
+        description: 'أخبار الاقتصاد والشركات',
+        color: '#f59e0b',
+        icon: '💼',
+        isActive: true,
+        sortOrder: 7,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        metadata: {
+          seoTitle: 'أعمال - سبق الذكية',
+          seoDescription: 'آخر أخبار الاقتصاد والشركات والاستثمار',
+          keywords: ['أعمال', 'اقتصاد', 'شركات', 'استثمار']
+        }
+      },
+      {
+        id: 'cat_technology',
+        name: 'تقنية',
+        nameAr: 'تقنية',
+        nameEn: 'Technology',
+        slug: 'technology',
+        description: 'الذكاء الاصطناعي والتكنولوجيا',
+        color: '#3b82f6',
+        icon: '💻',
+        isActive: true,
+        sortOrder: 8,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        metadata: {
+          seoTitle: 'تقنية - سبق الذكية',
+          seoDescription: 'أحدث التطورات في التقنية والذكاء الاصطناعي',
+          keywords: ['تقنية', 'ذكاء اصطناعي', 'تكنولوجيا', 'ابتكار']
+        }
+      },
+      {
+        id: 'cat_cars',
+        name: 'سيارات',
+        nameAr: 'سيارات',
+        nameEn: 'Cars',
+        slug: 'cars',
+        description: 'كل ما يتعلق بالسيارات',
+        color: '#ef4444',
+        icon: '🚗',
+        isActive: true,
+        sortOrder: 9,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        metadata: {
+          seoTitle: 'سيارات - سبق الذكية',
+          seoDescription: 'أخبار السيارات والمركبات الجديدة',
+          keywords: ['سيارات', 'مركبات', 'سباقات', 'تقنيات']
+        }
+      },
+      {
+        id: 'cat_media',
+        name: 'ميديا',
+        nameAr: 'ميديا',
+        nameEn: 'Media',
+        slug: 'media',
+        description: 'محتوى رقمي وفيديوهات',
+        color: '#8b5cf6',
+        icon: '🎬',
+        isActive: true,
+        sortOrder: 10,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        metadata: {
+          seoTitle: 'ميديا - سبق الذكية',
+          seoDescription: 'أحدث المحتوى الرقمي والفيديوهات',
+          keywords: ['ميديا', 'فيديو', 'محتوى', 'رقمي']
+        }
+      }
+    ];
+
+    setCategories(current => {
+      // Only add categories that don't already exist
+      const existingIds = current.map(c => c.slug);
+      const newCategories = sabqCategories.filter(cat => !existingIds.includes(cat.slug));
+      
+      if (newCategories.length > 0) {
+        toast.success(`تم إضافة ${newCategories.length} تصنيف جديد`);
+        return [...current, ...newCategories];
+      } else {
+        toast.info('جميع التصنيفات موجودة بالفعل');
+        return current;
+      }
+    });
+  };
 
   // Generate intelligent category suggestions
   const generateCategorySuggestions = async () => {
@@ -361,6 +573,10 @@ Return as JSON array with structure:
         </div>
         
         <div className="flex gap-2">
+          <Button onClick={initializeSabqCategories} variant="default">
+            <Target className="ml-2" size={16} />
+            تهيئة تصنيفات سبق
+          </Button>
           <Button onClick={generateCategorySuggestions} variant="outline">
             <Target className="ml-2" size={16} />
             اقتراح فئات
@@ -398,7 +614,7 @@ Return as JSON array with structure:
 
       {/* Tabs for Categories and Tags */}
       <Tabs defaultValue="categories" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="categories" className="flex items-center gap-2">
             <Folder size={16} />
             الفئات ({filteredCategories.length})
@@ -406,6 +622,10 @@ Return as JSON array with structure:
           <TabsTrigger value="tags" className="flex items-center gap-2">
             <TagIcon size={16} />
             العلامات ({filteredTags.length})
+          </TabsTrigger>
+          <TabsTrigger value="preview" className="flex items-center gap-2">
+            <Eye size={16} />
+            معاينة العرض
           </TabsTrigger>
         </TabsList>
 
@@ -714,6 +934,92 @@ Return as JSON array with structure:
                 </Card>
               ))}
             </div>
+          </div>
+        </TabsContent>
+
+        {/* Preview Tab */}
+        <TabsContent value="preview">
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-xl font-semibold mb-4">معاينة عرض التصنيفات</h2>
+              <p className="text-muted-foreground mb-6">
+                هذا هو شكل التصنيفات كما ستظهر في الواجهة الأمامية للمستخدمين
+              </p>
+            </div>
+
+            {/* Navigation Style Preview */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">عرض التنقل</CardTitle>
+                <CardDescription>كما تظهر في القائمة الجانبية</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <CategoryList
+                  categories={filteredCategories.filter(c => c.isActive)}
+                  variant="compact"
+                  showIcon={true}
+                  showColor={true}
+                  sortBy="order"
+                />
+              </CardContent>
+            </Card>
+
+            {/* Article Card Style Preview */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">عرض بطاقة المقال</CardTitle>
+                <CardDescription>كما تظهر في قائمة المقالات</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <CategoryList
+                  categories={filteredCategories.filter(c => c.isActive).slice(0, 6)}
+                  variant="default"
+                  showIcon={true}
+                  showColor={true}
+                  sortBy="order"
+                />
+              </CardContent>
+            </Card>
+
+            {/* Grid Style Preview */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">عرض الشبكة</CardTitle>
+                <CardDescription>عرض شامل للتصنيفات</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <CategoryList
+                  categories={filteredCategories.filter(c => c.isActive)}
+                  variant="card"
+                  columns={3}
+                  showIcon={true}
+                  showColor={true}
+                  sortBy="order"
+                />
+              </CardContent>
+            </Card>
+
+            {/* Detailed Preview */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">العرض التفصيلي</CardTitle>
+                <CardDescription>عرض مفصل مع الوصف</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {filteredCategories.filter(c => c.isActive).slice(0, 3).map(category => (
+                    <div key={category.id} className="p-4 border rounded-lg">
+                      <CategoryDisplay
+                        category={category}
+                        variant="detailed"
+                        showIcon={true}
+                        showColor={true}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </TabsContent>
       </Tabs>
