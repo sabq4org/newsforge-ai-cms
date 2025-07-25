@@ -21,6 +21,12 @@
     
     /* Prevent zoom on touch devices */
     touch-action: manipulation;
+    
+    /* Fix dashboard zoom level */
+    zoom: 1 !important;
+    -webkit-user-zoom: fixed !important;
+    -moz-user-zoom: fixed !important;
+    user-zoom: fixed !important;
   }
   
   html[dir="rtl"] {
@@ -568,6 +574,40 @@
     user-zoom: fixed !important;
   }
   
+  /* Dashboard-specific zoom fixes */
+  .dashboard,
+  .dashboard *,
+  .admin-panel,
+  .admin-panel *,
+  .control-panel,
+  .control-panel * {
+    zoom: 1 !important;
+    -webkit-user-zoom: fixed !important;
+    -moz-user-zoom: fixed !important;
+    user-zoom: fixed !important;
+    transform: none !important;
+    -webkit-transform: none !important;
+    scale: 1 !important;
+  }
+  
+  /* Responsive zoom control for different screen sizes */
+  @media (min-width: 1200px) {
+    html {
+      font-size: 16px !important; /* Base font size for larger screens */
+    }
+    
+    body {
+      zoom: 1 !important;
+      -webkit-zoom: 1 !important;
+    }
+  }
+  
+  @media (min-width: 1400px) {
+    html {
+      font-size: 16px !important; /* Keep consistent on very large screens */
+    }
+  }
+  
   /* Disable problematic CSS animations that may cause zoom */
   .no-zoom-animations *,
   .no-zoom-animations,
@@ -581,6 +621,55 @@
     -webkit-transform: none !important;
     scale: 1 !important;
     zoom: 1 !important;
+  }
+  
+  /* Additional viewport and zoom controls for dashboard usage */
+  @media screen {
+    html, body {
+      width: 100% !important;
+      height: 100% !important;
+      overflow-x: hidden;
+      -webkit-text-size-adjust: 100% !important;
+      -moz-text-size-adjust: 100% !important;
+      text-size-adjust: 100% !important;
+      zoom: 1 !important;
+    }
+    
+    /* Force consistent sizing across all screen types */
+    * {
+      box-sizing: border-box;
+    }
+    
+    /* Prevent any scaling on images or media */
+    img, video, canvas, svg {
+      max-width: 100%;
+      height: auto;
+      transform: none !important;
+      zoom: 1 !important;
+    }
+  }
+  
+  /* Enhanced desktop dashboard optimization */
+  @media (min-width: 1024px) {
+    .dashboard-container,
+    .admin-interface,
+    .cms-interface {
+      zoom: 1 !important;
+      -webkit-zoom: 1 !important;
+      transform: none !important;
+      scale: 1 !important;
+    }
+    
+    /* Ensure sidebar and content areas maintain proper proportions */
+    .sidebar {
+      min-width: 250px;
+      max-width: 350px;
+    }
+    
+    .main-content {
+      flex: 1;
+      min-width: 0; /* Prevent flex item overflow */
+    }
   }
 }
 

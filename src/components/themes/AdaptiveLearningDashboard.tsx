@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Switch } from '@/components/ui/switch';
+import { safeDateFormat } from '@/lib/utils';
 import { 
   Brain,
   Eye,
@@ -351,7 +352,12 @@ export function AdaptiveLearningDashboard({
                   <div>
                     <div className="font-medium">{adaptation.reason}</div>
                     <div className="text-sm text-muted-foreground">
-                      {adaptation.context} • {new Date(adaptation.timestamp).toLocaleString('ar-SA')}
+                      {adaptation.context} • {safeDateFormat(adaptation.timestamp, 'ar-SA', {
+                        month: 'short',
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: 'numeric'
+                      })}
                     </div>
                   </div>
                 </div>

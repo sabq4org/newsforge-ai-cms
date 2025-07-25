@@ -24,6 +24,8 @@ import {
   Images,
   Code,
   Medal,
+  Trophy,
+  Award,
   GitMerge,
   Wrench,
   Microphone,
@@ -221,7 +223,7 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
     {
       id: 'recommendation-system-overview',
       label: isArabic ? 'نظام التوصيات' : 'Recommendation System',
-      icon: Medal, // Using Medal instead of Award to fix runtime error
+      icon: Trophy,
       show: canAccess('ai-tools'),
       badge: isArabic ? 'ذكي' : 'AI'
     },

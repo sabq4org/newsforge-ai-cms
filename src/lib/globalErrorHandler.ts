@@ -13,6 +13,28 @@ const originalToLocaleTimeString = Date.prototype.toLocaleTimeString;
 let performanceErrorCount = 0;
 const maxPerformanceErrors = 10;
 
+// Global reference for cn function as fallback
+let fallbackCn: any = null;
+
+try {
+  // Try to import cn function dynamically for fallback
+  import('./utils').then(utils => {
+    if (utils.cn) {
+      fallbackCn = utils.cn;
+    }
+  }).catch(() => {
+    // Create a basic cn fallback function
+    fallbackCn = (...classes: any[]) => {
+      return classes.filter(Boolean).join(' ');
+    };
+  });
+} catch (error) {
+  // Create a basic cn fallback function
+  fallbackCn = (...classes: any[]) => {
+    return classes.filter(Boolean).join(' ');
+  };
+}
+
 // Override Date.prototype.toLocaleDateString with error handling
 Date.prototype.toLocaleDateString = function(locales?: string | string[], options?: Intl.DateTimeFormatOptions): string {
   try {
@@ -68,6 +90,13 @@ window.addEventListener('error', (event) => {
     });
     
     performanceErrorCount++;
+    
+    // Handle specific cn function errors
+    if (event.message.includes("Can't find variable: cn")) {
+      // Provide fallback cn function globally
+      (window as any).cn = fallbackCn || ((...classes: any[]) => classes.filter(Boolean).join(' '));
+      console.warn('globalErrorHandler: Provided fallback cn function');
+    }
     
     // Alert performance dashboard if too many errors
     if (performanceErrorCount >= maxPerformanceErrors) {

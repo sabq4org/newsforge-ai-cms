@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Slider } from '@/components/ui/slider';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { safeDateFormat } from '@/lib/utils';
 import { 
   Play,
   Pause,
@@ -632,9 +633,11 @@ Return structured script with scenes, visuals, and narration.`;
                           <Badge variant="outline">{audio.type}</Badge>
                           <Badge variant="outline">{audio.voice}</Badge>
                           <span>
-                            {audio.createdAt && !isNaN(new Date(audio.createdAt).getTime()) ? 
-                              new Date(audio.createdAt).toLocaleDateString('ar-SA') : 
-                              'غير متاح'}
+                            {safeDateFormat(audio.createdAt, 'ar-SA', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric'
+                            })}
                           </span>
                         </div>
                       </div>

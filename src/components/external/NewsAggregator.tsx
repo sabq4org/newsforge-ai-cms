@@ -516,7 +516,7 @@ export function NewsAggregator() {
                     <div className="space-y-2 text-sm">
                       <div className="flex items-center justify-between">
                         <span className="text-muted-foreground">حجم النقاش:</span>
-                        <span className="font-medium">{topic.volume.toLocaleString()}</span>
+                        <span className="font-medium">{(topic.volume || 0).toLocaleString()}</span>
                       </div>
                       
                       <div className="flex items-center justify-between">

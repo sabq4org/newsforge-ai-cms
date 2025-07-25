@@ -103,6 +103,26 @@ function AppContent() {
     
     // Update page title based on language
     document.title = isArabic ? 'سبق الذكية - نظام إدارة المحتوى الذكي' : 'Sabq Althakiyah - AI-Powered CMS';
+    
+    // Fix zoom and viewport issues
+    document.body.style.zoom = "1";
+    document.body.style.transform = "none";
+    document.body.style.webkitTransform = "none";
+    document.body.style.scale = "1";
+    
+    // Ensure viewport meta is properly set for dashboard
+    const viewportMeta = document.querySelector('meta[name="viewport"]');
+    if (viewportMeta) {
+      viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no, viewport-fit=cover');
+    }
+    
+    // Prevent any zoom on root elements
+    const rootElement = document.getElementById('root');
+    if (rootElement) {
+      rootElement.style.zoom = "1";
+      rootElement.style.transform = "none";
+      rootElement.style.webkitTransform = "none";
+    }
   }, [isRTL, language.code, isArabic]);
   
   const [activeView, setActiveView] = useState('dashboard');
@@ -136,6 +156,54 @@ function AppContent() {
     DataCache.clear();
     console.log('AppContent: Memory cleanup performed');
   });
+
+  // Additional effect to ensure proper zoom level on mount and updates
+  React.useEffect(() => {
+    const resetZoom = () => {
+      // Reset body zoom
+      document.body.style.zoom = "1";
+      document.body.style.webkitTransform = "none";
+      document.body.style.transform = "none";
+      document.body.style.scale = "1";
+      
+      // Reset root element zoom
+      const rootElement = document.getElementById('root');
+      if (rootElement) {
+        rootElement.style.zoom = "1";
+        rootElement.style.webkitTransform = "none";
+        rootElement.style.transform = "none";
+        rootElement.style.scale = "1";
+      }
+      
+      // Reset all dashboard-related elements
+      const dashboardElements = document.querySelectorAll('.dashboard, .admin-panel, .cms-interface, .app-container');
+      dashboardElements.forEach(element => {
+        const el = element as HTMLElement;
+        el.style.zoom = "1";
+        el.style.webkitTransform = "none";
+        el.style.transform = "none";
+        el.style.scale = "1";
+      });
+    };
+    
+    resetZoom();
+    
+    // Reset zoom after any layout changes
+    const observer = new MutationObserver(() => {
+      resetZoom();
+    });
+    
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['style', 'class']
+    });
+    
+    return () => {
+      observer.disconnect();
+    };
+  }, [activeView]); // Reset when view changes
 
   // Membership handlers
   const handleMemberLogin = (userData: UserProfile) => {

@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
+import { safeDateFormat, safeTimeFormat } from '@/lib/utils';
 import { 
   Brain,
   Eye,
@@ -575,7 +576,13 @@ export function AdaptiveColorLearningSystem({
                     <div>
                       <div className="font-medium">{adaptation.reasoning[0]}</div>
                       <div className="text-sm text-muted-foreground">
-                        {new Date(adaptation.timestamp).toLocaleString('ar-SA')}
+                        {safeDateFormat(adaptation.timestamp, 'ar-SA', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                          hour: 'numeric',
+                          minute: 'numeric'
+                        })}
                       </div>
                     </div>
                   </div>

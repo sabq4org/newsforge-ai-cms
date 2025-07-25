@@ -138,7 +138,7 @@ export const PersonalizedThemesDashboard: React.FC = () => {
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{analytics.totalUsers.toLocaleString()}</div>
+                <div className="text-2xl font-bold">{(analytics.totalUsers || 0).toLocaleString()}</div>
                 <p className="text-xs text-muted-foreground">
                   +12% من الشهر الماضي
                 </p>

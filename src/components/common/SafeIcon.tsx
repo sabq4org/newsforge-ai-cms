@@ -8,7 +8,9 @@ import {
   TrendingUp,
   BarChart3,
   Activity,
-  ChartLineUp
+  ChartLineUp,
+  Trophy,
+  Award
 } from '@phosphor-icons/react';
 import { safeToLowerCase } from '@/lib/utils';
 
@@ -16,8 +18,8 @@ import { safeToLowerCase } from '@/lib/utils';
 const ICON_MAP: Record<string, React.ComponentType<any>> = {
   medal: Medal,
   star: Star,
-  trophy: Medal, // Use Medal instead of Trophy to fix runtime error
-  award: Medal, // Use Medal instead of Award to fix runtime error
+  trophy: Trophy,
+  award: Award,
   crown: Crown,
   check: CheckCircle,
   alert: AlertTriangle,
