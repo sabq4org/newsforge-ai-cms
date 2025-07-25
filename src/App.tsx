@@ -45,11 +45,11 @@ import { SchedulingCalendar } from '@/components/scheduling';
 import { CategoryManager, CategoryStatistics, ComprehensiveCategoryManager } from '@/components/categories';
 import { LoyaltySystem } from '@/components/loyalty';
 import { DailyDosesManager } from '@/components/doses';
-import { PodcastDemo } from '@/components/demo/PodcastDemo';
+import { PodcastDemo, ArabicNeuralNetworkDemo } from '@/components/demo';
 import { ErrorChecker } from '@/components/debug/ErrorChecker';
 import { ErrorBoundary } from '@/components/debug/ErrorBoundary';
 import { RuntimeChecker } from '@/components/debug/RuntimeChecker';
-import { ReadingPreferencePrediction, AdvancedMLModelTraining, PredictiveBehaviorEngine, NeuralNetworkTrainer, TransformerTrainingStudio, DeepLearningPipelineManager } from '@/components/ml';
+import { ReadingPreferencePrediction, AdvancedMLModelTraining, PredictiveBehaviorEngine, NeuralNetworkTrainer, TransformerTrainingStudio, DeepLearningPipelineManager, ArabicContentClassifier } from '@/components/ml';
 import { ExternalDataManager, NewsAggregator } from '@/components/external';
 import { BreakingNewsNotifications, NotificationCenter, LiveNotificationBanner, NotificationPreferences, NotificationAnalytics, SmartNotificationSystem } from '@/components/notifications';
 import { AutoResourceOptimizerDashboard, ResourceOptimizationConfig, PerformanceOptimizationDemo, AutoResourceOptimizationOverview } from '@/components/optimization';
@@ -836,6 +836,12 @@ function AppContent() {
       
       case 'deep-learning-pipeline':
         return <DeepLearningPipelineManager />;
+      
+      case 'arabic-content-classifier':
+        return <ArabicContentClassifier />;
+      
+      case 'neural-network-demo':
+        return <ArabicNeuralNetworkDemo />;
       
       case 'smart-recommendations':
         return memberUser ? (

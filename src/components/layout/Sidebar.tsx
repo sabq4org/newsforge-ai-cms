@@ -284,6 +284,20 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       badge: isArabic ? 'خطوط' : 'Pipeline'
     },
     {
+      id: 'arabic-content-classifier',
+      label: isArabic ? 'مصنف المحتوى العربي' : 'Arabic Content Classifier',
+      icon: Brain,
+      show: canAccess('ai-tools'),
+      badge: isArabic ? 'تصنيف' : 'Classify'
+    },
+    {
+      id: 'neural-network-demo',
+      label: isArabic ? 'تجربة الشبكة العصبية' : 'Neural Network Demo',
+      icon: Brain,
+      show: canAccess('ai-tools'),
+      badge: isArabic ? 'تجربة' : 'Demo'
+    },
+    {
       id: 'predictive-behavior',
       label: isArabic ? 'محرك التنبؤ السلوكي' : 'Predictive Behavior Engine',
       icon: TrendingUp,
