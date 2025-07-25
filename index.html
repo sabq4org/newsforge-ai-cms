@@ -6,6 +6,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no, viewport-fit=cover, interactive-widget=resizes-content" />
     <title>سبق الذكية - Sabq Althakiyah</title>
     
+    <!-- Critical error handling script -->
+    <script>
+      // Emergency error detection
+      let criticalErrors = 0;
+      
+      window.addEventListener('error', function(e) {
+        criticalErrors++;
+        console.error('HTML-level error:', e.message, e.filename, e.lineno);
+        
+        if (e.message && (
+          e.message.includes('forEach') ||
+          e.message.includes('tailwind') ||
+          e.message.includes('classGroup') ||
+          e.message.includes("Can't find variable: cn") ||
+          e.message.includes('ChartLine') ||
+          e.message.includes('Trophy') ||
+          e.message.includes('Award')
+        )) {
+          console.warn('Critical error detected in HTML, redirecting to emergency mode');
+          if (window.location.search !== '?emergency=true') {
+            window.location.search = '?emergency=true';
+          }
+        }
+        
+        if (criticalErrors > 3) {
+          console.warn('Too many errors, forcing emergency mode');
+          window.location.search = '?emergency=true';
+        }
+      });
+      
+      // Provide basic fallbacks immediately
+      window.cn = window.cn || function() {
+        return Array.from(arguments).filter(Boolean).join(' ');
+      };
+    </script>
+    
     <!-- Optimized font loading with preconnect and preload -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

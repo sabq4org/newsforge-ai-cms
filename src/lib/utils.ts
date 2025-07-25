@@ -4,7 +4,33 @@ import { Article, Category } from "@/types"
 import { mockCategories } from "./mockData"
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  try {
+    // Ensure inputs is an array and filter out null/undefined values
+    const safeInputs = Array.isArray(inputs) ? inputs.filter(Boolean) : [];
+    
+    // If no valid inputs, return empty string
+    if (safeInputs.length === 0) {
+      return '';
+    }
+    
+    // Safely apply clsx first
+    const clsxResult = clsx(safeInputs);
+    
+    // Then safely apply twMerge
+    return twMerge(clsxResult);
+  } catch (error) {
+    console.warn('cn utility error:', error, 'inputs:', inputs);
+    
+    // Fallback: try to join strings manually
+    try {
+      return inputs
+        .filter(input => typeof input === 'string' && input.length > 0)
+        .join(' ');
+    } catch (fallbackError) {
+      console.warn('cn fallback error:', fallbackError);
+      return '';
+    }
+  }
 }
 
 /**

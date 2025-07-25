@@ -1059,6 +1059,7 @@ function AppContent() {
 import SafeTestApp from './SafeTestApp';
 import TestAppContent from './TestAppContent';
 import MinimalStartup from './MinimalStartup';
+import EmergencyApp from './EmergencyApp';
 
 function App() {
   try {
@@ -1067,6 +1068,12 @@ function App() {
     const safeMode = urlParams.get('safe') === 'true';
     const testMode = urlParams.get('test') === 'true';
     const minimalMode = urlParams.get('minimal') === 'true';
+    const emergencyMode = urlParams.get('emergency') === 'true';
+    
+    // Emergency mode - absolute minimum functionality for debugging
+    if (emergencyMode) {
+      return <EmergencyApp />;
+    }
     
     // Minimal mode - no dependencies, pure React
     if (minimalMode) {
@@ -1101,12 +1108,19 @@ function App() {
         <RuntimeErrorBoundary
           onError={(error, errorInfo) => {
             console.error('App-level runtime error:', error, errorInfo);
-            // Could send to error reporting service here
+            // Automatically redirect to emergency mode on critical errors
+            if (error.message.includes('forEach') || error.message.includes('toLowerCase')) {
+              window.location.search = '?emergency=true';
+            }
           }}
         >
           <ComponentErrorBoundary
             onError={(error, errorInfo) => {
               console.error('Component-level error:', error, errorInfo);
+              // Check for specific tailwind-merge or class utility errors
+              if (error.message.includes('forEach') || error.message.includes('classGroup')) {
+                window.location.search = '?emergency=true';
+              }
             }}
           >
             <ErrorBoundary>
@@ -1126,6 +1140,16 @@ function App() {
     );
   } catch (error) {
     console.error('Critical App.tsx error:', error);
+    
+    // If the error is related to forEach or string methods, go to emergency mode
+    if (error instanceof Error && (
+      error.message.includes('forEach') || 
+      error.message.includes('toLowerCase') ||
+      error.message.includes('classGroup')
+    )) {
+      return <EmergencyApp />;
+    }
+    
     // Fallback to absolute minimum if everything else fails
     return <MinimalStartup />;
   }

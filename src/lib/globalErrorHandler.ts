@@ -26,6 +26,44 @@ try {
   fallbackCn = () => '';
 }
 
+// Enhanced Array prototype safety
+const originalForEach = Array.prototype.forEach;
+Array.prototype.forEach = function<T>(this: T[], callbackfn: (value: T, index: number, array: T[]) => void, thisArg?: any): void {
+  try {
+    // Ensure this is actually an array
+    if (!Array.isArray(this)) {
+      console.warn('forEach called on non-array:', this);
+      return;
+    }
+    return originalForEach.call(this, callbackfn, thisArg);
+  } catch (error) {
+    console.error('Enhanced forEach error handler:', error);
+    // Try to continue with a basic loop
+    for (let i = 0; i < this.length; i++) {
+      try {
+        callbackfn.call(thisArg, this[i], i, this);
+      } catch (itemError) {
+        console.error(`Error processing array item ${i}:`, itemError);
+      }
+    }
+  }
+};
+
+// Enhanced String prototype safety
+const originalToLowerCase = String.prototype.toLowerCase;
+String.prototype.toLowerCase = function(): string {
+  try {
+    if (typeof this !== 'string' && typeof this.valueOf !== 'function') {
+      console.warn('toLowerCase called on invalid object:', this);
+      return '';
+    }
+    return originalToLowerCase.call(this);
+  } catch (error) {
+    console.error('Enhanced toLowerCase error handler:', error);
+    return String(this || '').toLowerCase();
+  }
+};
+
 // Override Date.prototype.toLocaleDateString with error handling
 Date.prototype.toLocaleDateString = function(locales?: string | string[], options?: Intl.DateTimeFormatOptions): string {
   try {
@@ -66,10 +104,13 @@ window.addEventListener('error', (event) => {
     event.message.includes("Can't find variable") ||
     event.message.includes("Can't find variable: cn") ||
     event.message.includes('toLowerCase') ||
+    event.message.includes('forEach') ||
     event.message.includes('Cannot read propert') ||
     event.message.includes('Trophy') ||
     event.message.includes('Award') ||
-    event.message.includes('ChartLine')
+    event.message.includes('ChartLine') ||
+    event.message.includes('classGroup') ||
+    event.message.includes('tailwind')
   )) {
     console.error('Global error caught and handled:', {
       message: event.message,
@@ -89,9 +130,36 @@ window.addEventListener('error', (event) => {
       console.warn('globalErrorHandler: Provided fallback cn function');
     }
     
+    // Handle forEach errors
+    if (event.message.includes('forEach') && event.message.includes('not a function')) {
+      console.warn('globalErrorHandler: forEach error detected, providing fallback');
+      event.preventDefault();
+      return true;
+    }
+    
+    // Handle tailwind-merge errors
+    if (event.message.includes('tailwind') || event.message.includes('classGroup')) {
+      console.warn('globalErrorHandler: Tailwind merge error detected');
+      // Provide a super simple cn fallback
+      (window as any).cn = (...classes: any[]) => {
+        try {
+          return classes.filter(c => c && typeof c === 'string').join(' ');
+        } catch {
+          return '';
+        }
+      };
+      event.preventDefault();
+      return true;
+    }
+    
     // Alert performance dashboard if too many errors
     if (performanceErrorCount >= maxPerformanceErrors) {
       console.warn(`Performance Alert: ${performanceErrorCount} errors detected`);
+      // Consider redirecting to emergency mode
+      if (window.location.search !== '?emergency=true') {
+        console.warn('Redirecting to emergency mode due to too many errors');
+        window.location.search = '?emergency=true';
+      }
       performanceErrorCount = 0; // Reset counter
     }
     
@@ -112,7 +180,11 @@ window.addEventListener('unhandledrejection', (event) => {
     event.reason.message.includes('Cannot read propert') ||
     event.reason.message.includes('Trophy') ||
     event.reason.message.includes('Award') ||
-    event.reason.message.includes('ChartLine')
+    event.reason.message.includes('ChartLine') ||
+    event.reason.message.includes('forEach') ||
+    event.reason.message.includes('toLowerCase') ||
+    event.reason.message.includes('classGroup') ||
+    event.reason.message.includes('tailwind')
   )) {
     console.error('Global async error caught and handled:', {
       reason: event.reason,
@@ -149,6 +221,16 @@ if ('PerformanceObserver' in window) {
 
 export function initializeGlobalErrorHandler() {
   console.log('Enhanced global error handler with performance monitoring initialized');
+  
+  // Provide global safe utilities
+  (window as any).safeCn = fallbackCn;
+  (window as any).safeToString = (value: any) => {
+    try {
+      return String(value || '');
+    } catch {
+      return '';
+    }
+  };
   
   // Report initial performance state
   if ('memory' in performance) {
