@@ -226,7 +226,17 @@ export function safeTimeFormat(
  * Safely call toLowerCase on a string with fallback
  */
 export function safeToLowerCase(value: any): string {
-  return safeToString(value).toLowerCase();
+  const str = safeToString(value);
+  try {
+    // Ensure we have a string and it has toLowerCase method
+    if (typeof str === 'string' && typeof str.toLowerCase === 'function') {
+      return str.toLowerCase();
+    }
+    return String(str).toLowerCase();
+  } catch (error) {
+    console.warn('safeToLowerCase: Error converting to lowercase:', value, error);
+    return '';
+  }
 }
 
 /**

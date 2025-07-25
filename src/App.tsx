@@ -52,6 +52,8 @@ import { ErrorChecker } from '@/components/debug/ErrorChecker';
 import { ErrorBoundary } from '@/components/debug/ErrorBoundary';
 import { RuntimeErrorBoundary } from '@/components/debug/RuntimeErrorBoundary';
 import { RuntimeChecker } from '@/components/debug/RuntimeChecker';
+import ComponentErrorBoundary from '@/components/debug/ComponentErrorBoundary';
+import SafeAppWrapper from '@/components/debug/SafeAppWrapper';
 import { ReadingPreferencePrediction, AdvancedMLModelTraining, PredictiveBehaviorEngine, NeuralNetworkTrainer, TransformerTrainingStudio, DeepLearningPipelineManager, ArabicContentClassifier } from '@/components/ml';
 import { ExternalDataManager, NewsAggregator } from '@/components/external';
 import { BreakingNewsNotifications, NotificationCenter, LiveNotificationBanner, NotificationPreferences, NotificationAnalytics, SmartNotificationSystem } from '@/components/notifications';
@@ -925,6 +927,13 @@ function AppContent() {
     }
   };
 
+  // Enhanced error handling for rendering
+  const renderWithErrorBoundary = (content: React.ReactNode) => (
+    <ComponentErrorBoundary>
+      {content}
+    </ComponentErrorBoundary>
+  );
+
   return (
     <div className={cn("min-h-screen bg-background no-zoom app-container admin-interface no-transform no-zoom-animations", isRTL && "rtl")} dir={isRTL ? "rtl" : "ltr"}>
       {/* Error Mitigation System */}
@@ -997,7 +1006,7 @@ function AppContent() {
           </div>
           
           <main className="flex-1 overflow-y-auto p-6 bg-background content-area admin-content">
-            {renderContent()}
+            {renderWithErrorBoundary(renderContent())}
           </main>
         </div>
       </div>
@@ -1047,33 +1056,79 @@ function AppContent() {
   );
 }
 
+import SafeTestApp from './SafeTestApp';
+import TestAppContent from './TestAppContent';
+import MinimalStartup from './MinimalStartup';
+
 function App() {
-  return (
-    <RuntimeErrorBoundary
-      onError={(error, errorInfo) => {
-        console.error('App-level runtime error:', error, errorInfo);
-        // Could send to error reporting service here
-      }}
-    >
-      <ErrorBoundary>
-        <AuthProvider>
-          <ThemeProvider>
-            <TypographyProvider>
-              <CollaborativeProvider>
-                <AppContent />
-                <Toaster 
-                  position="top-right"
-                  toastOptions={{
-                    duration: 3000,
-                  }}
-                />
-              </CollaborativeProvider>
-            </TypographyProvider>
-          </ThemeProvider>
-        </AuthProvider>
-      </ErrorBoundary>
-    </RuntimeErrorBoundary>
-  );
+  try {
+    // Safety mechanism - check URL parameters for testing modes
+    const urlParams = new URLSearchParams(window.location.search);
+    const safeMode = urlParams.get('safe') === 'true';
+    const testMode = urlParams.get('test') === 'true';
+    const minimalMode = urlParams.get('minimal') === 'true';
+    
+    // Minimal mode - no dependencies, pure React
+    if (minimalMode) {
+      return <MinimalStartup />;
+    }
+    
+    // Safe mode - minimal UI test
+    if (safeMode) {
+      return <SafeTestApp />;
+    }
+    
+    // Test mode - test with contexts but simpler content
+    if (testMode) {
+      return (
+        <SafeAppWrapper>
+          <ComponentErrorBoundary>
+            <AuthProvider>
+              <ThemeProvider>
+                <TypographyProvider>
+                  <TestAppContent />
+                </TypographyProvider>
+              </ThemeProvider>
+            </AuthProvider>
+          </ComponentErrorBoundary>
+        </SafeAppWrapper>
+      );
+    }
+
+    // Full application mode with enhanced error boundaries
+    return (
+      <SafeAppWrapper>
+        <RuntimeErrorBoundary
+          onError={(error, errorInfo) => {
+            console.error('App-level runtime error:', error, errorInfo);
+            // Could send to error reporting service here
+          }}
+        >
+          <ComponentErrorBoundary
+            onError={(error, errorInfo) => {
+              console.error('Component-level error:', error, errorInfo);
+            }}
+          >
+            <ErrorBoundary>
+              <AuthProvider>
+                <ThemeProvider>
+                  <TypographyProvider>
+                    <CollaborativeProvider>
+                      <AppContent />
+                    </CollaborativeProvider>
+                  </TypographyProvider>
+                </ThemeProvider>
+              </AuthProvider>
+            </ErrorBoundary>
+          </ComponentErrorBoundary>
+        </RuntimeErrorBoundary>
+      </SafeAppWrapper>
+    );
+  } catch (error) {
+    console.error('Critical App.tsx error:', error);
+    // Fallback to absolute minimum if everything else fails
+    return <MinimalStartup />;
+  }
 }
 
 export default App;
