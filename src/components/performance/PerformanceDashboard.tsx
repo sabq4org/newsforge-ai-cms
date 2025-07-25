@@ -208,6 +208,9 @@ export function PerformanceDashboard() {
     if (time < 33) return 'text-yellow-600'; // Acceptable (30fps)
     return 'text-red-600'; // Poor
   };
+
+  return (
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">لوحة تحكم الأداء</h1>

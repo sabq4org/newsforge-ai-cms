@@ -1,25 +1,51 @@
-import { ComponentType } from 'react';
-import { Question } from '@phosphor-icons/react';
+import React from 'react';
+import { 
+  Medal,
+  Star,
+  Trophy,
+  Award,
+  Crown,
+  CheckCircle,
+  AlertTriangle
+} from '@phosphor-icons/react';
+
+// Safe icon mapping to prevent runtime errors
+const ICON_MAP: Record<string, React.ComponentType<any>> = {
+  medal: Medal,
+  star: Star,
+  trophy: Trophy,
+  award: Award,
+  crown: Crown,
+  check: CheckCircle,
+  alert: AlertTriangle
+};
 
 interface SafeIconProps {
-  icon: ComponentType<any> | undefined;
-  fallback?: ComponentType<any>;
+  name: string;
+  size?: number;
   className?: string;
-  [key: string]: any;
+  fallback?: React.ComponentType<any>;
 }
 
+/**
+ * SafeIcon component that safely renders icons with fallback
+ * Prevents runtime errors from missing icon imports
+ */
 export function SafeIcon({ 
-  icon: Icon, 
-  fallback: Fallback = Question, 
-  className = "h-4 w-4",
-  ...props 
+  name, 
+  size = 16, 
+  className = '', 
+  fallback = Medal 
 }: SafeIconProps) {
-  const IconComponent = Icon || Fallback;
+  const IconComponent = ICON_MAP[name.toLowerCase()] || fallback;
   
   try {
-    return <IconComponent className={className} {...props} />;
+    return <IconComponent size={size} className={className} />;
   } catch (error) {
-    console.warn('SafeIcon: Error rendering icon, using fallback:', error);
-    return <Fallback className={className} {...props} />;
+    console.warn(`SafeIcon: Error rendering icon "${name}", using fallback:`, error);
+    const FallbackIcon = fallback;
+    return <FallbackIcon size={size} className={className} />;
   }
 }
+
+export default SafeIcon;

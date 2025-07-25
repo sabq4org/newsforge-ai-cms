@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { safeTimeFormat } from '@/lib/utils';
 import { 
   Gauge,
   Memory as MemoryIcon,
@@ -566,7 +567,7 @@ export function EnhancedPerformanceDashboard() {
                           key={index}
                           className="bg-blue-500 min-w-[4px] rounded-t"
                           style={{ height: `${point.memory}%` }}
-                          title={`${point.memory.toFixed(1)}% في ${point.timestamp.toLocaleTimeString()}`}
+                          title={`${point.memory.toFixed(1)}% في ${safeTimeFormat(point.timestamp, 'ar-SA')}`}
                         />
                       ))}
                     </div>
@@ -586,7 +587,7 @@ export function EnhancedPerformanceDashboard() {
                             point.renderTime < 33 ? 'bg-yellow-500' : 'bg-red-500'
                           }`}
                           style={{ height: `${Math.min(100, (point.renderTime / 50) * 100)}%` }}
-                          title={`${point.renderTime.toFixed(1)}ms في ${point.timestamp.toLocaleTimeString()}`}
+                          title={`${point.renderTime.toFixed(1)}ms في ${safeTimeFormat(point.timestamp, 'ar-SA')}`}
                         />
                       ))}
                     </div>
@@ -603,7 +604,7 @@ export function EnhancedPerformanceDashboard() {
                           key={index}
                           className="bg-purple-500 min-w-[4px] rounded-t"
                           style={{ height: `${Math.min(100, (point.cacheSize / 100) * 100)}%` }}
-                          title={`${point.cacheSize} عنصر في ${point.timestamp.toLocaleTimeString()}`}
+                          title={`${point.cacheSize} عنصر في ${safeTimeFormat(point.timestamp, 'ar-SA')}`}
                         />
                       ))}
                     </div>

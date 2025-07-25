@@ -273,15 +273,17 @@ export class DataCache {
 // Component lazy loading utility
 export function createLazyComponent<T extends React.ComponentType<any>>(
   importFunc: () => Promise<{ default: T }>,
-  fallback: React.ComponentType = () => <div>Loading...</div>
+  fallback: React.ComponentType = () => React.createElement('div', null, 'Loading...')
 ) {
   const LazyComponent = React.lazy(importFunc);
   
-  return React.forwardRef<any, React.ComponentProps<T>>((props, ref) => (
-    <React.Suspense fallback={<fallback />}>
-      <LazyComponent {...props} ref={ref} />
-    </React.Suspense>
-  ));
+  return React.forwardRef<any, React.ComponentProps<T>>((props, ref) => 
+    React.createElement(
+      React.Suspense,
+      { fallback: React.createElement(fallback) },
+      React.createElement(LazyComponent, { ...props, ref })
+    )
+  );
 }
 
 // Image optimization utilities
