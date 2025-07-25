@@ -650,6 +650,13 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
           return false;
         }
         
+        // Validate icon - must be either a valid function component or undefined
+        if (item.icon && typeof item.icon !== 'function') {
+          console.warn(`renderMenuSection: Invalid icon type for item: – "${item.id}" – "${typeof item.icon}"`);
+          // Set to undefined to use fallback
+          item.icon = undefined;
+        }
+        
         return item.show;
       } catch (error) {
         console.error('renderMenuSection: Error checking item validity:', error, item);
@@ -693,7 +700,12 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
               "flex items-center gap-3 w-full min-w-0",
               isRTL && "flex-row-reverse"
             )}>
-              <SafeIcon icon={item.icon} className="h-4 w-4 flex-shrink-0" />
+              <SafeIcon 
+                icon={item.icon || Medal} 
+                size={16} 
+                className="h-4 w-4 flex-shrink-0" 
+                fallback={Medal}
+              />
               <span className={cn(
                 "flex-1 truncate font-arabic text-left",
                 isRTL && "text-right"
@@ -723,14 +735,14 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       {/* Mobile overlay */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/50 z-20 lg:hidden"
           onClick={onClose}
         />
       )}
       
       {/* Sidebar */}
       <aside className={cn(
-        "fixed top-0 z-50 h-full w-72 bg-card border-r border-border transform transition-transform duration-200 ease-in-out lg:relative lg:translate-x-0 no-zoom",
+        "fixed top-0 z-30 h-full w-72 bg-card border-r border-border transform transition-transform duration-200 ease-in-out lg:relative lg:translate-x-0 no-zoom admin-sidebar",
         isRTL ? "right-0 border-l border-r-0" : "left-0",
         isOpen 
           ? "translate-x-0" 

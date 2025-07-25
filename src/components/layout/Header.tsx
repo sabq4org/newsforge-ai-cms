@@ -84,7 +84,7 @@ export function Header({
 
   return (
     <header className={cn(
-      "bg-card border-b border-border px-4 py-3 no-zoom",
+      "bg-card border-b border-border px-4 py-3 no-zoom admin-header",
       isRTL && "direction-rtl"
     )}>
       <div className={cn(

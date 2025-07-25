@@ -738,6 +738,74 @@
       flex: 1;
       min-width: 0; /* Prevent flex item overflow */
     }
+    
+    /* Prevent popovers from covering sidebar */
+    [data-radix-popper-content-wrapper] {
+      z-index: 25 !important; /* Lower than sidebar z-30 */
+    }
+    
+    [data-radix-toast-viewport] {
+      z-index: 60 !important; /* Higher for toast notifications */
+    }
+    
+    /* Fix floating elements z-index to prevent overlay issues */
+    .floating-elements,
+    [role="dialog"],
+    [role="tooltip"],
+    [role="popover"],
+    .dropdown-menu,
+    .select-content,
+    .popover-content {
+      z-index: 25 !important; /* Ensure they don't cover sidebar */
+    }
+    
+    /* Ensure modal dialogs stay on top */
+    .modal-overlay,
+    [data-radix-dialog-overlay],
+    [data-radix-alert-dialog-overlay] {
+      z-index: 100 !important;
+    }
+    
+    .modal-content,
+    [data-radix-dialog-content],
+    [data-radix-alert-dialog-content] {
+      z-index: 101 !important;
+    }
+  }
+  
+  /* Z-index management for admin interface */
+  .admin-sidebar {
+    z-index: 30 !important;
+  }
+  
+  .admin-header {
+    z-index: 40 !important;
+  }
+  
+  .admin-content {
+    z-index: 10 !important;
+  }
+  
+  /* Prevent floating UI elements from covering sidebar */
+  .floating-ui,
+  [data-floating-ui-portal],
+  [data-radix-popper-content-wrapper],
+  .select-trigger,
+  .select-content,
+  .dropdown-content,
+  .popover-content,
+  .tooltip {
+    z-index: 25 !important; /* Below sidebar but above content */
+  }
+  
+  /* Special handling for dropdown menus to respect sidebar boundaries */
+  .admin-interface .dropdown-content {
+    max-width: calc(100vw - 300px); /* Account for sidebar width */
+  }
+  
+  .admin-interface.rtl .dropdown-content {
+    max-width: calc(100vw - 300px);
+    transform-origin: top right;
   }
 }
 

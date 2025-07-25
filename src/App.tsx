@@ -921,7 +921,7 @@ function AppContent() {
   };
 
   return (
-    <div className={cn("min-h-screen bg-background no-zoom app-container no-transform no-zoom-animations", isRTL && "rtl")} dir={isRTL ? "rtl" : "ltr"}>
+    <div className={cn("min-h-screen bg-background no-zoom app-container admin-interface no-transform no-zoom-animations", isRTL && "rtl")} dir={isRTL ? "rtl" : "ltr"}>
       {/* Smart Theme Applicator - runs in background */}
       <SmartThemeApplicator 
         userId={user?.id}
@@ -969,7 +969,7 @@ function AppContent() {
             </div>
           </div>
           
-          <main className="flex-1 overflow-y-auto p-6 bg-background content-area">
+          <main className="flex-1 overflow-y-auto p-6 bg-background content-area admin-content">
             {renderContent()}
           </main>
         </div>

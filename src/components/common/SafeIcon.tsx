@@ -194,13 +194,21 @@ export function SafeIcon({
   className = '', 
   fallback = Medal 
 }: SafeIconProps) {
-  // Handle direct icon component first
-  if (icon && typeof icon === 'function') {
-    try {
-      const IconComponent = icon;
-      return <IconComponent size={size} className={className} />;
-    } catch (error) {
-      console.warn(`SafeIcon: Error rendering direct icon component, using fallback:`, error);
+  // Handle direct icon component first with better validation
+  if (icon) {
+    // Check if it's a valid React component function
+    if (typeof icon === 'function') {
+      try {
+        const IconComponent = icon;
+        return <IconComponent size={size} className={className} />;
+      } catch (error) {
+        console.warn(`SafeIcon: Error rendering direct icon component, using fallback:`, error);
+        const FallbackIcon = fallback;
+        return <FallbackIcon size={size} className={className} />;
+      }
+    } else {
+      // Invalid icon type provided
+      console.warn(`SafeIcon: Invalid icon type provided:`, typeof icon, icon);
       const FallbackIcon = fallback;
       return <FallbackIcon size={size} className={className} />;
     }
@@ -219,7 +227,8 @@ export function SafeIcon({
     }
   }
   
-  // No valid icon provided, use fallback
+  // No valid icon provided, use fallback with console warning
+  console.warn('SafeIcon: No valid icon provided, using fallback');
   const FallbackIcon = fallback;
   return <FallbackIcon size={size} className={className} />;
 }
