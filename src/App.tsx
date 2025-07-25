@@ -890,7 +890,7 @@ function AppContent() {
   };
 
   return (
-    <div className={cn("min-h-screen bg-background no-zoom app-container", isRTL && "rtl")} dir={isRTL ? "rtl" : "ltr"}>
+    <div className={cn("min-h-screen bg-background no-zoom app-container no-transform no-zoom-animations", isRTL && "rtl")} dir={isRTL ? "rtl" : "ltr"}>
       {/* Smart Theme Applicator - runs in background */}
       <SmartThemeApplicator 
         userId={user?.id}
@@ -901,7 +901,7 @@ function AppContent() {
         enableAdaptiveLearning={true}
       />
       
-      <div className="flex h-screen main-layout">
+      <div className="flex h-screen main-layout no-transform">
         <Sidebar 
           activeView={activeView}
           onViewChange={handleViewChange}
@@ -938,7 +938,7 @@ function AppContent() {
             </div>
           </div>
           
-          <main className="flex-1 overflow-y-auto p-6 bg-background">
+          <main className="flex-1 overflow-y-auto p-6 bg-background content-area">
             {renderContent()}
           </main>
         </div>

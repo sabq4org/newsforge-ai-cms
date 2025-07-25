@@ -405,3 +405,59 @@ export function normalizeDataObject(obj: any): any {
   
   return normalized;
 }
+
+/**
+ * Safely convert value to string with null/undefined handling
+ */
+export function safeToString(value: any): string {
+  if (value === null || value === undefined) {
+    return '';
+  }
+  
+  if (typeof value === 'string') {
+    return value;
+  }
+  
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return String(value);
+  }
+  
+  if (typeof value === 'object') {
+    try {
+      return JSON.stringify(value);
+    } catch {
+      return '[Object]';
+    }
+  }
+  
+  return String(value);
+}
+
+/**
+ * Safely convert string to lowercase with null handling
+ */
+export function safeToLowerCase(value: any): string {
+  return safeToString(value).toLowerCase();
+}
+
+/**
+ * Enhanced date formatting with proper error handling
+ */
+export function formatDate(
+  date: Date | string | number | undefined | null,
+  locale: string = 'ar-SA',
+  options: Intl.DateTimeFormatOptions = {}
+): string {
+  return safeDateFormat(date, locale, options);
+}
+
+/**
+ * Enhanced time formatting with proper error handling
+ */
+export function formatTime(
+  date: Date | string | number | undefined | null,
+  locale: string = 'ar-SA',
+  options: Intl.DateTimeFormatOptions = {}
+): string {
+  return safeTimeFormat(date, locale, options);
+}

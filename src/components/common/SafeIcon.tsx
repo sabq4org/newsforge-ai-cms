@@ -2,10 +2,13 @@ import React from 'react';
 import { 
   Medal,
   Star,
-  Trophy,
   Crown,
   CheckCircle,
-  AlertTriangle
+  AlertTriangle,
+  TrendingUp,
+  BarChart3,
+  Activity,
+  ChartLineUp
 } from '@phosphor-icons/react';
 import { safeToLowerCase } from '@/lib/utils';
 
@@ -13,11 +16,18 @@ import { safeToLowerCase } from '@/lib/utils';
 const ICON_MAP: Record<string, React.ComponentType<any>> = {
   medal: Medal,
   star: Star,
-  trophy: Trophy,
+  trophy: Medal, // Use Medal instead of Trophy to fix runtime error
   award: Medal, // Use Medal instead of Award to fix runtime error
   crown: Crown,
   check: CheckCircle,
-  alert: AlertTriangle
+  alert: AlertTriangle,
+  chartline: ChartLineUp, // Add ChartLine mapping
+  'chart-line': ChartLineUp,
+  chartlineup: ChartLineUp,
+  trending: TrendingUp,
+  chart: BarChart3,
+  activity: Activity,
+  fallback: Medal
 };
 
 interface SafeIconProps {
@@ -64,8 +74,7 @@ export function SafeIcon({
     }
   }
   
-  // No valid icon provided, use fallback
-  console.warn('SafeIcon: No valid icon provided, using fallback');
+  // No valid icon provided, use fallback (reduce console noise)
   const FallbackIcon = fallback;
   return <FallbackIcon size={size} className={className} />;
 }

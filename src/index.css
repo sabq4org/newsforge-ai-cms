@@ -51,6 +51,14 @@
     -moz-user-select: text;
     -ms-user-select: text;
     user-select: text;
+    
+    /* Force no transform or zoom */
+    transform: none !important;
+    -webkit-transform: none !important;
+    zoom: 1 !important;
+    -webkit-user-zoom: fixed !important;
+    -moz-user-zoom: fixed !important;
+    user-zoom: fixed !important;
   }
   
   .rtl {
@@ -388,6 +396,9 @@
     -webkit-text-size-adjust: 100%;
     -moz-text-size-adjust: 100%;
     text-size-adjust: 100%;
+    transform: none !important;
+    -webkit-transform: none !important;
+    zoom: 1 !important;
   }
 
   /* Re-enable text selection for content areas */
@@ -426,12 +437,18 @@
   }
 
   /* Override any zoom animations with fade animations */
-  .animate-in[data-state="open"] {
-    animation: fadeIn 200ms ease-out;
+  .animate-in[data-state="open"],
+  .animate-in {
+    animation: fadeIn 200ms ease-out !important;
+    transform: none !important;
+    zoom: 1 !important;
   }
 
-  .animate-out[data-state="closed"] {
-    animation: fadeOut 150ms ease-in;
+  .animate-out[data-state="closed"],
+  .animate-out {
+    animation: fadeOut 150ms ease-in !important;
+    transform: none !important;
+    zoom: 1 !important;
   }
 
   @keyframes fadeIn {
@@ -458,11 +475,16 @@
       -webkit-user-zoom: fixed !important;
       -moz-user-zoom: fixed !important;
       user-zoom: fixed !important;
+      transform: none !important;
+      -webkit-transform: none !important;
     }
     
     /* Prevent double-tap zoom */
     * {
       touch-action: manipulation;
+      transform: none !important;
+      -webkit-transform: none !important;
+      zoom: 1 !important;
     }
     
     input, select, textarea, button, [role="button"] {
@@ -470,6 +492,9 @@
       -webkit-user-select: none;
       -moz-user-select: none;
       user-select: none;
+      transform: none !important;
+      -webkit-transform: none !important;
+      zoom: 1 !important;
     }
     
     /* Allow text selection in input fields */
@@ -482,6 +507,48 @@
       -moz-user-select: text;
       user-select: text;
     }
+  }
+
+  /* Global transform and zoom prevention */
+  * {
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-perspective: 1000;
+    -moz-perspective: 1000;
+    perspective: 1000;
+  }
+  
+  /* Prevent any scaling or zooming on any element */
+  *:not(input):not(textarea):not([contenteditable]) {
+    -webkit-user-zoom: fixed !important;
+    -moz-user-zoom: fixed !important;
+    user-zoom: fixed !important;
+  }
+  
+  /* Comprehensive transform prevention */
+  .no-transform,
+  .app-container,
+  .main-layout,
+  .sidebar,
+  .header,
+  .content-area {
+    transform: none !important;
+    -webkit-transform: none !important;
+    -moz-transform: none !important;
+    -ms-transform: none !important;
+    zoom: 1 !important;
+    -webkit-user-zoom: fixed !important;
+    -moz-user-zoom: fixed !important;
+    user-zoom: fixed !important;
+  }
+  
+  /* Disable problematic CSS animations that may cause zoom */
+  .no-zoom-animations * {
+    animation: none !important;
+    transition: color 0.2s ease, background-color 0.2s ease, opacity 0.2s ease !important;
+    transform: none !important;
+    -webkit-transform: none !important;
   }
 }
 

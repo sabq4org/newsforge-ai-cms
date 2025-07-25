@@ -52,9 +52,12 @@ window.addEventListener('error', (event) => {
     event.message.includes('undefined is not an object') ||
     event.message.includes("Can't find variable") ||
     event.message.includes('toLowerCase') ||
-    event.message.includes('Cannot read propert')
+    event.message.includes('Cannot read propert') ||
+    event.message.includes('Trophy') ||
+    event.message.includes('Award') ||
+    event.message.includes('ChartLine')
   )) {
-    console.error('Global error caught:', {
+    console.error('Global error caught and handled:', {
       message: event.message,
       filename: event.filename,
       lineno: event.lineno,
@@ -84,9 +87,12 @@ window.addEventListener('unhandledrejection', (event) => {
     event.reason.message.includes('is not a function') ||
     event.reason.message.includes('undefined is not an object') ||
     event.reason.message.includes('toLowerCase') ||
-    event.reason.message.includes('Cannot read propert')
+    event.reason.message.includes('Cannot read propert') ||
+    event.reason.message.includes('Trophy') ||
+    event.reason.message.includes('Award') ||
+    event.reason.message.includes('ChartLine')
   )) {
-    console.error('Global async error caught:', {
+    console.error('Global async error caught and handled:', {
       reason: event.reason,
       promise: event.promise,
       stack: event.reason?.stack
