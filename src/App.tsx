@@ -890,7 +890,7 @@ function AppContent() {
   };
 
   return (
-    <div className={cn("min-h-screen bg-background", isRTL && "rtl")} dir={isRTL ? "rtl" : "ltr"}>
+    <div className={cn("min-h-screen bg-background no-zoom app-container", isRTL && "rtl")} dir={isRTL ? "rtl" : "ltr"}>
       {/* Smart Theme Applicator - runs in background */}
       <SmartThemeApplicator 
         userId={user?.id}
@@ -901,7 +901,7 @@ function AppContent() {
         enableAdaptiveLearning={true}
       />
       
-      <div className="flex h-screen">
+      <div className="flex h-screen main-layout">
         <Sidebar 
           activeView={activeView}
           onViewChange={handleViewChange}
@@ -929,7 +929,7 @@ function AppContent() {
                 variant="outline"
                 size="sm"
                 onClick={() => setIsPublicView(true)}
-                className={cn("gap-2 h-8 text-xs", isRTL && "flex-row-reverse")}
+                className={cn("gap-2 h-8 text-xs stable-hover", isRTL && "flex-row-reverse")}
               >
                 <Globe className="w-3 h-3" />
                 <span className="hidden sm:inline">عرض الموقع العام</span>
@@ -971,7 +971,7 @@ function AppContent() {
           <button
             onClick={() => setShowAuthModal(false)}
             className={cn(
-              "absolute top-4 text-white hover:text-gray-300",
+              "absolute top-4 text-white hover:text-gray-300 stable-hover",
               isRTL ? "left-4" : "right-4"
             )}
           >

@@ -733,7 +733,7 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       
       {/* Sidebar */}
       <aside className={cn(
-        "fixed top-0 z-50 h-full w-72 bg-card border-r border-border transform transition-transform duration-200 ease-in-out lg:relative lg:translate-x-0",
+        "fixed top-0 z-50 h-full w-72 bg-card border-r border-border transform transition-transform duration-200 ease-in-out lg:relative lg:translate-x-0 no-zoom",
         isRTL ? "right-0 border-l border-r-0" : "left-0",
         isOpen 
           ? "translate-x-0" 

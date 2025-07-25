@@ -12,6 +12,15 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    
+    /* Prevent unwanted zoom effects */
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    
+    /* Prevent zoom on touch devices */
+    touch-action: manipulation;
   }
   
   html[dir="rtl"] {
@@ -24,6 +33,24 @@
     /* Improve text readability */
     font-variant-ligatures: common-ligatures;
     font-kerning: normal;
+    
+    /* Prevent zoom and improve stability */
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    touch-action: manipulation;
+    
+    /* Prevent unwanted zoom on mobile */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    
+    /* Allow text selection where needed */
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
   }
   
   .rtl {
@@ -343,6 +370,118 @@
   .focus-content {
     scrollbar-width: none;
     -ms-overflow-style: none;
+  }
+
+  /* Disable zoom effects on interactive elements */
+  .no-zoom,
+  button,
+  [role="button"],
+  input,
+  select,
+  textarea,
+  .clickable {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /* Re-enable text selection for content areas */
+  .text-content,
+  .article-content,
+  .editor-content,
+  [contenteditable],
+  input[type="text"],
+  input[type="email"],
+  input[type="search"],
+  input[type="url"],
+  textarea {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+  }
+
+  /* Stable hover states without zoom */
+  .stable-hover {
+    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  /* Prevent transform-based animations on root elements */
+  #root,
+  .app-container,
+  .main-layout {
+    transform: none !important;
+    -webkit-transform: none !important;
+    -moz-transform: none !important;
+    -ms-transform: none !important;
+    zoom: 1 !important;
+    -webkit-text-size-adjust: 100% !important;
+    -moz-text-size-adjust: 100% !important;
+    text-size-adjust: 100% !important;
+  }
+
+  /* Override any zoom animations with fade animations */
+  .animate-in[data-state="open"] {
+    animation: fadeIn 200ms ease-out;
+  }
+
+  .animate-out[data-state="closed"] {
+    animation: fadeOut 150ms ease-in;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  /* Mobile-specific zoom prevention */
+  @media (max-width: 768px) {
+    html {
+      -webkit-text-size-adjust: 100% !important;
+      -moz-text-size-adjust: 100% !important;
+      text-size-adjust: 100% !important;
+      touch-action: manipulation;
+    }
+    
+    body {
+      zoom: 1 !important;
+      -webkit-user-zoom: fixed !important;
+      -moz-user-zoom: fixed !important;
+      user-zoom: fixed !important;
+    }
+    
+    /* Prevent double-tap zoom */
+    * {
+      touch-action: manipulation;
+    }
+    
+    input, select, textarea, button, [role="button"] {
+      touch-action: manipulation;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
+    }
+    
+    /* Allow text selection in input fields */
+    input[type="text"], 
+    input[type="email"], 
+    input[type="search"], 
+    textarea, 
+    [contenteditable] {
+      -webkit-user-select: text;
+      -moz-user-select: text;
+      user-select: text;
+    }
   }
 }
 

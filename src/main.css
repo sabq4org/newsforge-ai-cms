@@ -183,5 +183,34 @@
 
   body {
     @apply bg-background text-foreground;
+    /* Prevent zoom effects */
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    touch-action: manipulation;
+  }
+
+  /* Disable zoom and transform on root elements */
+  html, body, #root {
+    transform: none !important;
+    -webkit-transform: none !important;
+    zoom: 1 !important;
+    -webkit-text-size-adjust: 100% !important;
+    -moz-text-size-adjust: 100% !important;
+    text-size-adjust: 100% !important;
+  }
+
+  /* Override any zoom-based animations */
+  [data-state="open"],
+  [data-state="closed"] {
+    transform: none !important;
+    zoom: 1 !important;
+  }
+
+  /* Stable interactive elements */
+  button, [role="button"], input, select, textarea {
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
 }
