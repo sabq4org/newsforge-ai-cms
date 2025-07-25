@@ -31,7 +31,7 @@ import {
   useOptimizationStats,
   useResourceOptimization
 } from '@/lib/autoResourceOptimizer';
-import { cn } from '@/lib/utils';
+import { cn, safeDateFormat, safeTimeFormat } from '@/lib/utils';
 
 interface AutoResourceOptimizerDashboardProps {
   className?: string;
@@ -304,7 +304,7 @@ export function AutoResourceOptimizerDashboard({ className }: AutoResourceOptimi
                             القياس #{detailedMetrics.metrics.length - 10 + index + 1}
                           </span>
                           <span className="text-xs text-muted-foreground">
-                            {new Date(metric.timestamp).toLocaleTimeString('ar')}
+                            {safeDateFormat(metric.timestamp, 'ar-SA')} {safeTimeFormat(metric.timestamp, 'ar-SA')}
                           </span>
                         </div>
                         <div className="space-y-2">

@@ -16,23 +16,14 @@ const maxPerformanceErrors = 10;
 // Global reference for cn function as fallback
 let fallbackCn: any = null;
 
+// Create a basic cn fallback function without dynamic imports
 try {
-  // Try to import cn function dynamically for fallback
-  import('./utils').then(utils => {
-    if (utils.cn) {
-      fallbackCn = utils.cn;
-    }
-  }).catch(() => {
-    // Create a basic cn fallback function
-    fallbackCn = (...classes: any[]) => {
-      return classes.filter(Boolean).join(' ');
-    };
-  });
-} catch (error) {
-  // Create a basic cn fallback function
   fallbackCn = (...classes: any[]) => {
     return classes.filter(Boolean).join(' ');
   };
+} catch (error) {
+  console.warn('Could not create cn fallback:', error);
+  fallbackCn = () => '';
 }
 
 // Override Date.prototype.toLocaleDateString with error handling
