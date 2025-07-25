@@ -49,7 +49,7 @@ import { PodcastDemo } from '@/components/demo/PodcastDemo';
 import { ErrorChecker } from '@/components/debug/ErrorChecker';
 import { ErrorBoundary } from '@/components/debug/ErrorBoundary';
 import { RuntimeChecker } from '@/components/debug/RuntimeChecker';
-import { ReadingPreferencePrediction, AdvancedMLModelTraining, PredictiveBehaviorEngine } from '@/components/ml';
+import { ReadingPreferencePrediction, AdvancedMLModelTraining, PredictiveBehaviorEngine, NeuralNetworkTrainer, TransformerTrainingStudio, DeepLearningPipelineManager } from '@/components/ml';
 import { ExternalDataManager, NewsAggregator } from '@/components/external';
 import { BreakingNewsNotifications, NotificationCenter, LiveNotificationBanner, NotificationPreferences, NotificationAnalytics, SmartNotificationSystem } from '@/components/notifications';
 import { AutoResourceOptimizerDashboard, ResourceOptimizationConfig, PerformanceOptimizationDemo, AutoResourceOptimizationOverview } from '@/components/optimization';
@@ -827,6 +827,15 @@ function AppContent() {
       
       case 'predictive-behavior':
         return <PredictiveBehaviorEngine />;
+      
+      case 'neural-network-trainer':
+        return <NeuralNetworkTrainer />;
+      
+      case 'transformer-training-studio':
+        return <TransformerTrainingStudio />;
+      
+      case 'deep-learning-pipeline':
+        return <DeepLearningPipelineManager />;
       
       case 'smart-recommendations':
         return memberUser ? (

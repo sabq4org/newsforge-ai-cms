@@ -263,6 +263,27 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       badge: isArabic ? 'تدريب' : 'Train'
     },
     {
+      id: 'neural-network-trainer',
+      label: isArabic ? 'مدرب الشبكات العصبية' : 'Neural Network Trainer',
+      icon: Brain,
+      show: canAccess('ai-tools'),
+      badge: isArabic ? 'عميق' : 'Deep'
+    },
+    {
+      id: 'transformer-training-studio',
+      label: isArabic ? 'استوديو تدريب المحولات' : 'Transformer Training Studio',
+      icon: Sparkles,
+      show: canAccess('ai-tools'),
+      badge: isArabic ? 'محولات' : 'Transformers'
+    },
+    {
+      id: 'deep-learning-pipeline',
+      label: isArabic ? 'مدير خطوط التعلم العميق' : 'Deep Learning Pipeline Manager',
+      icon: Activity,
+      show: canAccess('ai-tools'),
+      badge: isArabic ? 'خطوط' : 'Pipeline'
+    },
+    {
       id: 'predictive-behavior',
       label: isArabic ? 'محرك التنبؤ السلوكي' : 'Predictive Behavior Engine',
       icon: TrendingUp,
