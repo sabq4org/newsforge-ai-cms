@@ -283,6 +283,67 @@
   html[dir="rtl"] .sidebar-button:hover {
     transform: translateX(-2px);
   }
+
+  /* Focus mode styles */
+  .focus-mode-active {
+    overflow: hidden;
+  }
+
+  .focus-mode-active * {
+    user-select: text;
+  }
+
+  /* Enhanced focus mode typography */
+  .focus-writing-area {
+    font-family: 'IBM Plex Sans Arabic', 'Inter', serif;
+    line-height: 1.8;
+    word-spacing: 0.1em;
+  }
+
+  .focus-writing-area:focus {
+    outline: none;
+  }
+
+  /* Typewriter focus effect */
+  .typewriter-focus {
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      transparent 45%,
+      var(--accent) 48%,
+      var(--accent) 52%,
+      transparent 55%,
+      transparent 100%
+    );
+    background-size: 100% 2em;
+    background-repeat: no-repeat;
+    background-attachment: local;
+  }
+
+  /* Focus mode themes */
+  .focus-theme-sepia {
+    filter: sepia(10%) contrast(105%) brightness(105%);
+  }
+
+  .focus-theme-contrast {
+    filter: contrast(200%) brightness(120%);
+  }
+
+  /* Smooth transitions for focus mode */
+  .focus-transition {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Hide scrollbar in focus mode content */
+  .focus-content::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+  }
+
+  .focus-content {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
 }
 
 :root {

@@ -51,11 +51,13 @@ import {
   Camera,
   Download,
   Play,
-  Pause
+  Pause,
+  ArrowsOut
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { ar, enUS } from 'date-fns/locale';
+import { FocusModeToggle, FocusModeFeatures } from './FocusModeToggle';
 
 interface ComprehensiveArticleEditorProps {
   article?: Article;
@@ -382,6 +384,14 @@ export function ComprehensiveArticleEditor({ article, onSave, onCancel }: Compre
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <FocusModeToggle
+            title={formData.title}
+            content={formData.content}
+            onTitleChange={(title) => setFormData(prev => ({ ...prev, title }))}
+            onContentChange={(content) => setFormData(prev => ({ ...prev, content }))}
+            onSave={() => handleSave()}
+            onPreview={() => setIsPreview(!isPreview)}
+          />
           <Button
             variant="outline"
             onClick={() => setIsPreview(!isPreview)}
@@ -418,10 +428,14 @@ export function ComprehensiveArticleEditor({ article, onSave, onCancel }: Compre
 
       {/* Main Editor Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="content" className="flex items-center gap-2">
             <FileText className="w-4 h-4" />
             {isArabic ? 'المحتوى' : 'Content'}
+          </TabsTrigger>
+          <TabsTrigger value="focus" className="flex items-center gap-2">
+            <ArrowsOut className="w-4 h-4" />
+            {isArabic ? 'التركيز' : 'Focus'}
           </TabsTrigger>
           <TabsTrigger value="media" className="flex items-center gap-2">
             <Images className="w-4 h-4" />
@@ -790,6 +804,100 @@ export function ComprehensiveArticleEditor({ article, onSave, onCancel }: Compre
               </Card>
             </div>
           </div>
+        </TabsContent>
+
+        {/* Focus Mode Tab */}
+        <TabsContent value="focus" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <ArrowsOut className="w-5 h-5" />
+                {isArabic ? 'وضع التركيز للكتابة' : 'Focus Mode for Writing'}
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                {isArabic ? 
+                  'اكتب بدون تشتيت في وضع ملء الشاشة مع أدوات مخصصة للتحكم في البيئة' :
+                  'Write distraction-free in fullscreen mode with customizable environment controls'
+                }
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {/* Quick Launch */}
+                <div className="flex items-center justify-center p-8 border-2 border-dashed border-muted-foreground/25 rounded-lg">
+                  <div className="text-center space-y-4">
+                    <div className="w-16 h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
+                      <ArrowsOut className="w-8 h-8 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">
+                        {isArabic ? 'ادخل وضع التركيز' : 'Enter Focus Mode'}
+                      </h3>
+                      <p className="text-muted-foreground mb-4">
+                        {isArabic ? 
+                          'اكتب مقالك في بيئة مخصصة للتركيز بدون أي مشتتات' :
+                          'Write your article in a dedicated focus environment without distractions'
+                        }
+                      </p>
+                      <FocusModeToggle
+                        title={formData.title}
+                        content={formData.content}
+                        onTitleChange={(title) => setFormData(prev => ({ ...prev, title }))}
+                        onContentChange={(content) => setFormData(prev => ({ ...prev, content }))}
+                        onSave={() => handleSave()}
+                        onPreview={() => setIsPreview(!isPreview)}
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Features Overview */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">
+                    {isArabic ? 'مميزات وضع التركيز' : 'Focus Mode Features'}
+                  </h3>
+                  <FocusModeFeatures />
+                </div>
+
+                {/* Tips */}
+                <div className="bg-blue-50 dark:bg-blue-950/30 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
+                    {isArabic ? 'نصائح للكتابة المنتجة' : 'Tips for Productive Writing'}
+                  </h4>
+                  <ul className={cn(
+                    "space-y-1 text-sm text-blue-800 dark:text-blue-200",
+                    isArabic && "text-right"
+                  )}>
+                    <li>
+                      {isArabic ? 
+                        '• اختر ثيم مريح للعين حسب الوقت (فاتح صباحاً، داكن مساءً)' :
+                        '• Choose an eye-friendly theme based on time (light morning, dark evening)'
+                      }
+                    </li>
+                    <li>
+                      {isArabic ? 
+                        '• فعّل الحفظ التلقائي لتجنب فقدان العمل' :
+                        '• Enable auto-save to prevent losing work'
+                      }
+                    </li>
+                    <li>
+                      {isArabic ? 
+                        '• استخدم وضع الآلة الكاتبة للتركيز على الفقرة الحالية' :
+                        '• Use typewriter mode to focus on current paragraph'
+                      }
+                    </li>
+                    <li>
+                      {isArabic ? 
+                        '• اضبط عرض النص ليناسب راحة قراءتك (600-1200 بكسل)' :
+                        '• Adjust text width for comfortable reading (600-1200px)'
+                      }
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* Media Tab */}
