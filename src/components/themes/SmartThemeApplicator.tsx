@@ -1,12 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useKV } from '@github/spark/hooks';
 import { UserProfile } from '@/types/membership';
+import { AdaptiveColorLearningSystem } from './AdaptiveColorLearningSystem';
 
 interface SmartThemeApplicatorProps {
   userId?: string;
   userProfile?: UserProfile;
   currentContext?: 'reading' | 'editing' | 'dashboard' | 'analysis';
+  enableAdaptiveLearning?: boolean;
 }
 
 interface UserThemeContext {
@@ -35,6 +37,7 @@ interface UserThemeContext {
     contextualSwitch: boolean;
     learningMode: boolean; // AI learns from user behavior
     accessibilityMode: boolean;
+    adaptiveColorLearning: boolean; // New adaptive learning feature
   };
 }
 
@@ -48,6 +51,25 @@ const defaultThemeContext: UserThemeContext = {
   contextualThemes: {
     reading: 'sabq-editorial',
     editing: 'royal-gold',
+    dashboard: 'coral-sunset',
+    analysis: 'warm-earth'
+  },
+  personalizedSettings: {
+    fontSize: 16,
+    lineHeight: 1.6,
+    letterSpacing: 0,
+    contrastLevel: 'normal',
+    reducedMotion: false,
+    colorBlindnessSupport: false
+  },
+  adaptivePreferences: {
+    autoTimeSwitch: true,
+    contextualSwitch: true,
+    learningMode: true,
+    accessibilityMode: false,
+    adaptiveColorLearning: true // Enable adaptive learning by default
+  }
+};
     dashboard: 'ocean-blue',
     analysis: 'midnight-professional'
   },
@@ -70,9 +92,11 @@ const defaultThemeContext: UserThemeContext = {
 export const SmartThemeApplicator: React.FC<SmartThemeApplicatorProps> = ({ 
   userId, 
   userProfile, 
-  currentContext = 'dashboard' 
+  currentContext = 'dashboard',
+  enableAdaptiveLearning = true
 }) => {
-  const { applyPreset, updateThemeSettings, themeSettings } = useTheme();
+  const { applyPreset, updateThemeSettings, themeSettings, currentTheme } = useTheme();
+  const [showAdaptiveLearning, setShowAdaptiveLearning] = useState(false);
   
   // Store user's theme context
   const [userThemeContext, setUserThemeContext] = useKV<UserThemeContext>(
@@ -284,8 +308,32 @@ export const SmartThemeApplicator: React.FC<SmartThemeApplicatorProps> = ({
     return () => clearInterval(timeCheckInterval);
   }, [userThemeContext.adaptivePreferences.autoTimeSwitch, userThemeContext.timeBasedThemes]);
 
-  // This component doesn't render anything - it's a background service
-  return null;
+  // Show adaptive learning when enabled and user is active
+  const shouldShowAdaptiveLearning = 
+    enableAdaptiveLearning && 
+    userThemeContext.adaptivePreferences.adaptiveColorLearning &&
+    userId &&
+    (currentContext === 'reading' || currentContext === 'editing');
+
+  // This component renders the adaptive learning system when appropriate
+  return (
+    <>
+      {shouldShowAdaptiveLearning && (
+        <div className="fixed bottom-4 right-4 z-40 max-w-sm">
+          <AdaptiveColorLearningSystem
+            userId={userId!}
+            userProfile={userProfile}
+            isActive={shouldShowAdaptiveLearning}
+            onColorAdaptation={(adaptedColors, reason) => {
+              console.log('Smart theme applicator - color adaptation:', { adaptedColors, reason });
+              // Record this as a learning event
+              recordThemeUsage('adaptive-colors', false);
+            }}
+          />
+        </div>
+      )}
+    </>
+  );
 };
 
 // Hook for easy theme context management

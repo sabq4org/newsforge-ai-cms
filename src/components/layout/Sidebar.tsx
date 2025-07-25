@@ -39,7 +39,8 @@ import {
   BookOpen,
   Palette,
   Package,
-  Play
+  Play,
+  PlayCircle
 } from '@phosphor-icons/react';
 
 interface SidebarProps {
@@ -514,9 +515,20 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       icon: Brain,
       show: true,
       badge: isArabic ? 'تكيفي' : 'Adaptive'
-    }
-      show: canAccess('settings'),
-      badge: isArabic ? 'شامل' : 'Full'
+    },
+    {
+      id: 'adaptive-color-learning',
+      label: isArabic ? 'التعلم التكيفي للألوان' : 'Adaptive Color Learning',
+      icon: Eye,
+      show: true,
+      badge: isArabic ? 'جديد' : 'New'
+    },
+    {
+      id: 'adaptive-color-demo',
+      label: isArabic ? 'عرض التكييف التوضيحي' : 'Adaptive Demo',
+      icon: PlayCircle,
+      show: true,
+      badge: isArabic ? 'تجربة' : 'Demo'
     }
   ];
 

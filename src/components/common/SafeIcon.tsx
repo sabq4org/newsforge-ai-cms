@@ -3,7 +3,6 @@ import {
   Medal,
   Star,
   Trophy,
-  Award,
   Crown,
   CheckCircle,
   AlertTriangle
@@ -14,7 +13,7 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
   medal: Medal,
   star: Star,
   trophy: Trophy,
-  award: Award,
+  award: Medal, // Use Medal instead of Award to fix runtime error
   crown: Crown,
   check: CheckCircle,
   alert: AlertTriangle

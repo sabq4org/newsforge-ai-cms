@@ -27,7 +27,7 @@ import { ThemeTestingShowcase } from '@/components/showcase/ThemeTestingShowcase
 import { LiveThemePreview } from '@/components/showcase/LiveThemePreview';
 import { ThemeImportExport } from '@/components/showcase/ThemeImportExport';
 import { ComprehensiveThemeManager, AutoThemeScheduler, InteractiveThemeDemo } from '@/components/showcase';
-import { PersonalizedThemeManager, UserProfileTheme, PersonalizedThemesDashboard, IntelligentThemeGenerator, BehavioralThemeLearningSystem } from '@/components/themes';
+import { PersonalizedThemeManager, UserProfileTheme, PersonalizedThemesDashboard, IntelligentThemeGenerator, BehavioralThemeLearningSystem, AdaptiveColorLearningSystem, AdaptiveLearningDashboard, AdaptiveColorDemo } from '@/components/themes';
 import { SmartThemeApplicator } from '@/components/themes/SmartThemeApplicator';
 import { MediaUpload, MediaGenerator, ComprehensiveMediaManager } from '@/components/media';
 import { AudioEditor, AudioLibrary, AudioAnalytics } from '@/components/audio';
@@ -581,25 +581,30 @@ function AppContent() {
           </div>
         );
 
-      case 'behavioral-theme-learning':
+      case 'adaptive-color-learning':
         return memberUser ? (
-          <BehavioralThemeLearningSystem
+          <AdaptiveLearningDashboard
             userId={memberUser.id}
-            userProfile={memberUser}
-            currentArticle={editingArticle}
-            onThemeAdaptation={(adaptedTheme, reasoning) => {
-              console.log('Theme adapted:', { adaptedTheme, reasoning });
-              toast.success('تم تكييف الثيم بناءً على سلوك قراءتك');
+            onSystemToggle={(enabled) => {
+              console.log('Adaptive learning system toggled:', enabled);
+              toast.success(enabled ? 'تم تفعيل التعلم التكيفي' : 'تم إيقاف التعلم التكيفي');
             }}
           />
         ) : (
           <div className="text-center py-12">
-            <h2 className="text-xl font-semibold">نظام التعلم السلوكي للثيمات</h2>
-            <p className="text-muted-foreground mt-2">يرجى تسجيل الدخول لتفعيل التعلم التكيفي</p>
+            <h2 className="text-xl font-semibold">نظام التعلم التكيفي للألوان</h2>
+            <p className="text-muted-foreground mt-2">يرجى تسجيل الدخول لتفعيل التعلم التكيفي للألوان</p>
             <Button className="mt-4" onClick={() => setShowAuthModal(true)}>
               تسجيل الدخول
             </Button>
           </div>
+        );
+
+      case 'adaptive-color-demo':
+        return (
+          <AdaptiveColorDemo
+            userId={memberUser?.id || 'demo'}
+          />
         );
       
       case 'media':
@@ -795,6 +800,7 @@ function AppContent() {
         currentContext={activeView === 'articles' || activeView === 'editor' ? 'editing' : 
                        activeView === 'deep-analysis' ? 'analysis' :
                        activeView.includes('analytics') ? 'dashboard' : 'reading'}
+        enableAdaptiveLearning={true}
       />
       
       <div className="flex h-screen">

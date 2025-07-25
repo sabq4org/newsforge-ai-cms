@@ -26,8 +26,8 @@ import {
   ThumbsUp,
   Calendar,
   CheckCircle,
-  Trophy,
-  Award
+  Trophy
+} from '@phosphor-icons/react';
 } from '@phosphor-icons/react';
 import { useKV } from '@github/spark/hooks';
 import { useAuth } from '@/contexts/AuthContext';
@@ -353,7 +353,7 @@ Return article IDs in this format:
       'message-circle': MessageCircle,
       'book-open': BookOpen,
       trophy: Trophy,
-      award: Award
+      award: Medal
     };
     const IconComponent = icons[iconName] || Medal;
     return <IconComponent size={16} />;

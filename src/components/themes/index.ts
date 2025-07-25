@@ -4,3 +4,6 @@ export { PersonalizedThemesDashboard } from './PersonalizedThemesDashboard';
 export { SmartThemeApplicator } from './SmartThemeApplicator';
 export { IntelligentThemeGenerator } from './IntelligentThemeGenerator';
 export { BehavioralThemeLearningSystem } from './BehavioralThemeLearningSystem';
+export { AdaptiveColorLearningSystem } from './AdaptiveColorLearningSystem';
+export { AdaptiveLearningDashboard } from './AdaptiveLearningDashboard';
+export { AdaptiveColorDemo } from './AdaptiveColorDemo';
