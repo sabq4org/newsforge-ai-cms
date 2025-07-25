@@ -34,7 +34,7 @@ export interface Article {
   coAuthors?: User[];
   category: Category;
   tags: Tag[];
-  status: 'draft' | 'review' | 'approved' | 'published' | 'scheduled' | 'archived';
+  status: 'draft' | 'review' | 'approved' | 'published' | 'scheduled' | 'archived' | 'disabled';
   publishedAt?: Date;
   scheduledAt?: Date;
   publishSettings?: { // Enhanced: Publishing settings

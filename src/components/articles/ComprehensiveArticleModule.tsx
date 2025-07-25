@@ -13,6 +13,7 @@ import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
 import { normalizeArticles } from '@/lib/utils';
 import { CategoryDisplay } from '@/components/categories';
+import { toast } from 'sonner';
 import { 
   Search, 
   Filter, 
@@ -28,7 +29,11 @@ import {
   FileText,
   Users,
   BarChart3,
-  Target
+  Target,
+  EyeSlash,
+  Warning,
+  Check,
+  X
 } from '@phosphor-icons/react';
 
 interface ComprehensiveArticleModuleProps {
@@ -62,6 +67,8 @@ export function ComprehensiveArticleModule({ onEditArticle, onCreateNew }: Compr
     published: articles.filter(a => a.status === 'published').length,
     draft: articles.filter(a => a.status === 'draft').length,
     scheduled: articles.filter(a => a.status === 'scheduled').length,
+    disabled: articles.filter(a => a.status === 'disabled').length,
+    breaking: articles.filter(a => a.priority === 'breaking').length,
     todayArticles: articles.filter(a => {
       const today = new Date().toDateString();
       const articleDate = new Date(a.createdAt).toDateString();
@@ -103,21 +110,28 @@ export function ComprehensiveArticleModule({ onEditArticle, onCreateNew }: Compr
     return matchesSearch && matchesStatus && matchesCategory;
   });
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: string, priority?: string) => {
+    if (priority === 'breaking') return 'bg-red-100 text-red-800 border-red-200';
     switch (status) {
       case 'published': return 'bg-green-100 text-green-800';
       case 'draft': return 'bg-yellow-100 text-yellow-800';
       case 'scheduled': return 'bg-blue-100 text-blue-800';
+      case 'disabled': return 'bg-gray-100 text-gray-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const getStatusText = (status: string) => {
+  const getStatusText = (status: string, priority?: string) => {
+    if (priority === 'breaking') {
+      return language.code === 'ar' ? 'عاجل' : 'Breaking';
+    }
+    
     if (language.code === 'ar') {
       switch (status) {
         case 'published': return 'منشور';
         case 'draft': return 'مسودة';
         case 'scheduled': return 'مجدول';
+        case 'disabled': return 'معطل';
         default: return status;
       }
     }
@@ -125,7 +139,50 @@ export function ComprehensiveArticleModule({ onEditArticle, onCreateNew }: Compr
   };
 
   const handleDelete = (id: string) => {
-    setArticles(currentArticles => currentArticles.filter(article => article.id !== id));
+    if (confirm(isArabic ? 'هل أنت متأكد من حذف هذا المقال؟' : 'Are you sure you want to delete this article?')) {
+      setArticles(currentArticles => currentArticles.filter(article => article.id !== id));
+      toast.success(isArabic ? 'تم حذف المقال بنجاح' : 'Article deleted successfully');
+    }
+  };
+
+  const handleToggleStatus = (id: string, newStatus: 'published' | 'disabled' | 'draft') => {
+    setArticles(currentArticles => 
+      currentArticles.map(article => 
+        article.id === id 
+          ? { ...article, status: newStatus, updatedAt: new Date() }
+          : article
+      )
+    );
+    
+    const statusText = newStatus === 'disabled' 
+      ? (isArabic ? 'تم إخفاء المقال' : 'Article hidden')
+      : (isArabic ? 'تم إظهار المقال' : 'Article shown');
+    
+    toast.success(statusText);
+  };
+
+  const handleMarkAsBreaking = (id: string) => {
+    setArticles(currentArticles => 
+      currentArticles.map(article => 
+        article.id === id 
+          ? { 
+              ...article, 
+              priority: article.priority === 'breaking' ? 'normal' : 'breaking',
+              status: 'published',
+              updatedAt: new Date()
+            }
+          : article
+      )
+    );
+    
+    const article = articles.find(a => a.id === id);
+    const isBreaking = article?.priority !== 'breaking';
+    
+    toast.success(
+      isBreaking 
+        ? (isArabic ? 'تم تمييز المقال كخبر عاجل' : 'Article marked as breaking news')
+        : (isArabic ? 'تم إلغاء تمييز المقال كخبر عاجل' : 'Article unmarked as breaking news')
+    );
   };
 
   const StatCard = ({ icon: Icon, title, value, subtitle, trend }: any) => (
@@ -156,8 +213,8 @@ export function ComprehensiveArticleModule({ onEditArticle, onCreateNew }: Compr
   return (
     <div className={`space-y-6 ${typography.rtlText}`}>
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex-1">
           <h1 className={typography.heading}>
             {isArabic ? 'إدارة المقالات' : 'Article Management'}
           </h1>
@@ -168,10 +225,19 @@ export function ComprehensiveArticleModule({ onEditArticle, onCreateNew }: Compr
           </p>
         </div>
         {hasPermission('create') && (
-          <Button onClick={onCreateNew} className={`${typography.button} gap-2`} size="lg">
-            <Plus size={18} />
-            {language.code === 'ar' ? 'إنشاء مقال جديد' : 'Create New Article'}
-          </Button>
+          <div className="flex flex-col gap-2">
+            <Button 
+              onClick={onCreateNew} 
+              className={`${typography.button} gap-2`} 
+              size="lg"
+            >
+              <Plus size={18} />
+              {language.code === 'ar' ? 'إنشاء خبر جديد' : 'Create New Article'}
+            </Button>
+            <p className="text-xs text-muted-foreground text-center">
+              {language.code === 'ar' ? 'متاح في جميع التبويبات' : 'Available in all tabs'}
+            </p>
+          </div>
         )}
       </div>
 
@@ -193,7 +259,7 @@ export function ComprehensiveArticleModule({ onEditArticle, onCreateNew }: Compr
 
         <TabsContent value="overview" className="space-y-6">
           {/* Statistics Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <StatCard
               icon={FileText}
               title={isArabic ? 'إجمالي المقالات' : 'Total Articles'}
@@ -219,6 +285,12 @@ export function ComprehensiveArticleModule({ onEditArticle, onCreateNew }: Compr
               value={stats.totalEngagement}
               subtitle={isArabic ? 'إعجابات ومشاركات' : 'likes & shares'}
             />
+            <StatCard
+              icon={Warning}
+              title={isArabic ? 'الأخبار العاجلة' : 'Breaking News'}
+              value={stats.breaking}
+              subtitle={isArabic ? 'خبر عاجل نشط' : 'active breaking news'}
+            />
           </div>
 
           {/* Quick Status Overview */}
@@ -230,7 +302,7 @@ export function ComprehensiveArticleModule({ onEditArticle, onCreateNew }: Compr
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 <div className="text-center p-4 bg-green-50 rounded-lg">
                   <div className="text-2xl font-bold text-green-600">{stats.published}</div>
                   <div className="text-sm text-green-700">{isArabic ? 'منشور' : 'Published'}</div>
@@ -242,6 +314,14 @@ export function ComprehensiveArticleModule({ onEditArticle, onCreateNew }: Compr
                 <div className="text-center p-4 bg-blue-50 rounded-lg">
                   <div className="text-2xl font-bold text-blue-600">{stats.scheduled}</div>
                   <div className="text-sm text-blue-700">{isArabic ? 'مجدول' : 'Scheduled'}</div>
+                </div>
+                <div className="text-center p-4 bg-gray-50 rounded-lg">
+                  <div className="text-2xl font-bold text-gray-600">{stats.disabled}</div>
+                  <div className="text-sm text-gray-700">{isArabic ? 'معطل' : 'Disabled'}</div>
+                </div>
+                <div className="text-center p-4 bg-red-50 rounded-lg">
+                  <div className="text-2xl font-bold text-red-600">{stats.breaking}</div>
+                  <div className="text-sm text-red-700">{isArabic ? 'عاجل' : 'Breaking'}</div>
                 </div>
               </div>
             </CardContent>
@@ -273,8 +353,8 @@ export function ComprehensiveArticleModule({ onEditArticle, onCreateNew }: Compr
                         </p>
                       </div>
                     </div>
-                    <Badge className={getStatusColor(article.status)} variant="secondary">
-                      {getStatusText(article.status)}
+                    <Badge className={getStatusColor(article.status, article.priority)} variant="secondary">
+                      {getStatusText(article.status, article.priority)}
                     </Badge>
                   </div>
                 ))}
@@ -318,6 +398,9 @@ export function ComprehensiveArticleModule({ onEditArticle, onCreateNew }: Compr
                     <SelectItem value="scheduled">
                       {language.code === 'ar' ? 'مجدول' : 'Scheduled'}
                     </SelectItem>
+                    <SelectItem value="disabled">
+                      {language.code === 'ar' ? 'معطل' : 'Disabled'}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
 
@@ -348,6 +431,18 @@ export function ComprehensiveArticleModule({ onEditArticle, onCreateNew }: Compr
                     ))}
                   </SelectContent>
                 </Select>
+                
+                {/* Quick Create Button in Articles Tab */}
+                {hasPermission('create') && (
+                  <Button 
+                    onClick={onCreateNew}
+                    className="gap-2 whitespace-nowrap"
+                    variant="default"
+                  >
+                    <Plus size={16} />
+                    {language.code === 'ar' ? 'جديد' : 'New'}
+                  </Button>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -364,10 +459,10 @@ export function ComprehensiveArticleModule({ onEditArticle, onCreateNew }: Compr
                       className="w-full h-full object-cover"
                     />
                     <Badge 
-                      className={`absolute top-2 right-2 ${getStatusColor(article.status)}`}
+                      className={`absolute top-2 right-2 ${getStatusColor(article.status, article.priority)}`}
                       variant="secondary"
                     >
-                      {getStatusText(article.status)}
+                      {getStatusText(article.status, article.priority)}
                     </Badge>
                   </div>
                 )}
@@ -379,10 +474,10 @@ export function ComprehensiveArticleModule({ onEditArticle, onCreateNew }: Compr
                     </CardTitle>
                     {!article.featuredImage && (
                       <Badge 
-                        className={getStatusColor(article.status)}
+                        className={getStatusColor(article.status, article.priority)}
                         variant="secondary"
                       >
-                        {getStatusText(article.status)}
+                        {getStatusText(article.status, article.priority)}
                       </Badge>
                     )}
                   </div>
@@ -451,28 +546,77 @@ export function ComprehensiveArticleModule({ onEditArticle, onCreateNew }: Compr
                   )}
 
                   {/* Actions */}
-                  <div className="flex items-center gap-2 pt-2 border-t">
+                  <div className="space-y-2 pt-2 border-t">
+                    {/* Primary Actions Row */}
+                    <div className="flex items-center gap-2">
+                      {hasPermission('edit') && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => onEditArticle(article)}
+                          className="flex-1 gap-1"
+                        >
+                          <Edit size={14} />
+                          {language.code === 'ar' ? 'تحرير' : 'Edit'}
+                        </Button>
+                      )}
+                      
+                      {hasPermission('edit') && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDelete(article.id)}
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                        >
+                          <Trash size={14} />
+                        </Button>
+                      )}
+                    </div>
+
+                    {/* Secondary Actions Row */}
                     {hasPermission('edit') && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onEditArticle(article)}
-                        className="flex-1"
-                      >
-                        <Edit size={14} />
-                        {language.code === 'ar' ? 'تحرير' : 'Edit'}
-                      </Button>
-                    )}
-                    
-                    {hasPermission('edit') && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDelete(article.id)}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        <Trash size={14} />
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        {/* Toggle Visibility */}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleToggleStatus(
+                            article.id, 
+                            article.status === 'disabled' ? 'published' : 'disabled'
+                          )}
+                          className="flex-1 gap-1 text-xs"
+                        >
+                          {article.status === 'disabled' ? (
+                            <>
+                              <Eye size={12} />
+                              {language.code === 'ar' ? 'إظهار' : 'Show'}
+                            </>
+                          ) : (
+                            <>
+                              <EyeSlash size={12} />
+                              {language.code === 'ar' ? 'إخفاء' : 'Hide'}
+                            </>
+                          )}
+                        </Button>
+
+                        {/* Breaking News Toggle */}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleMarkAsBreaking(article.id)}
+                          className={`flex-1 gap-1 text-xs ${
+                            article.priority === 'breaking' 
+                              ? 'text-red-600 bg-red-50 hover:bg-red-100' 
+                              : ''
+                          }`}
+                        >
+                          <Warning size={12} />
+                          {article.priority === 'breaking' 
+                            ? (language.code === 'ar' ? 'إلغاء العاجل' : 'Remove Breaking')
+                            : (language.code === 'ar' ? 'عاجل' : 'Breaking')
+                          }
+                        </Button>
+                      </div>
                     )}
                   </div>
                 </CardContent>
@@ -487,7 +631,7 @@ export function ComprehensiveArticleModule({ onEditArticle, onCreateNew }: Compr
                   {language.code === 'ar' ? 'لا توجد مقالات' : 'No articles found'}
                 </p>
                 {hasPermission('create') && (
-                  <Button onClick={onCreateNew} className="mt-4">
+                  <Button onClick={onCreateNew} className="mt-4 gap-2">
                     <Plus size={16} />
                     {language.code === 'ar' ? 'إنشاء أول مقال' : 'Create your first article'}
                   </Button>
