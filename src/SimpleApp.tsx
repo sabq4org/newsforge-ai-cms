@@ -6,13 +6,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Globe, Settings, PlusCircle, BookOpen, BarChart3, Users } from '@phosphor-icons/react';
+import { Globe, Settings, PlusCircle, BookOpen, ChartBar, Users } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
 // Simple sidebar menu structure
 const menuItems = [
-  { id: 'dashboard', label: 'لوحة التحكم', icon: BarChart3 },
+  { id: 'dashboard', label: 'لوحة التحكم', icon: ChartBar },
   { id: 'articles', label: 'إدارة المقالات', icon: BookOpen },
   { id: 'users', label: 'إدارة المستخدمين', icon: Users },
   { id: 'settings', label: 'الإعدادات', icon: Settings },

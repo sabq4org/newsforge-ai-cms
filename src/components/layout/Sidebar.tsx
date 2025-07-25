@@ -23,6 +23,7 @@ import {
   Images,
   Code,
   Medal,
+  Trophy,
   GitMerge,
   Wrench,
   Microphone,
@@ -696,12 +697,20 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
               "flex items-center gap-3 w-full min-w-0",
               isRTL && "flex-row-reverse"
             )}>
-              <SafeIcon 
-                icon={item.icon || Question} 
-                size={16} 
-                className="h-4 w-4 flex-shrink-0" 
-                fallback={Question}
-              />
+              {(() => {
+                try {
+                  const IconComponent = item.icon || Question;
+                  if (typeof IconComponent === 'function') {
+                    return <IconComponent size={16} className="h-4 w-4 flex-shrink-0" />;
+                  } else {
+                    console.warn(`Invalid icon for item ${item.id}, using fallback`);
+                    return <Question size={16} className="h-4 w-4 flex-shrink-0" />;
+                  }
+                } catch (error) {
+                  console.warn(`Error rendering icon for item ${item.id}:`, error);
+                  return <Question size={16} className="h-4 w-4 flex-shrink-0" />;
+                }
+              })()}
               <span className={cn(
                 "flex-1 truncate font-arabic text-left",
                 isRTL && "text-right"

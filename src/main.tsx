@@ -128,6 +128,7 @@ try {
         )) {
           localStorage.setItem('app-mode', 'emergency');
           window.location.search = '?emergency=true';
+          // Exit the callback early
           return;
         }
         
@@ -158,7 +159,8 @@ try {
   )) {
     // Redirect to emergency mode immediately
     window.location.search = '?emergency=true';
-    return;
+    // Exit early from the try-catch block
+    throw new Error('Redirecting to emergency mode');
   }
   
   // Emergency fallback - inject basic HTML directly
