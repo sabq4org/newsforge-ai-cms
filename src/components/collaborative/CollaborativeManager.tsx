@@ -324,7 +324,9 @@ Return JSON format:
                       بين {conflict.conflicts.user1.name} و {conflict.conflicts.user2.name}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {conflict.conflicts.user2.timestamp.toLocaleTimeString('ar-SA')}
+                      {conflict.conflicts.user2.timestamp ? 
+                        conflict.conflicts.user2.timestamp.toLocaleTimeString('ar-SA') : 
+                        'غير متاح'}
                     </p>
                   </div>
                   

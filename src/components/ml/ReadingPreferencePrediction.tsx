@@ -13,7 +13,7 @@ import {
   Clock,
   BookOpen,
   Zap,
-  Award,
+  Medal,
   Eye,
   Heart,
   Share2
@@ -455,7 +455,7 @@ export function ReadingPreferencePrediction() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Award className="w-5 h-5" />
+                  <Medal className="w-5 h-5" />
                   دقة التوقع حسب الفئة
                 </CardTitle>
               </CardHeader>

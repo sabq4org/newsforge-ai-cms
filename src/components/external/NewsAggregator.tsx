@@ -384,7 +384,7 @@ export function NewsAggregator() {
                     </div>
                     <div>
                       <span className="text-muted-foreground">آخر مزامنة:</span>
-                      <p>{safeTimeFormat(source.lastSync, 'ar-SA')}</p>
+                      <p>{source.lastSync ? safeTimeFormat(source.lastSync, 'ar-SA') : 'غير متاح'}</p>
                     </div>
                     <div>
                       <span className="text-muted-foreground">اللغة:</span>
@@ -571,7 +571,7 @@ export function NewsAggregator() {
                         <Badge variant="default" className="text-xs">ذو صلة</Badge>
                       )}
                       <span className="text-xs text-muted-foreground">
-                        {safeTimeFormat(post.timestamp, 'ar-SA')}
+                        {post.timestamp ? safeTimeFormat(post.timestamp, 'ar-SA') : 'غير متاح'}
                       </span>
                     </div>
                   </div>

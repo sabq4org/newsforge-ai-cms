@@ -631,7 +631,11 @@ Return structured script with scenes, visuals, and narration.`;
                           </span>
                           <Badge variant="outline">{audio.type}</Badge>
                           <Badge variant="outline">{audio.voice}</Badge>
-                          <span>{new Date(audio.createdAt).toLocaleDateString('ar-SA')}</span>
+                          <span>
+                            {audio.createdAt && !isNaN(new Date(audio.createdAt).getTime()) ? 
+                              new Date(audio.createdAt).toLocaleDateString('ar-SA') : 
+                              'غير متاح'}
+                          </span>
                         </div>
                       </div>
                     </div>

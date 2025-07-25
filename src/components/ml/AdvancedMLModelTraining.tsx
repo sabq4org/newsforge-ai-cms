@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
-  ChartLine, 
+  ChartLineUp, 
   Database, 
   Cpu, 
   Target, 
@@ -476,7 +476,7 @@ export function AdvancedMLModelTraining() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <ChartLine className="w-5 h-5" />
+                  <ChartLineUp className="w-5 h-5" />
                   جودة البيانات
                 </CardTitle>
               </CardHeader>
@@ -631,7 +631,7 @@ export function AdvancedMLModelTraining() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <ChartLine className="w-5 h-5" />
+                    <ChartLineUp className="w-5 h-5" />
                     منحنى التدريب
                   </CardTitle>
                 </CardHeader>
@@ -649,7 +649,7 @@ export function AdvancedMLModelTraining() {
                     </div>
                     
                     <div className="text-center py-8 text-muted-foreground">
-                      <ChartLine className="w-12 h-12 mx-auto mb-2" />
+                      <ChartLineUp className="w-12 h-12 mx-auto mb-2" />
                       <p>رسم بياني تفاعلي لمنحنى التدريب</p>
                       <p className="text-xs">(سيتم إضافة مكتبة الرسم البياني)</p>
                     </div>

@@ -605,7 +605,9 @@ export const BehavioralThemeLearningSystem: React.FC<BehavioralThemeLearningSyst
                   <div className="flex items-start justify-between mb-2">
                     <div>
                       <p className="text-sm font-medium">
-                        {new Date(adaptation.timestamp).toLocaleTimeString('ar-SA')}
+                        {adaptation.timestamp && !isNaN(new Date(adaptation.timestamp).getTime()) ? 
+                          new Date(adaptation.timestamp).toLocaleTimeString('ar-SA') : 
+                          'غير متاح'}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {adaptation.pattern.contentType} • {adaptation.pattern.deviceType === 'mobile' ? 'جوال' : 'حاسوب'}

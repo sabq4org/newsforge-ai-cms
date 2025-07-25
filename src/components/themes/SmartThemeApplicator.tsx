@@ -70,24 +70,6 @@ const defaultThemeContext: UserThemeContext = {
     adaptiveColorLearning: true // Enable adaptive learning by default
   }
 };
-    dashboard: 'ocean-blue',
-    analysis: 'midnight-professional'
-  },
-  personalizedSettings: {
-    fontSize: 1,
-    lineHeight: 1.5,
-    letterSpacing: 0,
-    contrastLevel: 'normal',
-    reducedMotion: false,
-    colorBlindnessSupport: false,
-  },
-  adaptivePreferences: {
-    autoTimeSwitch: true,
-    contextualSwitch: true,
-    learningMode: true,
-    accessibilityMode: false,
-  }
-};
 
 export const SmartThemeApplicator: React.FC<SmartThemeApplicatorProps> = ({ 
   userId, 

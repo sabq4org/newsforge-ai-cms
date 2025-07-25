@@ -377,7 +377,9 @@ export function ComprehensiveDeepAnalysisModule({
                       <div>
                         <p className="font-medium text-sm line-clamp-1">{analysis.articleTitle}</p>
                         <p className="text-xs text-muted-foreground">
-                          {analysis.overview.mainTheme} • {new Date(analysis.timestamp).toLocaleDateString()}
+                          {analysis.overview.mainTheme} • {analysis.timestamp && !isNaN(new Date(analysis.timestamp).getTime()) ? 
+                            new Date(analysis.timestamp).toLocaleDateString() : 
+                            'غير متاح'}
                         </p>
                       </div>
                     </div>
@@ -472,7 +474,11 @@ export function ComprehensiveDeepAnalysisModule({
                     </div>
                     <div className="flex items-center gap-1">
                       <Calendar size={14} />
-                      <span>{new Date(analysis.timestamp).toLocaleDateString()}</span>
+                      <span>
+                        {analysis.timestamp && !isNaN(new Date(analysis.timestamp).getTime()) ? 
+                          new Date(analysis.timestamp).toLocaleDateString() : 
+                          'غير متاح'}
+                      </span>
                     </div>
                   </div>
 

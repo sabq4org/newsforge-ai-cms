@@ -28,7 +28,6 @@ import {
   CheckCircle,
   Trophy
 } from '@phosphor-icons/react';
-} from '@phosphor-icons/react';
 import { useKV } from '@github/spark/hooks';
 import { useAuth } from '@/contexts/AuthContext';
 import { Article } from '@/types';

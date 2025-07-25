@@ -18,7 +18,7 @@ import {
   MessageCircle,
   Bookmark,
   Zap,
-  Award
+  Medal
 } from '@phosphor-icons/react';
 import { useKV } from '@github/spark/hooks';
 import { Article } from '@/types';
@@ -264,7 +264,7 @@ export function PredictiveBehaviorEngine() {
               ثقة: {insight.confidence}%
             </span>
             <span className="flex items-center gap-1">
-              <Award className="w-4 h-4" />
+              <Medal className="w-4 h-4" />
               دقة: {insight.accuracy}%
             </span>
           </div>
@@ -628,7 +628,7 @@ export function PredictiveBehaviorEngine() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Award className="w-5 h-5" />
+                  <Medal className="w-5 h-5" />
                   مؤشرات الأداء المتوقعة
                 </CardTitle>
               </CardHeader>

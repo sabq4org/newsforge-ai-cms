@@ -666,7 +666,9 @@ export function DeepContentAnalysis({ article, onAnalysisComplete }: DeepContent
                             آخر مراجعة: {currentAnalysis.humanReview.lastReviewedBy}
                           </span>
                           <span>
-                            {currentAnalysis.humanReview.lastReviewedAt.toLocaleDateString('ar-SA')}
+                            {currentAnalysis.humanReview.lastReviewedAt && !isNaN(new Date(currentAnalysis.humanReview.lastReviewedAt).getTime()) ? 
+                              currentAnalysis.humanReview.lastReviewedAt.toLocaleDateString('ar-SA') : 
+                              'غير متاح'}
                           </span>
                         </div>
                       </div>
