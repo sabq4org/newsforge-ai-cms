@@ -323,6 +323,13 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       badge: isArabic ? 'عضو' : 'Member'
     },
     {
+      id: 'user-adaptive-settings',
+      label: isArabic ? 'إعداداتي التكيفية' : 'My Adaptive Settings',
+      icon: Brain,
+      show: true,
+      badge: isArabic ? 'شخصي' : 'Personal'
+    },
+    {
       id: 'personalized-feed',
       label: isArabic ? 'الخلاصة المخصصة' : 'Personalized Feed',
       icon: Sparkles,
@@ -432,6 +439,20 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       icon: Settings,
       show: canAccess('settings'),
       badge: isArabic ? 'شامل' : 'Full'
+    },
+    {
+      id: 'adaptive-learning-settings',
+      label: isArabic ? 'إعدادات التعلم التكيفي' : 'Adaptive Learning Settings',
+      icon: Brain,
+      show: true,
+      badge: isArabic ? 'ذكي' : 'Smart'
+    },
+    {
+      id: 'personalized-reading',
+      label: isArabic ? 'محرك القراءة الشخصي' : 'Personalized Reading Engine',
+      icon: BookOpen,
+      show: true,
+      badge: isArabic ? 'شخصي' : 'Personal'
     },
     {
       id: 'typography-demo',

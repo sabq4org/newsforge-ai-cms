@@ -21,7 +21,7 @@ import { ComprehensiveDeepAnalysisModule } from '@/components/analysis';
 import { ComprehensiveArticleEditor } from '@/components/editor/ComprehensiveArticleEditor';
 import { AIOptimizationEngine } from '@/components/optimization/AIOptimizationEngine';
 import { ABTestingFramework } from '@/components/optimization/ABTestingFramework';
-import { TypographySettings, GeneralSettings, ThemeColorSettings } from '@/components/settings';
+import { TypographySettings, GeneralSettings, ThemeColorSettings, AdaptiveLearningSettings, PersonalizedReadingEngine, UserAdaptiveLearningSettings } from '@/components/settings';
 import { TypographyShowcase } from '@/components/showcase/TypographyShowcase';
 import { ThemeTestingShowcase } from '@/components/showcase/ThemeTestingShowcase';
 import { LiveThemePreview } from '@/components/showcase/LiveThemePreview';
@@ -511,6 +511,44 @@ function AppContent() {
       case 'theme-settings':
         return <ThemeColorSettings />;
       
+      case 'adaptive-learning-settings':
+        return memberUser ? (
+          <AdaptiveLearningSettings
+            userId={memberUser.id}
+            onSettingsChange={(config) => {
+              console.log('Adaptive learning settings changed:', config);
+              toast.success('تم حفظ إعدادات التعلم التكيفي');
+            }}
+          />
+        ) : (
+          <div className="text-center py-12">
+            <h2 className="text-xl font-semibold">إعدادات التعلم التكيفي</h2>
+            <p className="text-muted-foreground mt-2">يرجى تسجيل الدخول لإعداد التعلم التكيفي</p>
+            <Button className="mt-4" onClick={() => setShowAuthModal(true)}>
+              تسجيل الدخول
+            </Button>
+          </div>
+        );
+
+      case 'personalized-reading':
+        return memberUser ? (
+          <PersonalizedReadingEngine
+            userId={memberUser.id}
+            onPreferencesChange={(preferences) => {
+              console.log('Reading preferences changed:', preferences);
+              toast.success('تم حفظ تفضيلات القراءة');
+            }}
+          />
+        ) : (
+          <div className="text-center py-12">
+            <h2 className="text-xl font-semibold">محرك القراءة الشخصي</h2>
+            <p className="text-muted-foreground mt-2">يرجى تسجيل الدخول لتخصيص تجربة القراءة</p>
+            <Button className="mt-4" onClick={() => setShowAuthModal(true)}>
+              تسجيل الدخول
+            </Button>
+          </div>
+        );
+
       case 'settings':
         return <TypographySettings />;
       
@@ -686,6 +724,17 @@ function AppContent() {
             <h2 className="text-xl font-semibold">الملف الشخصي</h2>
             <p className="text-muted-foreground mt-2">يرجى تسجيل الدخول أولاً</p>
           </div>
+        );
+
+      case 'user-adaptive-settings':
+        return (
+          <UserAdaptiveLearningSettings
+            userProfile={memberUser || undefined}
+            onSettingsUpdate={(settings) => {
+              console.log('User adaptive settings updated:', settings);
+              toast.success('تم حفظ إعداداتك الشخصية');
+            }}
+          />
         );
       
       case 'personalized-feed':
