@@ -28,6 +28,7 @@ import {
   XCircle
 } from '@phosphor-icons/react';
 import { useAuth } from '@/contexts/AuthContext';
+import { safeDateFormat } from '@/lib/utils';
 import { useKV } from '@github/spark/hooks';
 import { Article } from '@/types';
 import { toast } from 'sonner';
@@ -605,7 +606,8 @@ export function ComprehensiveAnalysisEngine({
                           {language.code === 'ar' ? 'المراجع:' : 'Reviewer:'} {currentAnalysis.humanReview.reviewer}
                         </span>
                         <span>
-                          {currentAnalysis.humanReview.reviewDate.toLocaleDateString(
+                          {safeDateFormat(
+                            currentAnalysis.humanReview.reviewDate,
                             language.code === 'ar' ? 'ar-SA' : 'en-US'
                           )}
                         </span>

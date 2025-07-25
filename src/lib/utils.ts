@@ -254,3 +254,108 @@ export function normalizeActivityTimestamps(activities: any[]): any[] {
     };
   });
 }
+
+/**
+ * Normalize external sources to ensure dates are properly handled
+ */
+export function normalizeExternalSources(sources: any[]): any[] {
+  if (!Array.isArray(sources)) {
+    console.warn('normalizeExternalSources: Expected array, got:', typeof sources);
+    return [];
+  }
+  
+  return sources.map((source, index) => {
+    if (!source || typeof source !== 'object') {
+      console.warn(`normalizeExternalSources: Invalid source at index ${index}:`, source);
+      return null;
+    }
+    
+    // Ensure lastSync is a Date object
+    let lastSync = source.lastSync;
+    
+    try {
+      if (typeof lastSync === 'string') {
+        lastSync = new Date(lastSync);
+      } else if (typeof lastSync === 'number') {
+        lastSync = new Date(lastSync);
+      } else if (!(lastSync instanceof Date)) {
+        lastSync = new Date();
+      }
+      
+      // Check if date is valid
+      if (isNaN(lastSync.getTime())) {
+        console.warn(`normalizeExternalSources: Invalid lastSync at index ${index}, using current date`);
+        lastSync = new Date();
+      }
+    } catch (error) {
+      console.error(`normalizeExternalSources: Error processing lastSync at index ${index}:`, error);
+      lastSync = new Date();
+    }
+    
+    return {
+      ...source,
+      lastSync,
+      id: source.id || `source-${index}`,
+      name: source.name || 'Unknown Source',
+      isActive: source.isActive !== undefined ? source.isActive : true,
+      status: source.status || 'connected',
+      articleCount: source.articleCount || 0
+    };
+  }).filter((source): source is any => source !== null);
+}
+
+/**
+ * Universal data object normalization function that handles all timestamp fields
+ */
+export function normalizeDataObject(obj: any): any {
+  if (!obj || typeof obj !== 'object') {
+    return obj;
+  }
+  
+  if (Array.isArray(obj)) {
+    return obj.map(normalizeDataObject);
+  }
+  
+  const normalized = { ...obj };
+  
+  // Common timestamp fields to normalize
+  const timestampFields = [
+    'timestamp', 'lastSync', 'createdAt', 'updatedAt', 'publishedAt', 
+    'scheduledAt', 'reviewDate', 'lastReviewedAt', 'joinedAt', 'lastLoginAt',
+    'lastChecked', 'detectedAt', 'unlockedAt', 'scheduledFor', 'startTime',
+    'reviewedAt', 'resolvedAt'
+  ];
+  
+  for (const field of timestampFields) {
+    if (normalized[field] !== undefined && normalized[field] !== null) {
+      try {
+        if (typeof normalized[field] === 'string') {
+          normalized[field] = new Date(normalized[field]);
+        } else if (typeof normalized[field] === 'number') {
+          normalized[field] = new Date(normalized[field]);
+        } else if (!(normalized[field] instanceof Date)) {
+          // If it's not a valid date type, set to current date
+          normalized[field] = new Date();
+        }
+        
+        // Check if the date is valid
+        if (isNaN(normalized[field].getTime())) {
+          console.warn(`normalizeDataObject: Invalid ${field} date, using current date`);
+          normalized[field] = new Date();
+        }
+      } catch (error) {
+        console.error(`normalizeDataObject: Error processing ${field}:`, error);
+        normalized[field] = new Date();
+      }
+    }
+  }
+  
+  // Recursively normalize nested objects
+  for (const key in normalized) {
+    if (normalized[key] && typeof normalized[key] === 'object' && !Array.isArray(normalized[key]) && !(normalized[key] instanceof Date)) {
+      normalized[key] = normalizeDataObject(normalized[key]);
+    }
+  }
+  
+  return normalized;
+}

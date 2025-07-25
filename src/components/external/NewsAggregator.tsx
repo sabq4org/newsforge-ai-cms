@@ -25,6 +25,7 @@ import {
   Hash
 } from '@phosphor-icons/react';
 import { useKV } from '@github/spark/hooks';
+import { safeDateFormat, safeTimeFormat } from '@/lib/utils';
 
 interface NewsSource {
   id: string;
@@ -383,7 +384,7 @@ export function NewsAggregator() {
                     </div>
                     <div>
                       <span className="text-muted-foreground">آخر مزامنة:</span>
-                      <p>{source.lastSync.toLocaleTimeString('ar-SA')}</p>
+                      <p>{safeTimeFormat(source.lastSync, 'ar-SA')}</p>
                     </div>
                     <div>
                       <span className="text-muted-foreground">اللغة:</span>
@@ -466,7 +467,7 @@ export function NewsAggregator() {
                           <span>{article.source}</span>
                           <span>{article.author}</span>
                           <span>{article.readingTime} دقائق قراءة</span>
-                          <span>{article.publishedAt.toLocaleDateString('ar-SA')}</span>
+                          <span>{safeDateFormat(article.publishedAt, 'ar-SA')}</span>
                           <Badge variant="outline" className={`text-xs ${
                             article.sentiment === 'positive' ? 'text-green-600' :
                             article.sentiment === 'negative' ? 'text-red-600' : 'text-gray-600'
@@ -570,7 +571,7 @@ export function NewsAggregator() {
                         <Badge variant="default" className="text-xs">ذو صلة</Badge>
                       )}
                       <span className="text-xs text-muted-foreground">
-                        {post.timestamp.toLocaleTimeString('ar-SA')}
+                        {safeTimeFormat(post.timestamp, 'ar-SA')}
                       </span>
                     </div>
                   </div>

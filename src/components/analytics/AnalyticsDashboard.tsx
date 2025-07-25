@@ -28,6 +28,7 @@ import {
   Cell
 } from 'recharts';
 import { useAuth } from '@/contexts/AuthContext';
+import { safeDateFormat, safeTimeFormat } from '@/lib/utils';
 import { useKV } from '@github/spark/hooks';
 import { mockAnalytics } from '@/lib/mockData';
 import { 
@@ -212,7 +213,7 @@ export function AnalyticsDashboard({ onNavigate }: AnalyticsDashboardProps) {
 
   const formatChartData = () => {
     return realtimeData.map(data => ({
-      time: data.timestamp.toLocaleTimeString(language.code === 'ar' ? 'ar-SA' : 'en-US', {
+      time: safeTimeFormat(data.timestamp, language.code === 'ar' ? 'ar-SA' : 'en-US', {
         hour: '2-digit',
         minute: '2-digit'
       }),
@@ -246,7 +247,7 @@ export function AnalyticsDashboard({ onNavigate }: AnalyticsDashboardProps) {
           <div className="flex items-center gap-2 mt-2">
             <div className={`w-2 h-2 rounded-full ${isLive ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
             <span className="text-sm text-muted-foreground">
-              {language.code === 'ar' ? 'آخر تحديث:' : 'Last updated:'} {lastUpdated.toLocaleTimeString()}
+              {language.code === 'ar' ? 'آخر تحديث:' : 'Last updated:'} {safeTimeFormat(lastUpdated)}
             </span>
           </div>
         </div>
@@ -422,7 +423,7 @@ export function AnalyticsDashboard({ onNavigate }: AnalyticsDashboardProps) {
                         </div>
                       </div>
                       <span className="text-xs text-muted-foreground">
-                        {data.timestamp.toLocaleTimeString()}
+                        {safeTimeFormat(data.timestamp)}
                       </span>
                     </div>
                   ))}

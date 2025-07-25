@@ -35,6 +35,7 @@ import {
   CheckCircle,
   Clock,
   Medal,
+  Trophy,
   Activity
 } from '@phosphor-icons/react';
 import { useKV } from '@github/spark/hooks';

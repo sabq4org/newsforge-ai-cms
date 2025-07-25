@@ -14,7 +14,7 @@ import {
   Share,
   BookOpen,
   Timer,
-  ChartLine,
+  ChartLineUp,
   Activity
 } from '@phosphor-icons/react';
 import { useKV } from '@github/spark/hooks';
@@ -480,14 +480,14 @@ export function ReadingBehaviorTracker({ userId, article, onBehaviorUpdate }: Re
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <ChartLine />
+            <ChartLineUp />
             تطور سلوك القراءة
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="h-64 flex items-center justify-center text-muted-foreground">
             <div className="text-center">
-              <ChartLine className="w-12 h-12 mx-auto mb-4 opacity-50" />
+              <ChartLineUp className="w-12 h-12 mx-auto mb-4 opacity-50" />
               <p>رسم بياني لتطور سلوك القراءة</p>
               <p className="text-sm mt-2">سيتم عرض البيانات التفصيلية هنا</p>
             </div>

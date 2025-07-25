@@ -11,7 +11,7 @@ import { useOptimizedTypography } from '@/hooks/useOptimizedTypography';
 import { mockArticles, mockCategories } from '@/lib/mockData';
 import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
-import { normalizeArticles } from '@/lib/utils';
+import { normalizeArticles, safeDateFormat } from '@/lib/utils';
 import { CategoryDisplay } from '@/components/categories';
 import { toast } from 'sonner';
 import { 
@@ -91,10 +91,7 @@ export function ComprehensiveArticleModule({ onEditArticle, onCreateNew }: Compr
     if (!date) return '';
     
     try {
-      const dateObj = date instanceof Date ? date : new Date(date);
-      if (isNaN(dateObj.getTime())) return '';
-      
-      return dateObj.toLocaleDateString(language.code === 'ar' ? 'ar-SA' : 'en-US');
+      return safeDateFormat(date, language.code === 'ar' ? 'ar-SA' : 'en-US');
     } catch (error) {
       console.error('Date formatting error:', error);
       return '';

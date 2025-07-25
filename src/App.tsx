@@ -47,8 +47,12 @@ import { BreakingNewsNotifications, NotificationCenter, LiveNotificationBanner, 
 import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
 import { mockArticles, mockCategories, mockMediaFiles } from '@/lib/mockData';
-import { normalizeArticles } from '@/lib/utils';
+import { normalizeArticles, normalizeDataObject } from '@/lib/utils';
 import { UserProfile } from '@/types/membership';
+import { initializeGlobalErrorHandler } from '@/lib/globalErrorHandler';
+
+// Initialize global error handler for date formatting issues
+initializeGlobalErrorHandler();
 
 function AppContent() {
   const { isAuthenticated, user, canAccess } = useAuth();
@@ -56,7 +60,7 @@ function AppContent() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState<Article | undefined>();
   const [rawArticles, setRawArticles] = useKV<Article[]>('sabq-articles', mockArticles);
-  const articles = normalizeArticles(rawArticles || []);
+  const articles = normalizeArticles(normalizeDataObject(rawArticles || []));
   const [isPublicView, setIsPublicView] = useState(false);
   
   // Initialize media files
@@ -69,7 +73,7 @@ function AppContent() {
   
   const setArticles = (updater: (currentArticles: Article[]) => Article[]) => {
     setRawArticles(currentArticles => {
-      const normalized = normalizeArticles(currentArticles || []);
+      const normalized = normalizeArticles(normalizeDataObject(currentArticles || []));
       return updater(normalized);
     });
   };

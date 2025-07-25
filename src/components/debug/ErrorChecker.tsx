@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useKV } from '@github/spark/hooks';
 import { mockArticles, mockCategories, mockAnalytics } from '@/lib/mockData';
-import { normalizeArticles, normalizeActivityTimestamps } from '@/lib/utils';
+import { normalizeArticles, normalizeActivityTimestamps, safeDateFormat } from '@/lib/utils';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CheckCircle, AlertTriangle } from '@phosphor-icons/react';
 
@@ -78,8 +78,8 @@ export function ErrorChecker() {
   // Test date formatting
   try {
     const testDate = new Date();
-    const arabicDate = testDate.toLocaleDateString('ar-SA');
-    const englishDate = testDate.toLocaleDateString('en-US');
+    const arabicDate = safeDateFormat(testDate, 'ar-SA');
+    const englishDate = safeDateFormat(testDate, 'en-US');
     
     checkResults.push({
       test: 'Date Formatting',

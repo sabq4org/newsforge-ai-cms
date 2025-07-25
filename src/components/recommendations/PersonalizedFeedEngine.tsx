@@ -15,7 +15,7 @@ import {
   Star,
   Target,
   Sparkles,
-  ChartLine,
+  ChartLineUpUp,
   Timer,
   Coffee,
   Moon,
@@ -524,7 +524,7 @@ export function PersonalizedFeedEngine({ userId, articles, onArticleSelect }: Pe
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <ChartLine />
+                <ChartLineUpUp />
                 إحصائيات القراءة
               </CardTitle>
             </CardHeader>

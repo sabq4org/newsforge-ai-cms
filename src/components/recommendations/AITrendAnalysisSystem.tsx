@@ -24,7 +24,7 @@ import {
   ArrowUp,
   ArrowDown,
   Minus,
-  ChartLine,
+  ChartLineUp,
   BarChart3,
   PieChart,
   Activity,
@@ -722,7 +722,7 @@ export function AITrendAnalysisSystem({
         <TabsContent value="trends" className="space-y-6">
           {trendAnalyses.length === 0 ? (
             <div className="text-center py-12">
-              <ChartLine className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+              <ChartLineUp className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
               <h3 className="text-xl font-semibold mb-2">لا توجد تحليلات متاحة</h3>
               <p className="text-muted-foreground mb-4">اضغط على "تحليل جديد" لبدء تحليل الاتجاهات</p>
               <Button onClick={generateTrendAnalysis} disabled={isAnalyzing}>

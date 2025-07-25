@@ -25,6 +25,7 @@ import {
   Activity
 } from '@phosphor-icons/react';
 import { useKV } from '@github/spark/hooks';
+import { safeDateFormat, safeTimeFormat, normalizeExternalSources } from '@/lib/utils';
 
 interface WeatherData {
   city: string;
@@ -100,13 +101,16 @@ export function ExternalDataManager() {
     }
   ]);
 
+  // Normalize external sources to ensure proper date handling
+  const normalizedSources = normalizeExternalSources(externalSources || []);
+
   const [isLoading, setIsLoading] = useState(false);
   const [selectedCity, setSelectedCity] = useState('الرياض');
   const [searchQuery, setSearchQuery] = useState('');
 
   // Weather data fetching
   const fetchWeatherData = async (city: string) => {
-    const weatherSource = externalSources.find(s => s.id === 'openweather');
+    const weatherSource = normalizedSources.find(s => s.id === 'openweather');
     if (!weatherSource?.isActive || !weatherSource.apiKey) {
       toast.error('مصدر بيانات الطقس غير مكون بشكل صحيح');
       return;
@@ -140,7 +144,7 @@ export function ExternalDataManager() {
 
   // Visual content fetching
   const fetchVisualContent = async (query: string) => {
-    const unsplashSource = externalSources.find(s => s.id === 'unsplash');
+    const unsplashSource = normalizedSources.find(s => s.id === 'unsplash');
     if (!unsplashSource?.isActive || !unsplashSource.apiKey) {
       toast.error('مصدر المحتوى المرئي غير مكون بشكل صحيح');
       return;
@@ -209,7 +213,7 @@ export function ExternalDataManager() {
         </div>
         <Badge variant="outline" className="gap-2">
           <Activity className="h-4 w-4" />
-          {externalSources.filter(s => s.isActive).length} مصدر نشط
+          {normalizedSources.filter(s => s.isActive).length} مصدر نشط
         </Badge>
       </div>
 
@@ -278,7 +282,7 @@ export function ExternalDataManager() {
                         <div>سرعة الرياح: {weather.windSpeed} كم/س</div>
                         <div className="flex items-center gap-1">
                           <Clock className="h-3 w-3" />
-                          آخر تحديث: {weather.timestamp.toLocaleTimeString('ar-SA')}
+                          آخر تحديث: {safeTimeFormat(weather.timestamp, 'ar-SA')}
                         </div>
                       </div>
                     </div>
@@ -383,7 +387,7 @@ export function ExternalDataManager() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {externalSources.map((source) => (
+              {normalizedSources.map((source) => (
                 <Card key={source.id} className="p-4">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
@@ -444,7 +448,13 @@ export function ExternalDataManager() {
                       <span>آخر مزامنة:</span>
                       <span className="flex items-center gap-1">
                         <Clock className="h-3 w-3" />
-                        {source.lastSync.toLocaleString('ar-SA')}
+                        {safeDateFormat(source.lastSync, 'ar-SA', { 
+                          year: 'numeric', 
+                          month: 'short', 
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
                       </span>
                     </div>
                     
@@ -472,7 +482,7 @@ export function ExternalDataManager() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {externalSources.map((source) => (
+                  {normalizedSources.map((source) => (
                     <div key={source.id} className="flex items-center justify-between">
                       <span className="text-sm">{source.name}</span>
                       <Badge variant={source.isActive ? 'default' : 'secondary'}>
@@ -529,7 +539,7 @@ export function ExternalDataManager() {
                   <div className="flex items-center justify-between">
                     <span className="text-sm">آخر تحديث</span>
                     <span className="text-xs text-muted-foreground">
-                      {new Date().toLocaleTimeString('ar-SA')}
+                      {safeTimeFormat(new Date(), 'ar-SA')}
                     </span>
                   </div>
                 </div>

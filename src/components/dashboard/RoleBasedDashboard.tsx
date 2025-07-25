@@ -26,6 +26,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { useOptimizedTypography } from '@/hooks/useOptimizedTypography';
 import { useKV } from '@github/spark/hooks';
+import { safeDateFormat, safeTimeFormat } from '@/lib/utils';
 import { mockAnalytics, mockArticles } from '@/lib/mockData';
 import { normalizeActivityTimestamps } from '@/lib/utils';
 import { Analytics, Article } from '@/types';
@@ -262,8 +263,8 @@ export function RoleBasedDashboard({ onNavigate }: RoleBasedDashboardProps) {
           </h1>
           <p className={typography.summary}>
             {isArabic 
-              ? `مرحباً بك في منصة سبق الذكية - ${new Date().toLocaleDateString('ar-SA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`
-              : `Welcome to Sabq Althakiyah - ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`
+              ? `مرحباً بك في منصة سبق الذكية - ${safeDateFormat(new Date(), 'ar-SA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`
+              : `Welcome to Sabq Althakiyah - ${safeDateFormat(new Date(), 'en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`
             }
           </p>
         </div>
@@ -390,10 +391,10 @@ export function RoleBasedDashboard({ onNavigate }: RoleBasedDashboardProps) {
                           }
                           
                           // Use the normalized date
-                          return date.toLocaleDateString(isArabic ? 'ar-SA' : 'en-US');
+                          return safeDateFormat(date, isArabic ? 'ar-SA' : 'en-US');
                         } catch (e) {
                           console.warn('Date formatting error for activity:', activity, e);
-                          return new Date().toLocaleDateString(isArabic ? 'ar-SA' : 'en-US');
+                          return safeDateFormat(new Date(), isArabic ? 'ar-SA' : 'en-US');
                         }
                       })()}
                     </p>
