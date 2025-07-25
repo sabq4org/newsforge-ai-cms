@@ -5,3 +5,5 @@ export { ThemeImportExport } from './ThemeImportExport';
 export { InteractiveThemeDemo } from './InteractiveThemeDemo';
 export { QuickThemeSelector } from './QuickThemeSelector';
 export { ComprehensiveThemeManager } from './ComprehensiveThemeManager';
+export { AutoThemeScheduler } from './AutoThemeScheduler';
+export { ThemeScheduleStatus } from './ThemeScheduleStatus';

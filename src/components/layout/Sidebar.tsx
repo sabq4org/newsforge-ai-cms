@@ -472,6 +472,13 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       icon: Palette,
       show: true,
       badge: isArabic ? 'شامل' : 'Complete'
+    },
+    {
+      id: 'auto-theme-scheduler',
+      label: isArabic ? 'جدولة الثيمات التلقائية' : 'Auto Theme Scheduler',
+      icon: Calendar,
+      show: true,
+      badge: isArabic ? 'تلقائي' : 'Auto'
     }
   ];
 

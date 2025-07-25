@@ -26,7 +26,7 @@ import { TypographyShowcase } from '@/components/showcase/TypographyShowcase';
 import { ThemeTestingShowcase } from '@/components/showcase/ThemeTestingShowcase';
 import { LiveThemePreview } from '@/components/showcase/LiveThemePreview';
 import { ThemeImportExport } from '@/components/showcase/ThemeImportExport';
-import { ComprehensiveThemeManager } from '@/components/showcase/ComprehensiveThemeManager';
+import { ComprehensiveThemeManager, AutoThemeScheduler, InteractiveThemeDemo } from '@/components/showcase';
 import { MediaUpload, MediaGenerator, ComprehensiveMediaManager } from '@/components/media';
 import { AudioEditor, AudioLibrary, AudioAnalytics } from '@/components/audio';
 import { SystemAnalysis, ComprehensiveAnalysisEngine } from '@/components/analysis';
@@ -532,6 +532,9 @@ function AppContent() {
       
       case 'comprehensive-theme-manager':
         return <ComprehensiveThemeManager />;
+      
+      case 'auto-theme-scheduler':
+        return <AutoThemeScheduler />;
       
       case 'media':
         return <ComprehensiveMediaManager />;

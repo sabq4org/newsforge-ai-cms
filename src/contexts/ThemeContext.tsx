@@ -203,6 +203,8 @@ interface ThemeContextType {
   resetToDefault: () => void;
   exportTheme: () => string;
   importTheme: (themeData: string) => boolean;
+  setTheme: (colors: ThemeColors) => void;
+  applyThemeGradually: (colors: ThemeColors, durationMinutes: number) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -290,6 +292,44 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     }
   };
 
+  const setTheme = (colors: ThemeColors) => {
+    updateThemeSettings({
+      activePreset: 'custom',
+      customColors: colors,
+    });
+  };
+
+  const applyThemeGradually = (colors: ThemeColors, durationMinutes: number) => {
+    const steps = 20;
+    const stepDuration = (durationMinutes * 60 * 1000) / steps;
+    
+    const currentColors = getCurrentColors();
+    const targetColors = colors;
+    
+    let step = 0;
+    const interval = setInterval(() => {
+      step++;
+      const progress = step / steps;
+      
+      const interpolatedColors = interpolateColors(currentColors, targetColors, progress);
+      setTheme(interpolatedColors);
+      
+      if (step >= steps) {
+        clearInterval(interval);
+      }
+    }, stepDuration);
+  };
+
+  const interpolateColors = (from: ThemeColors, to: ThemeColors, progress: number): ThemeColors => {
+    // Simple color interpolation - in production, use proper color interpolation
+    return Object.keys(from).reduce((acc, key) => {
+      const fromColor = from[key as keyof ThemeColors];
+      const toColor = to[key as keyof ThemeColors];
+      acc[key as keyof ThemeColors] = progress > 0.5 ? toColor : fromColor;
+      return acc;
+    }, {} as ThemeColors);
+  };
+
   // Apply theme changes to CSS variables
   useEffect(() => {
     const colors = getCurrentColors();
@@ -310,6 +350,8 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     resetToDefault,
     exportTheme,
     importTheme,
+    setTheme,
+    applyThemeGradually,
   };
 
   return (
