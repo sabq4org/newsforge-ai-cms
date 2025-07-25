@@ -6,9 +6,18 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Globe, Settings, PlusCircle, BookOpen, ChartBar, Users } from '@phosphor-icons/react';
+import { Globe, Settings, PlusCircle, BookOpen } from '@phosphor-icons/react';
+import { ChartBar, Users } from '@/components/common/SafeIcon';
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
+
+// Safe cn implementation
+const cn = (...classes: any[]): string => {
+  try {
+    return classes.filter(Boolean).join(' ');
+  } catch {
+    return '';
+  }
+};
 
 // Simple sidebar menu structure
 const menuItems = [

@@ -81,7 +81,7 @@ const SafeButton: React.FC<SafeButtonProps> = ({
     alignItems: 'center',
     justifyContent: 'center',
     gap: '0.5rem'
-  };
+  } as const;
 
   const sizeStyles = {
     sm: { padding: '0.5rem 1rem', fontSize: '0.875rem' },

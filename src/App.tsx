@@ -64,8 +64,27 @@ import { Article } from '@/types';
 import { UserProfile } from '@/types/membership';
 import { useKV } from '@github/spark/hooks';
 import { mockArticles, mockCategories, mockMediaFiles } from '@/lib/mockData';
-import { normalizeArticles, normalizeDataObject, cn } from '@/lib/utils';
+import { normalizeArticles, normalizeDataObject } from '@/lib/utils';
+
+// Import safeCn with fallback
+let safeCn: (...classes: any[]) => string;
+try {
+  safeCn = require('@/lib/criticalErrorFixes').safeCn;
+} catch {
+  // Ultra-safe fallback if import fails
+  safeCn = (...classes: any[]): string => {
+    try {
+      return classes.filter(Boolean).join(' ');
+    } catch {
+      return '';
+    }
+  };
+}
+
 import { ZIndexManager, DirectReadingScaleController, QuantumColorAdaptationSystem, ReadingScaleIndicator, ColorAdaptationIndicator, ErrorMitigationSystem, SidebarProtector, useSidebarProtection } from '@/components/common';
+
+// Use safeCn instead of cn throughout the component
+const cn = safeCn;
 import { initializeGlobalErrorHandler } from '@/lib/globalErrorHandler';
 import '@/lib/runtimeErrorFixes'; // Import runtime error fixes
 import '@/lib/criticalErrorFixes'; // Import critical error fixes
@@ -1061,6 +1080,7 @@ import SafeTestApp from './SafeTestApp';
 import TestAppContent from './TestAppContent';
 import MinimalStartup from './MinimalStartup';
 import EmergencyApp from './EmergencyApp';
+import EmergencyFallbackApp from './EmergencyFallbackApp';
 
 function App() {
   try {
@@ -1073,7 +1093,7 @@ function App() {
     
     // Emergency mode - absolute minimum functionality for debugging
     if (emergencyMode) {
-      return <EmergencyApp />;
+      return <EmergencyFallbackApp />;
     }
     
     // Minimal mode - no dependencies, pure React
@@ -1110,7 +1130,10 @@ function App() {
           onError={(error, errorInfo) => {
             console.error('App-level runtime error:', error, errorInfo);
             // Automatically redirect to emergency mode on critical errors
-            if (error.message.includes('forEach') || error.message.includes('toLowerCase')) {
+            if (error.message.includes('forEach') || 
+                error.message.includes('toLowerCase') ||
+                error.message.includes('cn') ||
+                error.message.includes('undefined is not an object')) {
               window.location.search = '?emergency=true';
             }
           }}
@@ -1119,7 +1142,10 @@ function App() {
             onError={(error, errorInfo) => {
               console.error('Component-level error:', error, errorInfo);
               // Check for specific tailwind-merge or class utility errors
-              if (error.message.includes('forEach') || error.message.includes('classGroup')) {
+              if (error.message.includes('forEach') || 
+                  error.message.includes('classGroup') ||
+                  error.message.includes('cn') ||
+                  error.message.includes('undefined is not an object')) {
                 window.location.search = '?emergency=true';
               }
             }}
@@ -1146,13 +1172,15 @@ function App() {
     if (error instanceof Error && (
       error.message.includes('forEach') || 
       error.message.includes('toLowerCase') ||
-      error.message.includes('classGroup')
+      error.message.includes('classGroup') ||
+      error.message.includes('cn') ||
+      error.message.includes('undefined is not an object')
     )) {
-      return <EmergencyApp />;
+      return <EmergencyFallbackApp />;
     }
     
     // Fallback to absolute minimum if everything else fails
-    return <MinimalStartup />;
+    return <EmergencyFallbackApp />;
   }
 }
 
