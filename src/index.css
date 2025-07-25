@@ -438,17 +438,23 @@
 
   /* Override any zoom animations with fade animations */
   .animate-in[data-state="open"],
-  .animate-in {
+  .animate-in,
+  [data-state="open"],
+  .data-\\[state\\=open\\]\\:animate-in {
     animation: fadeIn 200ms ease-out !important;
     transform: none !important;
     zoom: 1 !important;
+    scale: 1 !important;
   }
 
   .animate-out[data-state="closed"],
-  .animate-out {
+  .animate-out,
+  [data-state="closed"],
+  .data-\\[state\\=closed\\]\\:animate-out {
     animation: fadeOut 150ms ease-in !important;
     transform: none !important;
     zoom: 1 !important;
+    scale: 1 !important;
   }
 
   @keyframes fadeIn {
@@ -519,6 +525,22 @@
     perspective: 1000;
   }
   
+  /* Prevent scaling/zooming on specific elements that commonly cause issues */
+  body, 
+  #root,
+  .app-container,
+  .main-layout,
+  button,
+  [role="button"],
+  input,
+  select,
+  textarea {
+    transform: none !important;
+    -webkit-transform: none !important;
+    scale: 1 !important;
+    zoom: 1 !important;
+  }
+  
   /* Prevent any scaling or zooming on any element */
   *:not(input):not(textarea):not([contenteditable]) {
     -webkit-user-zoom: fixed !important;
@@ -532,23 +554,33 @@
   .main-layout,
   .sidebar,
   .header,
-  .content-area {
+  .content-area,
+  [data-radix-popper-content-wrapper],
+  [data-radix-scroll-area-viewport] {
     transform: none !important;
     -webkit-transform: none !important;
     -moz-transform: none !important;
     -ms-transform: none !important;
     zoom: 1 !important;
+    scale: 1 !important;
     -webkit-user-zoom: fixed !important;
     -moz-user-zoom: fixed !important;
     user-zoom: fixed !important;
   }
   
   /* Disable problematic CSS animations that may cause zoom */
-  .no-zoom-animations * {
+  .no-zoom-animations *,
+  .no-zoom-animations,
+  [class*="animate-"],
+  [class*="transition-"],
+  .transition-all,
+  .transition-transform {
     animation: none !important;
     transition: color 0.2s ease, background-color 0.2s ease, opacity 0.2s ease !important;
     transform: none !important;
     -webkit-transform: none !important;
+    scale: 1 !important;
+    zoom: 1 !important;
   }
 }
 

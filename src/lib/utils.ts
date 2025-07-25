@@ -202,26 +202,7 @@ export function safeTimeFormat(
  * Safely call toLowerCase on a string with fallback
  */
 export function safeToLowerCase(value: any): string {
-  if (value === null || value === undefined) {
-    console.warn('safeToLowerCase: Received null/undefined value, returning empty string');
-    return '';
-  }
-  
-  if (typeof value === 'string') {
-    return value.toLowerCase();
-  }
-  
-  if (typeof value === 'number' || typeof value === 'boolean') {
-    return String(value).toLowerCase();
-  }
-  
-  // For objects, try to convert to string first
-  try {
-    return String(value).toLowerCase();
-  } catch (error) {
-    console.warn('safeToLowerCase: Error converting value to string:', value, error);
-    return '';
-  }
+  return safeToString(value).toLowerCase();
 }
 
 /**
@@ -234,6 +215,18 @@ export function safeToString(value: any): string {
   
   if (typeof value === 'string') {
     return value;
+  }
+  
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return String(value);
+  }
+  
+  if (typeof value === 'object') {
+    try {
+      return JSON.stringify(value);
+    } catch {
+      return '[Object]';
+    }
   }
   
   try {
@@ -406,39 +399,7 @@ export function normalizeDataObject(obj: any): any {
   return normalized;
 }
 
-/**
- * Safely convert value to string with null/undefined handling
- */
-export function safeToString(value: any): string {
-  if (value === null || value === undefined) {
-    return '';
-  }
-  
-  if (typeof value === 'string') {
-    return value;
-  }
-  
-  if (typeof value === 'number' || typeof value === 'boolean') {
-    return String(value);
-  }
-  
-  if (typeof value === 'object') {
-    try {
-      return JSON.stringify(value);
-    } catch {
-      return '[Object]';
-    }
-  }
-  
-  return String(value);
-}
 
-/**
- * Safely convert string to lowercase with null handling
- */
-export function safeToLowerCase(value: any): string {
-  return safeToString(value).toLowerCase();
-}
 
 /**
  * Enhanced date formatting with proper error handling

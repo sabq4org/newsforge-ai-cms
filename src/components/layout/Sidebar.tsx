@@ -57,6 +57,9 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
   const isRTL = language.direction === 'rtl';
   const isArabic = language.code === 'ar';
 
+  // Track logged icon warnings to reduce console noise
+  const loggedIconWarnings = new Set<string>();
+
   // Core navigation items
   const coreItems = [
     {
@@ -648,9 +651,13 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
           return false;
         }
         
-        // Additional safety checks for icon
+        // Additional safety checks for icon (reduced console noise)
         if (item.icon && typeof item.icon !== 'function') {
-          console.warn('renderMenuSection: Invalid icon type for item:', item.id, typeof item.icon);
+          // Only log once per icon type to reduce noise
+          if (!loggedIconWarnings.has(item.id)) {
+            console.warn('renderMenuSection: Invalid icon type for item:', item.id, typeof item.icon);
+            loggedIconWarnings.add(item.id);
+          }
         }
         
         return item.show;

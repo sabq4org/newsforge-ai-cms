@@ -51,6 +51,7 @@ window.addEventListener('error', (event) => {
     event.message.includes('is not a function') ||
     event.message.includes('undefined is not an object') ||
     event.message.includes("Can't find variable") ||
+    event.message.includes("Can't find variable: cn") ||
     event.message.includes('toLowerCase') ||
     event.message.includes('Cannot read propert') ||
     event.message.includes('Trophy') ||
@@ -86,7 +87,8 @@ window.addEventListener('unhandledrejection', (event) => {
     event.reason.message.includes('toLocaleTimeString') ||
     event.reason.message.includes('is not a function') ||
     event.reason.message.includes('undefined is not an object') ||
-    event.reason.message.includes('toLowerCase') ||
+    event.reason.message.includes("Can't find variable") ||
+    event.reason.message.includes("Can't find variable: cn") ||
     event.reason.message.includes('Cannot read propert') ||
     event.reason.message.includes('Trophy') ||
     event.reason.message.includes('Award') ||

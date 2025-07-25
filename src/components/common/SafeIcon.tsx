@@ -74,7 +74,10 @@ export function SafeIcon({
     }
   }
   
-  // No valid icon provided, use fallback (reduce console noise)
+  // No valid icon provided, use fallback with minimal logging
+  if (process.env.NODE_ENV === 'development' && (icon !== undefined || name !== undefined)) {
+    console.warn('SafeIcon: No valid icon provided, using fallback', { icon: typeof icon, name });
+  }
   const FallbackIcon = fallback;
   return <FallbackIcon size={size} className={className} />;
 }
