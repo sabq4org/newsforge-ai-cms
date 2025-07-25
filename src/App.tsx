@@ -20,7 +20,7 @@ import { ComprehensiveDeepAnalysisModule } from '@/components/analysis';
 import { ComprehensiveArticleEditor } from '@/components/editor/ComprehensiveArticleEditor';
 import { AIOptimizationEngine } from '@/components/optimization/AIOptimizationEngine';
 import { ABTestingFramework } from '@/components/optimization/ABTestingFramework';
-import { TypographySettings } from '@/components/settings/TypographySettings';
+import { TypographySettings, GeneralSettings } from '@/components/settings';
 import { TypographyShowcase } from '@/components/showcase/TypographyShowcase';
 import { MediaUpload, MediaGenerator, ComprehensiveMediaManager } from '@/components/media';
 import { AudioEditor, AudioLibrary, AudioAnalytics } from '@/components/audio';
@@ -503,6 +503,9 @@ function AppContent() {
       
       case 'settings':
         return <TypographySettings />;
+      
+      case 'general-settings':
+        return <GeneralSettings />;
       
       case 'typography-demo':
         return <TypographyShowcase />;

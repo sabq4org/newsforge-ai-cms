@@ -411,9 +411,16 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
     },
     {
       id: 'settings',
-      label: isArabic ? 'الإعدادات' : 'Settings',
+      label: isArabic ? 'إعدادات النظام' : 'Typography Settings',
       icon: Settings,
       show: canAccess('settings')
+    },
+    {
+      id: 'general-settings',
+      label: isArabic ? 'الإعدادات العامة' : 'General Settings',
+      icon: Settings,
+      show: canAccess('settings'),
+      badge: isArabic ? 'شامل' : 'Full'
     },
     {
       id: 'typography-demo',
