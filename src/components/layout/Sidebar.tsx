@@ -37,7 +37,9 @@ import {
   Activity,
   MemoryStick,
   BookOpen,
-  Palette
+  Palette,
+  Package,
+  Play
 } from '@phosphor-icons/react';
 
 interface SidebarProps {
@@ -442,6 +444,34 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       icon: Palette,
       show: true,
       badge: isArabic ? 'تجربة' : 'Test'
+    },
+    {
+      id: 'live-theme-preview',
+      label: isArabic ? 'معاينة الثيمات المباشرة' : 'Live Theme Preview',
+      icon: Eye,
+      show: true,
+      badge: isArabic ? 'مباشر' : 'Live'
+    },
+    {
+      id: 'theme-import-export',
+      label: isArabic ? 'تصدير واستيراد الثيمات' : 'Import/Export Themes',
+      icon: Package,
+      show: true,
+      badge: isArabic ? 'شارك' : 'Share'
+    },
+    {
+      id: 'interactive-theme-demo',
+      label: isArabic ? 'العرض التفاعلي للثيمات' : 'Interactive Theme Demo',
+      icon: Play,
+      show: true,
+      badge: isArabic ? 'تفاعلي' : 'Interactive'
+    },
+    {
+      id: 'comprehensive-theme-manager',
+      label: isArabic ? 'إدارة الثيمات الشاملة' : 'Theme Manager',
+      icon: Palette,
+      show: true,
+      badge: isArabic ? 'شامل' : 'Complete'
     }
   ];
 

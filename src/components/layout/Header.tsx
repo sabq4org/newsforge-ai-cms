@@ -12,6 +12,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/contexts/AuthContext';
 import { HeaderProfileMenu } from '@/components/membership';
+import { QuickThemeSelector } from '@/components/showcase/QuickThemeSelector';
 import { cn } from '@/lib/utils';
 import { 
   Sparkles, 
@@ -141,6 +142,9 @@ export function Header({
             </SelectItem>
           </SelectContent>
         </Select>
+
+        {/* Quick Theme Selector */}
+        <QuickThemeSelector />
 
         {/* Notifications */}
         <Button variant="ghost" size="sm" className="relative h-9 w-9">

@@ -24,6 +24,9 @@ import { ABTestingFramework } from '@/components/optimization/ABTestingFramework
 import { TypographySettings, GeneralSettings, ThemeColorSettings } from '@/components/settings';
 import { TypographyShowcase } from '@/components/showcase/TypographyShowcase';
 import { ThemeTestingShowcase } from '@/components/showcase/ThemeTestingShowcase';
+import { LiveThemePreview } from '@/components/showcase/LiveThemePreview';
+import { ThemeImportExport } from '@/components/showcase/ThemeImportExport';
+import { ComprehensiveThemeManager } from '@/components/showcase/ComprehensiveThemeManager';
 import { MediaUpload, MediaGenerator, ComprehensiveMediaManager } from '@/components/media';
 import { AudioEditor, AudioLibrary, AudioAnalytics } from '@/components/audio';
 import { SystemAnalysis, ComprehensiveAnalysisEngine } from '@/components/analysis';
@@ -517,6 +520,18 @@ function AppContent() {
       
       case 'theme-testing':
         return <ThemeTestingShowcase />;
+      
+      case 'live-theme-preview':
+        return <LiveThemePreview />;
+      
+      case 'theme-import-export':
+        return <ThemeImportExport />;
+      
+      case 'interactive-theme-demo':
+        return <InteractiveThemeDemo />;
+      
+      case 'comprehensive-theme-manager':
+        return <ComprehensiveThemeManager />;
       
       case 'media':
         return <ComprehensiveMediaManager />;
