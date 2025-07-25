@@ -6,7 +6,7 @@ import App from './App.tsx'
 import BasicTestApp from './BasicTestApp.tsx'
 import MinimalApp from './MinimalApp.tsx'
 import DiagnosticApp from './DiagnosticApp.tsx'
-import ErrorFallback from './ErrorFallback.tsx'
+import { ErrorFallback } from './ErrorFallback.tsx'
 
 import "./main.css"
 import "./styles/theme.css"

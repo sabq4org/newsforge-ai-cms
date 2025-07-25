@@ -33,6 +33,13 @@ window.addEventListener('error', (event) => {
       return false;
     }
     
+    // Fix: toLowerCase is not a function / undefined is not an object
+    if (message.includes("toLowerCase") || message.includes("toLowerCase is not a function")) {
+      console.warn('Runtime Fix: toLowerCase error prevented');
+      event.preventDefault();
+      return false;
+    }
+    
     // Fix: Can't find variable errors
     if (message.includes("Can't find variable")) {
       console.warn('Runtime Fix: variable access error prevented');

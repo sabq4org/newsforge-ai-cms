@@ -573,10 +573,10 @@ export function AdaptiveColorLearningSystem({
               {adaptationHistory.slice(-5).reverse().map((adaptation, index) => (
                 <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-full" style={{ backgroundColor: safeProperty(adaptation.colors, 'accent', '#999999') }} />
+                    <div className="w-6 h-6 rounded-full" style={{ backgroundColor: (adaptation?.colors?.accent) || '#999999' }} />
                     <div>
                       <div className="font-medium">
-                        {adaptation.reasoning && adaptation.reasoning.length > 0 
+                        {(adaptation?.reasoning && adaptation.reasoning.length > 0) 
                           ? adaptation.reasoning[0] 
                           : 'تكييف تلقائي للألوان'}
                       </div>
