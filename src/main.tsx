@@ -8,6 +8,8 @@ import MinimalApp from './MinimalApp.tsx'
 import DiagnosticApp from './DiagnosticApp.tsx'
 import SimpleApp from './SimpleApp.tsx'
 import EmergencyApp from './EmergencyApp.tsx'
+import SafeFallbackApp from './SafeFallbackApp.tsx'
+import UltimateSafeApp from './UltimateSafeApp.tsx'
 import { ErrorFallback } from './ImprovedErrorFallback.tsx'
 
 import "./main.css"
@@ -77,6 +79,10 @@ const getAppComponent = () => {
     return DiagnosticApp;
   } else if (urlParams.get('simple') === 'true' || mode === 'simple' || storedMode === 'simple') {
     return SimpleApp;
+  } else if (mode === 'safe-fallback' || storedMode === 'safe-fallback') {
+    return SafeFallbackApp;
+  } else if (mode === 'ultimate-safe' || storedMode === 'ultimate-safe') {
+    return UltimateSafeApp;
   } else if (mode === 'basic' || storedMode === 'basic') {
     return BasicTestApp;
   } else if (mode === 'diagnostic' || storedMode === 'diagnostic') {
@@ -84,11 +90,11 @@ const getAppComponent = () => {
   } else if (mode === 'full' || storedMode === 'full') {
     return App;
   } else if (mode === null && !storedMode) {
-    // Default to simple app for safety
-    return SimpleApp;
+    // Default to ultimate safe app for maximum stability
+    return UltimateSafeApp;
   } else {
-    // Fallback to minimal for safety
-    return MinimalApp;
+    // Fallback to ultimate safe app for safety
+    return UltimateSafeApp;
   }
 };
 
@@ -132,12 +138,12 @@ try {
           return;
         }
         
-        // Auto-switch to simple mode if anything fails
-        localStorage.setItem('app-mode', 'simple');
+        // Auto-switch to ultimate safe mode if anything fails
+        localStorage.setItem('app-mode', 'ultimate-safe');
         // Don't reload immediately, let user see the error first
         setTimeout(() => {
-          if (confirm('حدث خطأ في التطبيق. هل تريد الانتقال إلى الوضع المبسط؟')) {
-            window.location.search = '?mode=simple';
+          if (confirm('حدث خطأ في التطبيق. هل تريد الانتقال إلى الوضع الآمن المحسن؟')) {
+            window.location.search = '?mode=ultimate-safe';
           }
         }, 2000);
       }}
@@ -170,7 +176,7 @@ try {
       display: flex; 
       align-items: center; 
       justify-content: center;
-      font-family: system-ui, sans-serif;
+      font-family: 'IBM Plex Sans Arabic', Arial, sans-serif;
       direction: rtl;
       text-align: center;
       padding: 2rem;
@@ -199,7 +205,7 @@ try {
             font-weight: 500;
           ">وضع الطوارئ</button>
           
-          <button onclick="window.location.search = '?minimal=true'" style="
+          <button onclick="window.location.search = '?mode=ultimate-safe'" style="
             padding: 0.75rem 1.5rem;
             background: #3b82f6;
             color: white;
@@ -207,7 +213,7 @@ try {
             border-radius: 0.5rem;
             cursor: pointer;
             font-weight: 500;
-          ">الوضع الأساسي</button>
+          ">الوضع الآمن المحسن</button>
           
           <button onclick="window.location.reload()" style="
             padding: 0.75rem 1.5rem;

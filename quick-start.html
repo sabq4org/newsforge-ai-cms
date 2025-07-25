@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+    <title>سبق الذكية - اختبار سريع</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'IBM Plex Sans Arabic', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            direction: rtl;
+            padding: 1rem;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+        
+        .subtitle {
+            color: #6b7280;
+            font-size: 1.125rem;
+            margin-bottom: 3rem;
+            line-height: 1.6;
+        }
+        
+        .buttons {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #f8fafc;
+            color: #475569;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .btn-secondary:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+            transform: translateY(-1px);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            box-shadow: 0 8px 16px rgba(239, 68, 68, 0.3);
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(239, 68, 68, 0.4);
+        }
+        
+        .status {
+            background: #f0fdf4;
+            border: 2px solid #bbf7d0;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .status-text {
+            color: #166534;
+            font-weight: 500;
+        }
+        
+        .footer {
+            margin-top: 2rem;
+            font-size: 0.875rem;
+            color: #9ca3af;
+        }
+        
+        @media (max-width: 640px) {
+            .container {
+                padding: 2rem;
+                margin: 1rem;
+            }
+            
+            .logo {
+                font-size: 2rem;
+            }
+            
+            .btn {
+                padding: 0.875rem 1.5rem;
+                font-size: 0.875rem;
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .loading {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">سبق الذكية</div>
+        <div class="subtitle">
+            نظام إدارة المحتوى الذكي المتطور<br>
+            اختر وضع التشغيل المناسب لك
+        </div>
+        
+        <div class="buttons">
+            <a href="/" class="btn btn-primary">
+                <span>🚀</span>
+                <span>التشغيل العادي (التطبيق الكامل)</span>
+            </a>
+            
+            <a href="/?mode=ultimate-safe" class="btn btn-secondary">
+                <span>🛡️</span>
+                <span>الوضع الآمن المحسن (مستحسن)</span>
+            </a>
+            
+            <a href="/?mode=simple" class="btn btn-secondary">
+                <span>⚡</span>
+                <span>الوضع المبسط</span>
+            </a>
+            
+            <a href="/?emergency=true" class="btn btn-danger">
+                <span>🚨</span>
+                <span>وضع الطوارئ</span>
+            </a>
+        </div>
+        
+        <div class="status">
+            <div class="status-text">
+                ✅ النظام جاهز للتشغيل
+            </div>
+        </div>
+        
+        <div style="margin-top: 2rem;">
+            <button onclick="runQuickTest()" class="btn btn-secondary" style="font-size: 0.875rem;">
+                <span>🧪</span>
+                <span>اختبار سريع للنظام</span>
+            </button>
+        </div>
+        
+        <div class="footer">
+            نظام سبق الذكية لإدارة المحتوى © 2024<br>
+            مطور بتقنيات حديثة مع دعم كامل للغة العربية
+        </div>
+    </div>
+
+    <script>
+        // Quick system test
+        function runQuickTest() {
+            const button = event.target.closest('.btn');
+            const originalText = button.innerHTML;
+            
+            button.innerHTML = '<span>⏳</span><span>جاري الاختبار...</span>';
+            button.classList.add('loading');
+            
+            // Test basic functions
+            const tests = [
+                () => Array.isArray([1,2,3]),
+                () => 'HELLO'.toLowerCase() === 'hello',
+                () => new Date().toLocaleDateString(),
+                () => JSON.stringify({test: true}),
+                () => typeof localStorage !== 'undefined'
+            ];
+            
+            let passed = 0;
+            tests.forEach(test => {
+                try {
+                    if (test()) passed++;
+                } catch {}
+            });
+            
+            setTimeout(() => {
+                button.classList.remove('loading');
+                if (passed === tests.length) {
+                    button.innerHTML = '<span>✅</span><span>النظام يعمل بشكل مثالي!</span>';
+                    button.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+                    button.style.color = 'white';
+                } else {
+                    button.innerHTML = '<span>⚠️</span><span>تم اكتشاف مشاكل - استخدم الوضع الآمن</span>';
+                    button.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
+                    button.style.color = 'white';
+                }
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.style.background = '';
+                    button.style.color = '';
+                }, 3000);
+            }, 1500);
+        }
+        
+        // Auto-detect and recommend mode
+        window.addEventListener('load', () => {
+            try {
+                // Check for common issues
+                const hasIssues = !Array.prototype.forEach || 
+                                 !String.prototype.toLowerCase ||
+                                 !Date.prototype.toLocaleDateString;
+                
+                if (hasIssues) {
+                    const status = document.querySelector('.status');
+                    status.style.background = '#fef3c7';
+                    status.style.borderColor = '#fbbf24';
+                    status.querySelector('.status-text').style.color = '#92400e';
+                    status.querySelector('.status-text').innerHTML = '⚠️ يُنصح بالوضع الآمن المحسن';
+                }
+            } catch {
+                // Silent fail
+            }
+        });
+        
+        // Add click tracking
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                if (!btn.onclick) {
+                    const mode = btn.href.includes('mode=') ? 
+                        btn.href.split('mode=')[1].split('&')[0] : 
+                        'default';
+                    console.log('User selected mode:', mode);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

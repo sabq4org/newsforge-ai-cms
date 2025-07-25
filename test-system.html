@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+    <title>سبق الذكية - اختبار النظام</title>
+    
+    <!-- Load Google Fonts for Arabic -->
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'IBM Plex Sans Arabic', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f9fafb;
+            direction: rtl;
+            text-align: right;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            margin: 0.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+        }
+        
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+        
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+        
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+        
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+        
+        .status-good {
+            color: #059669;
+            font-weight: 500;
+        }
+        
+        .status-warning {
+            color: #d97706;
+            font-weight: 500;
+        }
+        
+        .status-error {
+            color: #dc2626;
+            font-weight: 500;
+        }
+        
+        h1 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+        
+        h2 {
+            color: #374151;
+            margin-bottom: 1rem;
+        }
+        
+        .test-result {
+            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .test-success {
+            background: #f0fdf4;
+            border-color: #22c55e;
+        }
+        
+        .test-warning {
+            background: #fffbeb;
+            border-color: #f59e0b;
+        }
+        
+        .test-error {
+            background: #fef2f2;
+            border-color: #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>🧪 سبق الذكية - اختبار النظام</h1>
+            <p>هذه الصفحة تساعد في اختبار وتشخيص حالة النظام قبل تشغيل التطبيق الرئيسي.</p>
+        </div>
+
+        <div class="card">
+            <h2>🔍 فحص النظام</h2>
+            <div id="systemCheck">
+                <p>جاري فحص النظام...</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🚀 خيارات التشغيل</h2>
+            <p>اختر وضع التشغيل المناسب:</p>
+            
+            <div>
+                <a href="/" class="btn btn-primary">التطبيق العادي</a>
+                <a href="/?mode=safe-fallback" class="btn btn-secondary">الوضع الآمن</a>
+                <a href="/?mode=full" class="btn btn-secondary">التطبيق الكامل</a>
+                <a href="/?mode=simple" class="btn btn-secondary">الوضع المبسط</a>
+                <a href="/?emergency=true" class="btn btn-danger">وضع الطوارئ</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🛠️ أدوات الصيانة</h2>
+            <button onclick="clearStorage()" class="btn btn-secondary">مسح التخزين المحلي</button>
+            <button onclick="resetApp()" class="btn btn-secondary">إعادة تعيين التطبيق</button>
+            <button onclick="testFunctions()" class="btn btn-primary">اختبار الوظائف الأساسية</button>
+        </div>
+
+        <div class="card">
+            <h2>📊 سجل الأخطاء</h2>
+            <div id="errorLog">
+                <p>لا توجد أخطاء مسجلة.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Error logging
+        const errorLog = [];
+        const originalConsoleError = console.error;
+        console.error = function(...args) {
+            errorLog.push({
+                timestamp: new Date().toLocaleString('ar-SA'),
+                message: args.join(' ')
+            });
+            updateErrorLog();
+            originalConsoleError.apply(console, args);
+        };
+
+        // System check functions
+        function checkBrowserSupport() {
+            const checks = {
+                'ES6 Support': () => {
+                    try {
+                        new Function('() => {}');
+                        return true;
+                    } catch {
+                        return false;
+                    }
+                },
+                'Local Storage': () => {
+                    try {
+                        localStorage.setItem('test', 'test');
+                        localStorage.removeItem('test');
+                        return true;
+                    } catch {
+                        return false;
+                    }
+                },
+                'Fetch API': () => typeof fetch !== 'undefined',
+                'Promise Support': () => typeof Promise !== 'undefined',
+                'Array.forEach': () => typeof Array.prototype.forEach === 'function',
+                'String.toLowerCase': () => typeof String.prototype.toLowerCase === 'function'
+            };
+
+            return checks;
+        }
+
+        function runSystemCheck() {
+            const checks = checkBrowserSupport();
+            const results = [];
+
+            for (const [name, test] of Object.entries(checks)) {
+                try {
+                    const passed = test();
+                    results.push({
+                        name,
+                        passed,
+                        status: passed ? 'نجح' : 'فشل',
+                        className: passed ? 'test-success' : 'test-error'
+                    });
+                } catch (error) {
+                    results.push({
+                        name,
+                        passed: false,
+                        status: 'خطأ: ' + error.message,
+                        className: 'test-error'
+                    });
+                }
+            }
+
+            const systemCheckDiv = document.getElementById('systemCheck');
+            systemCheckDiv.innerHTML = results.map(result => 
+                `<div class="test-result ${result.className}">
+                    <strong>${result.name}:</strong> 
+                    <span class="${result.passed ? 'status-good' : 'status-error'}">${result.status}</span>
+                </div>`
+            ).join('');
+        }
+
+        function testFunctions() {
+            const tests = [
+                {
+                    name: 'اختبار Array.forEach',
+                    test: () => {
+                        const arr = [1, 2, 3];
+                        let sum = 0;
+                        arr.forEach(n => sum += n);
+                        return sum === 6;
+                    }
+                },
+                {
+                    name: 'اختبار String.toLowerCase',
+                    test: () => {
+                        return 'HELLO'.toLowerCase() === 'hello';
+                    }
+                },
+                {
+                    name: 'اختبار Date.toLocaleDateString',
+                    test: () => {
+                        const date = new Date();
+                        return typeof date.toLocaleDateString() === 'string';
+                    }
+                },
+                {
+                    name: 'اختبار JSON',
+                    test: () => {
+                        const obj = { test: 'value' };
+                        return JSON.parse(JSON.stringify(obj)).test === 'value';
+                    }
+                }
+            ];
+
+            const results = tests.map(({ name, test }) => {
+                try {
+                    const passed = test();
+                    return `<div class="test-result ${passed ? 'test-success' : 'test-error'}">
+                        <strong>${name}:</strong> 
+                        <span class="${passed ? 'status-good' : 'status-error'}">${passed ? 'نجح' : 'فشل'}</span>
+                    </div>`;
+                } catch (error) {
+                    return `<div class="test-result test-error">
+                        <strong>${name}:</strong> 
+                        <span class="status-error">خطأ: ${error.message}</span>
+                    </div>`;
+                }
+            });
+
+            const systemCheckDiv = document.getElementById('systemCheck');
+            systemCheckDiv.innerHTML = '<h3>نتائج اختبار الوظائف:</h3>' + results.join('');
+        }
+
+        function clearStorage() {
+            try {
+                localStorage.clear();
+                sessionStorage.clear();
+                alert('تم مسح التخزين المحلي بنجاح');
+            } catch (error) {
+                alert('فشل في مسح التخزين: ' + error.message);
+            }
+        }
+
+        function resetApp() {
+            if (confirm('هل أنت متأكد من إعادة تعيين التطبيق؟ سيتم مسح جميع البيانات المحلية.')) {
+                clearStorage();
+                window.location.href = '/';
+            }
+        }
+
+        function updateErrorLog() {
+            const errorLogDiv = document.getElementById('errorLog');
+            if (errorLog.length === 0) {
+                errorLogDiv.innerHTML = '<p>لا توجد أخطاء مسجلة.</p>';
+            } else {
+                errorLogDiv.innerHTML = errorLog.map(error => 
+                    `<div class="test-result test-error">
+                        <strong>${error.timestamp}:</strong> ${error.message}
+                    </div>`
+                ).join('');
+            }
+        }
+
+        // Global error handler
+        window.addEventListener('error', function(event) {
+            console.error('JavaScript Error:', event.error);
+        });
+
+        window.addEventListener('unhandledrejection', function(event) {
+            console.error('Unhandled Promise Rejection:', event.reason);
+        });
+
+        // Run system check on load
+        runSystemCheck();
+    </script>
+</body>
+</html>
