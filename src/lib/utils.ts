@@ -138,18 +138,30 @@ export function safeDateFormat(
     let dateObj: Date;
     
     if (date instanceof Date) {
+      // Check if the Date object is valid
+      if (isNaN(date.getTime())) {
+        console.warn('safeDateFormat: Invalid Date object provided:', date);
+        return new Date().toLocaleDateString(locale, options);
+      }
       dateObj = date;
     } else if (typeof date === 'string') {
       dateObj = new Date(date);
     } else if (typeof date === 'number') {
       dateObj = new Date(date);
     } else {
+      console.warn('safeDateFormat: Unsupported date type:', typeof date, date);
       dateObj = new Date();
     }
     
-    // Check if date is valid
+    // Double-check if date is valid after conversion
     if (isNaN(dateObj.getTime())) {
-      console.warn('safeDateFormat: Invalid date provided:', date);
+      console.warn('safeDateFormat: Invalid date after conversion:', date);
+      return new Date().toLocaleDateString(locale, options);
+    }
+    
+    // Ensure toLocaleDateString method exists
+    if (typeof dateObj.toLocaleDateString !== 'function') {
+      console.warn('safeDateFormat: toLocaleDateString method not available on date object');
       return new Date().toLocaleDateString(locale, options);
     }
     
@@ -176,18 +188,30 @@ export function safeTimeFormat(
     let dateObj: Date;
     
     if (date instanceof Date) {
+      // Check if the Date object is valid
+      if (isNaN(date.getTime())) {
+        console.warn('safeTimeFormat: Invalid Date object provided:', date);
+        return new Date().toLocaleTimeString(locale, options);
+      }
       dateObj = date;
     } else if (typeof date === 'string') {
       dateObj = new Date(date);
     } else if (typeof date === 'number') {
       dateObj = new Date(date);
     } else {
+      console.warn('safeTimeFormat: Unsupported date type:', typeof date, date);
       dateObj = new Date();
     }
     
-    // Check if date is valid
+    // Double-check if date is valid after conversion
     if (isNaN(dateObj.getTime())) {
-      console.warn('safeTimeFormat: Invalid date provided:', date);
+      console.warn('safeTimeFormat: Invalid date after conversion:', date);
+      return new Date().toLocaleTimeString(locale, options);
+    }
+    
+    // Ensure toLocaleTimeString method exists
+    if (typeof dateObj.toLocaleTimeString !== 'function') {
+      console.warn('safeTimeFormat: toLocaleTimeString method not available on date object');
       return new Date().toLocaleTimeString(locale, options);
     }
     
@@ -268,13 +292,17 @@ export function normalizeActivityTimestamps(activities: any[]): any[] {
         if (isNaN(timestamp.getTime())) {
           timestamp = new Date();
         }
+      } else if (timestamp && typeof timestamp === 'object' && timestamp.constructor === Object) {
+        // Handle plain objects that might be serialized dates
+        console.warn(`normalizeActivityTimestamps: Converting object to date at index ${index}:`, timestamp);
+        timestamp = new Date(); // fallback to current date for objects
       } else {
         console.warn(`normalizeActivityTimestamps: Invalid timestamp at index ${index}:`, timestamp);
         timestamp = new Date(); // fallback to current date
       }
       
-      // Double-check the Date object is valid
-      if (!timestamp || !(timestamp instanceof Date) || isNaN(timestamp.getTime())) {
+      // Triple-check the Date object is valid and has required methods
+      if (!timestamp || !(timestamp instanceof Date) || isNaN(timestamp.getTime()) || typeof timestamp.toLocaleDateString !== 'function') {
         console.warn(`normalizeActivityTimestamps: Invalid date after processing at index ${index}, using current date`);
         timestamp = new Date(); // fallback to current date for invalid dates
       }
@@ -309,7 +337,7 @@ export function normalizeExternalSources(sources: any[]): any[] {
       return null;
     }
     
-    // Ensure lastSync is a Date object
+    // Ensure lastSync is a Date object with enhanced checking
     let lastSync = source.lastSync;
     
     try {
@@ -321,8 +349,8 @@ export function normalizeExternalSources(sources: any[]): any[] {
         lastSync = new Date();
       }
       
-      // Check if date is valid
-      if (isNaN(lastSync.getTime())) {
+      // Enhanced date validation
+      if (isNaN(lastSync.getTime()) || typeof lastSync.toLocaleDateString !== 'function') {
         console.warn(`normalizeExternalSources: Invalid lastSync at index ${index}, using current date`);
         lastSync = new Date();
       }
@@ -368,20 +396,26 @@ export function normalizeDataObject(obj: any): any {
   for (const field of timestampFields) {
     if (normalized[field] !== undefined && normalized[field] !== null) {
       try {
-        if (typeof normalized[field] === 'string') {
-          normalized[field] = new Date(normalized[field]);
-        } else if (typeof normalized[field] === 'number') {
-          normalized[field] = new Date(normalized[field]);
-        } else if (!(normalized[field] instanceof Date)) {
+        let dateValue = normalized[field];
+        
+        if (typeof dateValue === 'string') {
+          dateValue = new Date(dateValue);
+        } else if (typeof dateValue === 'number') {
+          dateValue = new Date(dateValue);
+        } else if (!(dateValue instanceof Date)) {
           // If it's not a valid date type, set to current date
-          normalized[field] = new Date();
+          dateValue = new Date();
         }
         
-        // Check if the date is valid
-        if (isNaN(normalized[field].getTime())) {
+        // Enhanced validation to check both validity and required methods
+        if (isNaN(dateValue.getTime()) || 
+            typeof dateValue.toLocaleDateString !== 'function' || 
+            typeof dateValue.toLocaleTimeString !== 'function') {
           console.warn(`normalizeDataObject: Invalid ${field} date, using current date`);
-          normalized[field] = new Date();
+          dateValue = new Date();
         }
+        
+        normalized[field] = dateValue;
       } catch (error) {
         console.error(`normalizeDataObject: Error processing ${field}:`, error);
         normalized[field] = new Date();

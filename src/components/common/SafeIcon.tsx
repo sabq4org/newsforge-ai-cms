@@ -9,13 +9,48 @@ import {
   BarChart3,
   Activity,
   ChartLineUp,
+  ChartLine,
   Trophy,
-  Award
+  Award,
+  House,
+  FileText,
+  Brain,
+  Users,
+  Settings,
+  Sparkles,
+  Eye,
+  Calendar,
+  FolderOpen,
+  Tag,
+  Images,
+  Shield,
+  Globe,
+  Heart,
+  Smiley,
+  Code,
+  Package,
+  BookOpen,
+  Palette,
+  Play,
+  PlayCircle,
+  TestTube,
+  GitMerge,
+  Wrench,
+  Microphone,
+  FileAudio,
+  TrendUp,
+  Coffee,
+  Drop,
+  Bell,
+  BellRinging,
+  Cpu,
+  MemoryStick
 } from '@phosphor-icons/react';
 import { safeToLowerCase } from '@/lib/utils';
 
 // Safe icon mapping to prevent runtime errors
 const ICON_MAP: Record<string, React.ComponentType<any>> = {
+  // Common icons
   medal: Medal,
   star: Star,
   trophy: Trophy,
@@ -23,13 +58,110 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
   crown: Crown,
   check: CheckCircle,
   alert: AlertTriangle,
-  chartline: ChartLineUp, // Add ChartLine mapping
-  'chart-line': ChartLineUp,
+  
+  // Chart icons
+  chartline: ChartLine,
+  'chart-line': ChartLine,
   chartlineup: ChartLineUp,
+  'chart-line-up': ChartLineUp,
   trending: TrendingUp,
   chart: BarChart3,
   activity: Activity,
-  fallback: Medal
+  
+  // Navigation icons
+  house: House,
+  home: House,
+  dashboard: House,
+  filetext: FileText,
+  'file-text': FileText,
+  articles: FileText,
+  brain: Brain,
+  ai: Brain,
+  users: Users,
+  user: Users,
+  settings: Settings,
+  config: Settings,
+  sparkles: Sparkles,
+  magic: Sparkles,
+  eye: Eye,
+  view: Eye,
+  calendar: Calendar,
+  schedule: Calendar,
+  
+  // Content icons
+  folderopen: FolderOpen,
+  'folder-open': FolderOpen,
+  folder: FolderOpen,
+  tag: Tag,
+  tags: Tag,
+  images: Images,
+  media: Images,
+  shield: Shield,
+  moderation: Shield,
+  globe: Globe,
+  world: Globe,
+  heart: Heart,
+  sentiment: Heart,
+  smiley: Smiley,
+  emoji: Smiley,
+  
+  // Technical icons
+  code: Code,
+  debug: Code,
+  package: Package,
+  export: Package,
+  bookopen: BookOpen,
+  'book-open': BookOpen,
+  book: BookOpen,
+  palette: Palette,
+  theme: Palette,
+  color: Palette,
+  play: Play,
+  demo: Play,
+  playcircle: PlayCircle,
+  'play-circle': PlayCircle,
+  
+  // Testing and collaboration
+  testtube: TestTube,
+  'test-tube': TestTube,
+  testing: TestTube,
+  gitmerge: GitMerge,
+  'git-merge': GitMerge,
+  collaboration: GitMerge,
+  wrench: Wrench,
+  maintenance: Wrench,
+  
+  // Audio and media
+  microphone: Microphone,
+  audio: Microphone,
+  fileaudio: FileAudio,
+  'file-audio': FileAudio,
+  podcast: FileAudio,
+  
+  // Trends and analytics
+  trendup: TrendUp,
+  'trend-up': TrendUp,
+  coffee: Coffee,
+  dose: Drop,
+  drop: Drop,
+  
+  // Notifications
+  bell: Bell,
+  notification: Bell,
+  bellringing: BellRinging,
+  'bell-ringing': BellRinging,
+  alerts: BellRinging,
+  
+  // System
+  cpu: Cpu,
+  processor: Cpu,
+  memorystick: MemoryStick,
+  'memory-stick': MemoryStick,
+  memory: MemoryStick,
+  
+  // Fallback
+  fallback: Medal,
+  default: Medal
 };
 
 interface SafeIconProps {

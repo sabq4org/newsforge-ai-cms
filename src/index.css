@@ -22,11 +22,19 @@
     /* Prevent zoom on touch devices */
     touch-action: manipulation;
     
-    /* Fix dashboard zoom level */
+    /* Fix dashboard zoom level - more aggressive approach */
     zoom: 1 !important;
     -webkit-user-zoom: fixed !important;
     -moz-user-zoom: fixed !important;
     user-zoom: fixed !important;
+    
+    /* Prevent any scaling transforms */
+    transform: none !important;
+    -webkit-transform: none !important;
+    -moz-transform: none !important;
+    -ms-transform: none !important;
+    scale: 1 !important;
+    -webkit-scale: 1 !important;
   }
   
   html[dir="rtl"] {
@@ -58,12 +66,24 @@
     -ms-user-select: text;
     user-select: text;
     
-    /* Force no transform or zoom */
+    /* Force no transform or zoom - more aggressive */
     transform: none !important;
     -webkit-transform: none !important;
+    -moz-transform: none !important;
+    -ms-transform: none !important;
     zoom: 1 !important;
+    -webkit-zoom: 1 !important;
+    -moz-zoom: 1 !important;
+    -ms-zoom: 1 !important;
+    scale: 1 !important;
+    -webkit-scale: 1 !important;
     -webkit-user-zoom: fixed !important;
     -moz-user-zoom: fixed !important;
+    user-zoom: fixed !important;
+    
+    /* Prevent any viewport scaling */
+    min-zoom: 1 !important;
+    max-zoom: 1 !important;
     user-zoom: fixed !important;
   }
   
@@ -543,8 +563,20 @@
   textarea {
     transform: none !important;
     -webkit-transform: none !important;
+    -moz-transform: none !important;
+    -ms-transform: none !important;
     scale: 1 !important;
+    -webkit-scale: 1 !important;
     zoom: 1 !important;
+    -webkit-zoom: 1 !important;
+    -moz-zoom: 1 !important;
+    
+    /* Additional viewport controls */
+    -webkit-user-zoom: fixed !important;
+    -moz-user-zoom: fixed !important;
+    user-zoom: fixed !important;
+    min-zoom: 1 !important;
+    max-zoom: 1 !important;
   }
   
   /* Prevent any scaling or zooming on any element */

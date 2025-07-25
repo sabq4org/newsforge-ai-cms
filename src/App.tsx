@@ -104,11 +104,28 @@ function AppContent() {
     // Update page title based on language
     document.title = isArabic ? 'سبق الذكية - نظام إدارة المحتوى الذكي' : 'Sabq Althakiyah - AI-Powered CMS';
     
-    // Fix zoom and viewport issues
-    document.body.style.zoom = "1";
-    document.body.style.transform = "none";
-    document.body.style.webkitTransform = "none";
-    document.body.style.scale = "1";
+    // More aggressive zoom and viewport control
+    const setZoomStyles = (element: HTMLElement) => {
+      element.style.zoom = "1";
+      element.style.webkitZoom = "1";
+      element.style.mozZoom = "1";
+      element.style.msZoom = "1";
+      element.style.transform = "none";
+      element.style.webkitTransform = "none";
+      element.style.mozTransform = "none";
+      element.style.msTransform = "none";
+      element.style.scale = "1";
+      element.style.webkitScale = "1";
+      element.style.minZoom = "1";
+      element.style.maxZoom = "1";
+      element.style.userZoom = "fixed";
+      element.style.webkitUserZoom = "fixed";
+      element.style.mozUserZoom = "fixed";
+    };
+    
+    // Apply to document elements
+    setZoomStyles(document.documentElement);
+    setZoomStyles(document.body);
     
     // Ensure viewport meta is properly set for dashboard
     const viewportMeta = document.querySelector('meta[name="viewport"]');
@@ -116,12 +133,10 @@ function AppContent() {
       viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no, viewport-fit=cover');
     }
     
-    // Prevent any zoom on root elements
+    // Apply to root element
     const rootElement = document.getElementById('root');
     if (rootElement) {
-      rootElement.style.zoom = "1";
-      rootElement.style.transform = "none";
-      rootElement.style.webkitTransform = "none";
+      setZoomStyles(rootElement);
     }
   }, [isRTL, language.code, isArabic]);
   
@@ -160,29 +175,49 @@ function AppContent() {
   // Additional effect to ensure proper zoom level on mount and updates
   React.useEffect(() => {
     const resetZoom = () => {
+      // More comprehensive zoom reset function
+      const setNoZoom = (element: HTMLElement) => {
+        element.style.zoom = "1";
+        element.style.webkitZoom = "1";
+        element.style.mozZoom = "1";
+        element.style.msZoom = "1";
+        element.style.webkitTransform = "none";
+        element.style.mozTransform = "none";
+        element.style.msTransform = "none";
+        element.style.transform = "none";
+        element.style.scale = "1";
+        element.style.webkitScale = "1";
+        element.style.minZoom = "1";
+        element.style.maxZoom = "1";
+        element.style.userZoom = "fixed";
+        element.style.webkitUserZoom = "fixed";
+        element.style.mozUserZoom = "fixed";
+      };
+      
       // Reset body zoom
-      document.body.style.zoom = "1";
-      document.body.style.webkitTransform = "none";
-      document.body.style.transform = "none";
-      document.body.style.scale = "1";
+      setNoZoom(document.body);
+      setNoZoom(document.documentElement);
       
       // Reset root element zoom
       const rootElement = document.getElementById('root');
       if (rootElement) {
-        rootElement.style.zoom = "1";
-        rootElement.style.webkitTransform = "none";
-        rootElement.style.transform = "none";
-        rootElement.style.scale = "1";
+        setNoZoom(rootElement);
       }
       
       // Reset all dashboard-related elements
-      const dashboardElements = document.querySelectorAll('.dashboard, .admin-panel, .cms-interface, .app-container');
+      const dashboardElements = document.querySelectorAll('.dashboard, .admin-panel, .cms-interface, .app-container, .main-layout, .sidebar, .content-area');
       dashboardElements.forEach(element => {
+        setNoZoom(element as HTMLElement);
+      });
+      
+      // Reset any shadcn components that might have transforms
+      const shadcnElements = document.querySelectorAll('[data-radix-popper-content-wrapper], [data-radix-scroll-area-viewport], .animate-in, .animate-out');
+      shadcnElements.forEach(element => {
         const el = element as HTMLElement;
-        el.style.zoom = "1";
-        el.style.webkitTransform = "none";
         el.style.transform = "none";
+        el.style.webkitTransform = "none";
         el.style.scale = "1";
+        el.style.zoom = "1";
       });
     };
     

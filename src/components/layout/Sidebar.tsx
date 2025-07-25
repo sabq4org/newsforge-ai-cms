@@ -44,7 +44,9 @@ import {
   Play,
   PlayCircle,
   Heart,
-  Smiley
+  Smiley,
+  ChartLine,
+  ChartLineUp
 } from '@phosphor-icons/react';
 
 interface SidebarProps {
