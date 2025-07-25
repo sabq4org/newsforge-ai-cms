@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import * as React from 'react';
 import { Toaster } from '@/components/ui/sonner';
 import { Button } from '@/components/ui/button';
 import { Globe, Gear as Settings, X } from '@phosphor-icons/react';
@@ -91,7 +92,19 @@ function AppContent() {
   usePerformanceMonitor('AppContent');
   useResourceOptimization('AppContent');
   
-  const { isAuthenticated, user, canAccess } = useAuth();
+  const { isAuthenticated, user, canAccess, language } = useAuth();
+  const isRTL = language.direction === 'rtl';
+  const isArabic = language.code === 'ar';
+  
+  // Update document direction and title when language changes
+  React.useEffect(() => {
+    document.documentElement.setAttribute('dir', isRTL ? 'rtl' : 'ltr');
+    document.documentElement.setAttribute('lang', language.code);
+    
+    // Update page title based on language
+    document.title = isArabic ? 'سبق الذكية - نظام إدارة المحتوى الذكي' : 'Sabq Althakiyah - AI-Powered CMS';
+  }, [isRTL, language.code, isArabic]);
+  
   const [activeView, setActiveView] = useState('dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState<Article | undefined>();
@@ -877,7 +890,7 @@ function AppContent() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className={cn("min-h-screen bg-background", isRTL && "rtl")} dir={isRTL ? "rtl" : "ltr"}>
       {/* Smart Theme Applicator - runs in background */}
       <SmartThemeApplicator 
         userId={user?.id}
@@ -909,20 +922,23 @@ function AppContent() {
             onMemberLogout={handleMemberLogout}
           />
           
-          {/* Public View Toggle */}
-          <div className="border-b border-border px-6 py-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsPublicView(true)}
-              className="gap-2 ml-auto"
-            >
-              <Globe className="w-4 h-4" />
-              عرض الموقع العام
-            </Button>
+          {/* Public View Toggle - Better positioned */}
+          <div className="border-b border-border px-6 py-2 bg-muted/30">
+            <div className={cn("flex", isRTL ? "justify-start" : "justify-end")}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsPublicView(true)}
+                className={cn("gap-2 h-8 text-xs", isRTL && "flex-row-reverse")}
+              >
+                <Globe className="w-3 h-3" />
+                <span className="hidden sm:inline">عرض الموقع العام</span>
+                <span className="sm:hidden">عام</span>
+              </Button>
+            </div>
           </div>
           
-          <main className="flex-1 overflow-y-auto p-6">
+          <main className="flex-1 overflow-y-auto p-6 bg-background">
             {renderContent()}
           </main>
         </div>
@@ -954,7 +970,10 @@ function AppContent() {
           {/* Close button */}
           <button
             onClick={() => setShowAuthModal(false)}
-            className="absolute top-4 right-4 text-white hover:text-gray-300"
+            className={cn(
+              "absolute top-4 text-white hover:text-gray-300",
+              isRTL ? "left-4" : "right-4"
+            )}
           >
             <X size={24} />
           </button>

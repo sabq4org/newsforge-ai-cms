@@ -663,21 +663,23 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
     return (
       <div className="space-y-1">
         {title && (
-          <>
-            <div className="px-2 py-1">
-              <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider font-arabic">
-                {title}
-              </h3>
-            </div>
-          </>
+          <div className={cn("px-3 py-2 mb-1", isRTL && "text-right")}>
+            <h3 className={cn(
+              "text-xs font-semibold text-muted-foreground uppercase tracking-wider font-arabic",
+              isRTL && "text-right"
+            )}>
+              {safeToString(title)}
+            </h3>
+          </div>
         )}
         {validItems.map((item) => (
           <Button
             key={item.id || 'unknown'}
             variant={activeView === item.id ? "secondary" : "ghost"}
             className={cn(
-              "w-full justify-start h-9 text-sm font-arabic",
-              isRTL && "justify-end flex-row-reverse"
+              "w-full h-10 px-3 text-sm font-arabic relative overflow-hidden sidebar-button",
+              isRTL ? "justify-start flex-row-reverse" : "justify-start",
+              activeView === item.id && "bg-secondary/80 text-secondary-foreground"
             )}
             onClick={() => {
               try {
@@ -690,18 +692,29 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
               }
             }}
           >
-            <SafeIcon icon={item.icon} className="h-4 w-4" />
-            <span className={cn(
-              "flex-1 font-arabic",
-              isRTL ? "text-right mr-2" : "text-left ml-2"
+            <div className={cn(
+              "flex items-center gap-3 w-full min-w-0",
+              isRTL && "flex-row-reverse"
             )}>
-              {item.label || 'Unknown'}
-            </span>
-            {item.badge && (
-              <Badge variant="secondary" className="text-xs h-4 px-1 font-arabic">
-                {item.badge}
-              </Badge>
-            )}
+              <SafeIcon icon={item.icon} className="h-4 w-4 flex-shrink-0" />
+              <span className={cn(
+                "flex-1 truncate font-arabic text-left",
+                isRTL && "text-right"
+              )}>
+                {safeToString(item.label || 'Unknown')}
+              </span>
+              {item.badge && (
+                <Badge 
+                  variant="secondary" 
+                  className={cn(
+                    "text-xs h-5 px-2 flex-shrink-0 font-arabic",
+                    isRTL && "mr-auto"
+                  )}
+                >
+                  {safeToString(item.badge)}
+                </Badge>
+              )}
+            </div>
           </Button>
         ))}
       </div>
@@ -720,8 +733,8 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       
       {/* Sidebar */}
       <aside className={cn(
-        "fixed top-0 z-50 h-full w-64 bg-card border-r border-border transform transition-transform duration-200 ease-in-out lg:relative lg:translate-x-0",
-        isRTL ? "right-0" : "left-0",
+        "fixed top-0 z-50 h-full w-72 bg-card border-r border-border transform transition-transform duration-200 ease-in-out lg:relative lg:translate-x-0",
+        isRTL ? "right-0 border-l border-r-0" : "left-0",
         isOpen 
           ? "translate-x-0" 
           : isRTL 
@@ -730,16 +743,16 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       )}>
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className={cn("p-4 border-b border-border font-arabic", isRTL && "text-right")}>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-accent to-primary rounded-lg flex items-center justify-center">
+          <div className={cn("p-4 border-b border-border", isRTL && "text-right")}>
+            <div className={cn("flex items-center gap-3", isRTL && "flex-row-reverse")}>
+              <div className="w-8 h-8 bg-gradient-to-br from-accent to-primary rounded-lg flex items-center justify-center flex-shrink-0">
                 <Sparkles className="w-4 h-4 text-white" />
               </div>
-              <div className="flex-1">
-                <h2 className="text-base font-bold text-foreground font-arabic">
+              <div className="flex-1 min-w-0">
+                <h2 className="text-base font-bold text-foreground font-arabic truncate">
                   {isArabic ? 'سبق الذكية' : 'Sabq Althakiyah'}
                 </h2>
-                <p className="text-xs text-muted-foreground font-arabic">
+                <p className="text-xs text-muted-foreground font-arabic truncate">
                   {isArabic ? 'نظام إدارة محتوى ذكي' : 'AI-Powered CMS'}
                 </p>
               </div>
@@ -747,49 +760,52 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-3 space-y-4 overflow-y-auto">
+          <nav className="flex-1 overflow-y-auto py-2 px-3 space-y-3 sidebar-nav">
             {/* Core Items */}
             {renderMenuSection(coreItems)}
             
-            <Separator />
+            <Separator className="my-2" />
             
             {/* Content Management */}
             {renderMenuSection(contentItems, isArabic ? 'إدارة المحتوى' : 'Content')}
             
-            <Separator />
+            <Separator className="my-2" />
             
             {/* AI & Analytics */}
             {renderMenuSection(aiAnalyticsItems, isArabic ? 'التحليلات والذكاء الاصطناعي' : 'AI & Analytics')}
             
-            <Separator />
+            <Separator className="my-2" />
             
             {/* Notifications */}
             {renderMenuSection(notificationItems, isArabic ? 'الإشعارات' : 'Notifications')}
             
-            <Separator />
+            <Separator className="my-2" />
             
             {/* User Experience */}
             {renderMenuSection(userExperienceItems, isArabic ? 'تجربة المستخدم' : 'User Experience')}
             
-            <Separator />
+            <Separator className="my-2" />
             
             {/* Management */}
             {renderMenuSection(managementItems, isArabic ? 'الإدارة' : 'Management')}
           </nav>
 
           {/* User Info */}
-          <div className="p-3 border-t border-border">
-            <div className={cn("flex items-center gap-2 p-2 rounded-lg bg-muted/50 font-arabic", isRTL && "flex-row-reverse")}>
-              <div className="w-6 h-6 bg-accent rounded-full flex items-center justify-center">
-                <span className="text-xs font-bold text-accent-foreground font-arabic">
+          <div className="p-3 border-t border-border flex-shrink-0">
+            <div className={cn(
+              "flex items-center gap-3 p-3 rounded-lg bg-muted/50 font-arabic", 
+              isRTL && "flex-row-reverse"
+            )}>
+              <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-sm font-bold text-accent-foreground font-arabic">
                   {safeToString(user?.name || user?.nameAr || 'U').charAt(0).toUpperCase()}
                 </span>
               </div>
-              <div className={cn("flex-1 min-w-0 font-arabic", isRTL && "text-right")}>
-                <p className="text-xs font-medium truncate font-arabic">
+              <div className={cn("flex-1 min-w-0", isRTL && "text-right")}>
+                <p className="text-sm font-medium truncate font-arabic">
                   {safeToString(isArabic ? (user?.nameAr || user?.name) : (user?.name || user?.nameAr)) || 'مستخدم'}
                 </p>
-                <p className="text-xs text-muted-foreground font-arabic">
+                <p className="text-xs text-muted-foreground font-arabic truncate">
                   {user?.role === 'admin' ? (isArabic ? 'مدير' : 'Administrator') :
                    user?.role === 'editor-in-chief' ? (isArabic ? 'رئيس تحرير' : 'Editor-in-Chief') :
                    user?.role === 'section-editor' ? (isArabic ? 'محرر قسم' : 'Section Editor') :
@@ -800,15 +816,18 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
                 </p>
               </div>
               <Globe 
-                className="w-4 h-4 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" 
+                className="w-4 h-4 text-muted-foreground cursor-pointer hover:text-foreground transition-colors flex-shrink-0" 
                 title={isArabic ? 'تغيير اللغة' : 'Switch Language'}
               />
             </div>
           </div>
 
           {/* Footer */}
-          <div className="p-3 border-t border-border">
-            <div className={cn("text-xs text-muted-foreground font-arabic", isRTL ? "text-right" : "text-center")}>
+          <div className="p-3 border-t border-border flex-shrink-0">
+            <div className={cn(
+              "text-xs text-muted-foreground font-arabic text-center",
+              isRTL && "text-right"
+            )}>
               {isArabic ? 'سبق الذكية v1.0' : 'Sabq Althakiyah v1.0'}
             </div>
           </div>
