@@ -37,6 +37,11 @@ const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
   onPreview, 
   onApply 
 }) => {
+  // Safety check for preset and colors
+  if (!preset || !preset.colors) {
+    return null;
+  }
+
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case 'editorial': return <Lightbulb className="w-4 h-4" />;
@@ -82,7 +87,7 @@ const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
             <div className="text-center">
               <div 
                 className="w-full h-8 rounded border mb-1"
-                style={{ backgroundColor: preset.colors.primary }}
+                style={{ backgroundColor: preset.colors?.primary || '#000000' }}
                 title="Primary"
               />
               <p className="text-xs">أساسي</p>
@@ -90,7 +95,7 @@ const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
             <div className="text-center">
               <div 
                 className="w-full h-8 rounded border mb-1"
-                style={{ backgroundColor: preset.colors.accent }}
+                style={{ backgroundColor: preset.colors?.accent || '#999999' }}
                 title="Accent"
               />
               <p className="text-xs">تمييز</p>
@@ -98,7 +103,7 @@ const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
             <div className="text-center">
               <div 
                 className="w-full h-8 rounded border mb-1"
-                style={{ backgroundColor: preset.colors.secondary }}
+                style={{ backgroundColor: preset.colors?.secondary || '#666666' }}
                 title="Secondary"
               />
               <p className="text-xs">ثانوي</p>
@@ -106,7 +111,7 @@ const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
             <div className="text-center">
               <div 
                 className="w-full h-8 rounded border mb-1"
-                style={{ backgroundColor: preset.colors.card }}
+                style={{ backgroundColor: preset.colors?.card || '#f8f8f8' }}
                 title="Card"
               />
               <p className="text-xs">بطاقة</p>
@@ -116,29 +121,29 @@ const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
 
         {/* Sample Components */}
         <div className="space-y-3" style={{ 
-          '--preview-primary': preset.colors.primary,
-          '--preview-accent': preset.colors.accent,
-          '--preview-secondary': preset.colors.secondary,
-          '--preview-background': preset.colors.background,
-          '--preview-foreground': preset.colors.foreground,
-          '--preview-card': preset.colors.card,
-          '--preview-muted': preset.colors.muted,
+          '--preview-primary': preset.colors?.primary || '#000000',
+          '--preview-accent': preset.colors?.accent || '#999999',
+          '--preview-secondary': preset.colors?.secondary || '#666666',
+          '--preview-background': preset.colors?.background || '#ffffff',
+          '--preview-foreground': preset.colors?.foreground || '#000000',
+          '--preview-card': preset.colors?.card || '#f8f8f8',
+          '--preview-muted': preset.colors?.muted || '#f0f0f0',
         } as React.CSSProperties}>
           
           {/* Button Preview */}
           <div className="flex gap-2 flex-wrap">
             <button 
               className="px-3 py-1 text-xs rounded text-white"
-              style={{ backgroundColor: preset.colors.primary }}
+              style={{ backgroundColor: preset.colors?.primary || '#000000' }}
             >
               زر أساسي
             </button>
             <button 
               className="px-3 py-1 text-xs rounded border"
               style={{ 
-                backgroundColor: preset.colors.secondary,
-                borderColor: preset.colors.border,
-                color: preset.colors.foreground
+                backgroundColor: preset.colors?.secondary || '#666666',
+                borderColor: preset.colors?.border || '#e0e0e0',
+                color: preset.colors?.foreground || '#000000'
               }}
             >
               ثانوي
@@ -149,13 +154,13 @@ const ThemePreviewCard: React.FC<ThemePreviewCardProps> = ({
           <div 
             className="p-3 rounded border text-xs"
             style={{ 
-              backgroundColor: preset.colors.card,
-              borderColor: preset.colors.border,
-              color: preset.colors.cardForeground
+              backgroundColor: preset.colors?.card || '#f8f8f8',
+              borderColor: preset.colors?.border || '#e0e0e0',
+              color: preset.colors?.cardForeground || '#000000'
             }}
           >
             <div className="font-medium mb-1">عنوان المقال</div>
-            <div style={{ color: preset.colors.mutedForeground }}>
+            <div style={{ color: preset.colors?.mutedForeground || '#666666' }}>
               نص تجريبي لعرض شكل المحتوى
             </div>
           </div>

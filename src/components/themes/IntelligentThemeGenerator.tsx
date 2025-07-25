@@ -750,19 +750,19 @@ export const IntelligentThemeGenerator: React.FC<IntelligentThemeGeneratorProps>
                     <div className="flex gap-2 mb-4">
                       <div 
                         className="w-8 h-8 rounded-full border-2 border-white shadow-sm"
-                        style={{ backgroundColor: theme.colors.primary }}
+                        style={{ backgroundColor: theme.colors?.primary || '#000' }}
                       />
                       <div 
                         className="w-8 h-8 rounded-full border-2 border-white shadow-sm"
-                        style={{ backgroundColor: theme.colors.accent }}
+                        style={{ backgroundColor: theme.colors?.accent || '#999' }}
                       />
                       <div 
                         className="w-8 h-8 rounded-full border-2 border-white shadow-sm"
-                        style={{ backgroundColor: theme.colors.secondary }}
+                        style={{ backgroundColor: theme.colors?.secondary || '#666' }}
                       />
                       <div 
                         className="w-8 h-8 rounded-full border-2 border-white shadow-sm"
-                        style={{ backgroundColor: theme.colors.background }}
+                        style={{ backgroundColor: theme.colors?.background || '#fff' }}
                       />
                     </div>
 

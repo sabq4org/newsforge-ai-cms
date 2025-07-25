@@ -504,10 +504,10 @@ export const UserProfileTheme: React.FC<UserProfileThemeProps> = ({
                   
                   <CardContent className="space-y-3">
                     <div className="grid grid-cols-4 gap-1 h-6 rounded overflow-hidden">
-                      <div style={{ backgroundColor: theme.colors.primary }} />
-                      <div style={{ backgroundColor: theme.colors.secondary }} />
-                      <div style={{ backgroundColor: theme.colors.accent }} />
-                      <div style={{ backgroundColor: theme.colors.background, border: '1px solid #ccc' }} />
+                      <div style={{ backgroundColor: theme.colors?.primary || '#000' }} />
+                      <div style={{ backgroundColor: theme.colors?.secondary || '#666' }} />
+                      <div style={{ backgroundColor: theme.colors?.accent || '#999' }} />
+                      <div style={{ backgroundColor: theme.colors?.background || '#fff', border: '1px solid #ccc' }} />
                     </div>
                     
                     <Button 
@@ -566,10 +566,10 @@ export const UserProfileTheme: React.FC<UserProfileThemeProps> = ({
                     const theme = themePresets.find(p => p.id === userProfile.readingModes.news);
                     return theme ? (
                       <>
-                        <div style={{ backgroundColor: theme.colors.primary }} />
-                        <div style={{ backgroundColor: theme.colors.secondary }} />
-                        <div style={{ backgroundColor: theme.colors.accent }} />
-                        <div style={{ backgroundColor: theme.colors.background, border: '1px solid #ccc' }} />
+                        <div style={{ backgroundColor: theme.colors?.primary || '#000' }} />
+                        <div style={{ backgroundColor: theme.colors?.secondary || '#666' }} />
+                        <div style={{ backgroundColor: theme.colors?.accent || '#999' }} />
+                        <div style={{ backgroundColor: theme.colors?.background || '#fff', border: '1px solid #ccc' }} />
                       </>
                     ) : null;
                   })()}
@@ -602,10 +602,10 @@ export const UserProfileTheme: React.FC<UserProfileThemeProps> = ({
                     const theme = themePresets.find(p => p.id === userProfile.readingModes.analysis);
                     return theme ? (
                       <>
-                        <div style={{ backgroundColor: theme.colors.primary }} />
-                        <div style={{ backgroundColor: theme.colors.secondary }} />
-                        <div style={{ backgroundColor: theme.colors.accent }} />
-                        <div style={{ backgroundColor: theme.colors.background, border: '1px solid #ccc' }} />
+                        <div style={{ backgroundColor: theme.colors?.primary || '#000' }} />
+                        <div style={{ backgroundColor: theme.colors?.secondary || '#666' }} />
+                        <div style={{ backgroundColor: theme.colors?.accent || '#999' }} />
+                        <div style={{ backgroundColor: theme.colors?.background || '#fff', border: '1px solid #ccc' }} />
                       </>
                     ) : null;
                   })()}
@@ -638,10 +638,10 @@ export const UserProfileTheme: React.FC<UserProfileThemeProps> = ({
                     const theme = themePresets.find(p => p.id === userProfile.readingModes.dashboard);
                     return theme ? (
                       <>
-                        <div style={{ backgroundColor: theme.colors.primary }} />
-                        <div style={{ backgroundColor: theme.colors.secondary }} />
-                        <div style={{ backgroundColor: theme.colors.accent }} />
-                        <div style={{ backgroundColor: theme.colors.background, border: '1px solid #ccc' }} />
+                        <div style={{ backgroundColor: theme.colors?.primary || '#000' }} />
+                        <div style={{ backgroundColor: theme.colors?.secondary || '#666' }} />
+                        <div style={{ backgroundColor: theme.colors?.accent || '#999' }} />
+                        <div style={{ backgroundColor: theme.colors?.background || '#fff', border: '1px solid #ccc' }} />
                       </>
                     ) : null;
                   })()}

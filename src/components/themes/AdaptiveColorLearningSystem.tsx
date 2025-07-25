@@ -345,9 +345,9 @@ export function AdaptiveColorLearningSystem({
         
         // Record successful adaptation
         const newPreference: ColorPreference = {
-          backgroundColor: colors.background,
-          textColor: colors.foreground,
-          accentColor: colors.accent,
+          backgroundColor: colors?.background || '#ffffff',
+          textColor: colors?.foreground || '#000000',
+          accentColor: colors?.accent || '#999999',
           satisfaction: 75, // Would be user-rated in full implementation
           readingEfficiency: currentMetrics.readingEfficiency,
           environmentalContext: context,
@@ -572,7 +572,7 @@ export function AdaptiveColorLearningSystem({
               {adaptationHistory.slice(-5).reverse().map((adaptation, index) => (
                 <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-full" style={{ backgroundColor: adaptation.colors.accent }} />
+                    <div className="w-6 h-6 rounded-full" style={{ backgroundColor: adaptation.colors?.accent || '#999999' }} />
                     <div>
                       <div className="font-medium">{adaptation.reasoning[0]}</div>
                       <div className="text-sm text-muted-foreground">

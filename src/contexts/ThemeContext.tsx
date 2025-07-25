@@ -228,24 +228,38 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   );
 
   const applyCSSVariables = (colors: ThemeColors, radius: number, fontScale: number, lineHeightScale: number, letterSpacing: number) => {
-    const root = document.documentElement;
-    
-    // Apply color variables
-    Object.entries(colors).forEach(([key, value]) => {
-      const cssVar = '--' + key.replace(/([A-Z])/g, '-$1').toLowerCase();
-      root.style.setProperty(cssVar, value);
-    });
-    
-    // Apply design system variables
-    root.style.setProperty('--radius', `${radius}rem`);
-    root.style.setProperty('--user-font-scale', fontScale.toString());
-    root.style.setProperty('--user-line-height-scale', lineHeightScale.toString());
-    root.style.setProperty('--user-letter-spacing', `${letterSpacing}em`);
+    try {
+      const root = document.documentElement;
+      
+      // Ensure colors exists and fallback to default if needed
+      const safeColors = colors || defaultColors;
+      
+      // Apply color variables with safety checks
+      Object.entries(safeColors).forEach(([key, value]) => {
+        if (key && value && typeof value === 'string') {
+          const cssVar = '--' + key.replace(/([A-Z])/g, '-$1').toLowerCase();
+          root.style.setProperty(cssVar, value);
+        }
+      });
+      
+      // Apply design system variables with fallbacks
+      root.style.setProperty('--radius', `${radius || 0.5}rem`);
+      root.style.setProperty('--user-font-scale', (fontScale || 1).toString());
+      root.style.setProperty('--user-line-height-scale', (lineHeightScale || 1.5).toString());
+      root.style.setProperty('--user-letter-spacing', `${letterSpacing || 0}em`);
+    } catch (error) {
+      console.warn('CSS variable application error:', error);
+    }
   };
 
   const updateThemeSettings = (newSettings: Partial<ThemeSettings>) => {
     setThemeSettings(prev => {
-      const updated = { ...prev, ...newSettings };
+      const current = prev || defaultThemeSettings;
+      const updated = { 
+        ...current, 
+        ...newSettings,
+        customColors: newSettings.customColors || current.customColors || defaultColors
+      };
       return updated;
     });
   };
@@ -262,9 +276,12 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
   const getCurrentColors = (): ThemeColors => {
     const preset = themePresets.find(p => p.id === themeSettings.activePreset);
+    const customColors = themeSettings.customColors || defaultColors;
+    const presetColors = preset?.colors || defaultColors;
+    
     return themeSettings.activePreset === 'custom' 
-      ? themeSettings.customColors 
-      : preset?.colors || defaultColors;
+      ? customColors 
+      : presetColors;
   };
 
   const resetToDefault = () => {
@@ -332,15 +349,55 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
   // Apply theme changes to CSS variables
   useEffect(() => {
-    const colors = getCurrentColors();
-    applyCSSVariables(
-      colors,
-      themeSettings.radius,
-      themeSettings.fontScale,
-      themeSettings.lineHeightScale,
-      themeSettings.letterSpacing
-    );
+    try {
+      const settings = themeSettings || defaultThemeSettings;
+      const colors = getCurrentColors();
+      
+      // Ensure colors is valid
+      if (colors && typeof colors === 'object') {
+        applyCSSVariables(
+          colors,
+          settings.radius || 0.5,
+          settings.fontScale || 1,
+          settings.lineHeightScale || 1.5,
+          settings.letterSpacing || 0
+        );
+      }
+    } catch (error) {
+      console.warn('Theme application error:', error);
+      // Fallback to default colors
+      applyCSSVariables(
+        defaultColors,
+        0.5,
+        1,
+        1.5,
+        0
+      );
+    }
   }, [themeSettings]);
+
+  // Initialize theme on mount
+  useEffect(() => {
+    try {
+      // Ensure we have valid theme settings on mount
+      if (!themeSettings) {
+        setThemeSettings(defaultThemeSettings);
+      } else {
+        // Apply theme immediately on mount
+        const colors = getCurrentColors();
+        applyCSSVariables(
+          colors,
+          themeSettings.radius || 0.5,
+          themeSettings.fontScale || 1,
+          themeSettings.lineHeightScale || 1.5,
+          themeSettings.letterSpacing || 0
+        );
+      }
+    } catch (error) {
+      console.warn('Theme initialization error:', error);
+      setThemeSettings(defaultThemeSettings);
+    }
+  }, []); // Run only on mount
 
   const contextValue: ThemeContextType = {
     themeSettings,

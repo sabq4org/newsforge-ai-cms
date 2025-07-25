@@ -78,7 +78,7 @@ export const ThemePreviewComponent: React.FC = () => {
                 <div className="text-center">
                   <div 
                     className="w-full h-12 rounded-lg border mb-2"
-                    style={{ backgroundColor: colors.accent }}
+                    style={{ backgroundColor: colors?.accent || '#999999' }}
                   />
                   <p className="text-xs font-medium">تمييز</p>
                   <p className="text-xs text-muted-foreground">Accent</p>

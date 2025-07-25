@@ -141,22 +141,22 @@ const PresetCard: React.FC<PresetCardProps> = ({ preset, isActive, onSelect }) =
         <div className="flex gap-1 mb-3">
           <div 
             className="w-6 h-6 rounded-sm border"
-            style={{ backgroundColor: preset.colors.primary }}
+            style={{ backgroundColor: preset.colors?.primary || '#000000' }}
             title="Primary"
           />
           <div 
             className="w-6 h-6 rounded-sm border"
-            style={{ backgroundColor: preset.colors.accent }}
+            style={{ backgroundColor: preset.colors?.accent || '#999999' }}
             title="Accent"
           />
           <div 
             className="w-6 h-6 rounded-sm border"
-            style={{ backgroundColor: preset.colors.secondary }}
+            style={{ backgroundColor: preset.colors?.secondary || '#666666' }}
             title="Secondary"
           />
           <div 
             className="w-6 h-6 rounded-sm border"
-            style={{ backgroundColor: preset.colors.card }}
+            style={{ backgroundColor: preset.colors?.card || '#f8f8f8' }}
             title="Card"
           />
         </div>

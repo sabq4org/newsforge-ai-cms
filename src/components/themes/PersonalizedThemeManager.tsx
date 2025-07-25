@@ -71,7 +71,46 @@ export const PersonalizedThemeManager: React.FC<PersonalizedThemeManagerProps> =
   const [newThemeNameAr, setNewThemeNameAr] = useState('');
   const [newThemeDescription, setNewThemeDescription] = useState('');
   const [newThemeTags, setNewThemeTags] = useState('');
-  const [customColors, setCustomColors] = useState<ThemeColors>(getCurrentColors());
+  const [customColors, setCustomColors] = useState<ThemeColors>(() => {
+    try {
+      return getCurrentColors() || {
+        primary: 'oklch(0.25 0.08 250)',
+        primaryForeground: 'oklch(1 0 0)',
+        secondary: 'oklch(0.9 0 0)',
+        secondaryForeground: 'oklch(0.2 0 0)',
+        accent: 'oklch(0.65 0.15 45)',
+        accentForeground: 'oklch(1 0 0)',
+        background: 'oklch(1 0 0)',
+        foreground: 'oklch(0.15 0 0)',
+        card: 'oklch(0.98 0 0)',
+        cardForeground: 'oklch(0.15 0 0)',
+        muted: 'oklch(0.95 0 0)',
+        mutedForeground: 'oklch(0.45 0 0)',
+        border: 'oklch(0.9 0 0)',
+        destructive: 'oklch(0.577 0.245 27.325)',
+        destructiveForeground: 'oklch(1 0 0)',
+      };
+    } catch (error) {
+      console.warn('Error initializing custom colors:', error);
+      return {
+        primary: 'oklch(0.25 0.08 250)',
+        primaryForeground: 'oklch(1 0 0)',
+        secondary: 'oklch(0.9 0 0)',
+        secondaryForeground: 'oklch(0.2 0 0)',
+        accent: 'oklch(0.65 0.15 45)',
+        accentForeground: 'oklch(1 0 0)',
+        background: 'oklch(1 0 0)',
+        foreground: 'oklch(0.15 0 0)',
+        card: 'oklch(0.98 0 0)',
+        cardForeground: 'oklch(0.15 0 0)',
+        muted: 'oklch(0.95 0 0)',
+        mutedForeground: 'oklch(0.45 0 0)',
+        border: 'oklch(0.9 0 0)',
+        destructive: 'oklch(0.577 0.245 27.325)',
+        destructiveForeground: 'oklch(1 0 0)',
+      };
+    }
+  });
   const [customSettings, setCustomSettings] = useState({
     radius: themeSettings.radius,
     fontScale: themeSettings.fontScale,
@@ -298,7 +337,7 @@ export const PersonalizedThemeManager: React.FC<PersonalizedThemeManagerProps> =
               </Card>
             ) : (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {userThemes.map((theme) => (
+                {userThemes.filter(theme => theme && theme.colors).map((theme) => (
                   <Card key={theme.id} className="relative">
                     <CardHeader className="pb-3">
                       <div className="flex items-center justify-between">
@@ -324,10 +363,10 @@ export const PersonalizedThemeManager: React.FC<PersonalizedThemeManagerProps> =
                     <CardContent className="space-y-4">
                       {/* Theme Preview */}
                       <div className="grid grid-cols-4 gap-1 h-8 rounded overflow-hidden">
-                        <div style={{ backgroundColor: theme.colors.primary }} />
-                        <div style={{ backgroundColor: theme.colors.secondary }} />
-                        <div style={{ backgroundColor: theme.colors.accent }} />
-                        <div style={{ backgroundColor: theme.colors.background, border: '1px solid #ccc' }} />
+                        <div style={{ backgroundColor: theme.colors?.primary || '#000' }} />
+                        <div style={{ backgroundColor: theme.colors?.secondary || '#666' }} />
+                        <div style={{ backgroundColor: theme.colors?.accent || '#999' }} />
+                        <div style={{ backgroundColor: theme.colors?.background || '#fff', border: '1px solid #ccc' }} />
                       </div>
                       
                       {/* Tags */}
@@ -601,7 +640,7 @@ export const PersonalizedThemeManager: React.FC<PersonalizedThemeManagerProps> =
         {/* Public Themes Tab */}
         <TabsContent value="public" className="space-y-4">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {publicThemes.map((theme) => (
+            {publicThemes.filter(theme => theme && theme.colors).map((theme) => (
               <Card key={theme.id}>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg">{theme.nameAr}</CardTitle>
@@ -616,10 +655,10 @@ export const PersonalizedThemeManager: React.FC<PersonalizedThemeManagerProps> =
                 
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-4 gap-1 h-8 rounded overflow-hidden">
-                    <div style={{ backgroundColor: theme.colors.primary }} />
-                    <div style={{ backgroundColor: theme.colors.secondary }} />
-                    <div style={{ backgroundColor: theme.colors.accent }} />
-                    <div style={{ backgroundColor: theme.colors.background, border: '1px solid #ccc' }} />
+                    <div style={{ backgroundColor: theme.colors?.primary || '#000' }} />
+                    <div style={{ backgroundColor: theme.colors?.secondary || '#666' }} />
+                    <div style={{ backgroundColor: theme.colors?.accent || '#999' }} />
+                    <div style={{ backgroundColor: theme.colors?.background || '#fff', border: '1px solid #ccc' }} />
                   </div>
                   
                   <div className="flex gap-2">
@@ -647,7 +686,7 @@ export const PersonalizedThemeManager: React.FC<PersonalizedThemeManagerProps> =
         {/* Presets Tab */}
         <TabsContent value="presets" className="space-y-4">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {themePresets.map((preset) => (
+            {themePresets.filter(preset => preset && preset.colors).map((preset) => (
               <Card key={preset.id}>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg">{preset.nameAr}</CardTitle>
@@ -656,10 +695,10 @@ export const PersonalizedThemeManager: React.FC<PersonalizedThemeManagerProps> =
                 
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-4 gap-1 h-8 rounded overflow-hidden">
-                    <div style={{ backgroundColor: preset.colors.primary }} />
-                    <div style={{ backgroundColor: preset.colors.secondary }} />
-                    <div style={{ backgroundColor: preset.colors.accent }} />
-                    <div style={{ backgroundColor: preset.colors.background, border: '1px solid #ccc' }} />
+                    <div style={{ backgroundColor: preset.colors?.primary || '#000' }} />
+                    <div style={{ backgroundColor: preset.colors?.secondary || '#666' }} />
+                    <div style={{ backgroundColor: preset.colors?.accent || '#999' }} />
+                    <div style={{ backgroundColor: preset.colors?.background || '#fff', border: '1px solid #ccc' }} />
                   </div>
                   
                   <Badge variant="outline">{preset.category}</Badge>
