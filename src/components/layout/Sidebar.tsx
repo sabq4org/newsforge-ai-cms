@@ -498,6 +498,23 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       id: 'personalized-themes-dashboard',
       label: isArabic ? 'لوحة الثيمات الشخصية' : 'Personalized Themes Dashboard',
       icon: BarChart3,
+      show: true,
+      badge: isArabic ? 'لوحة' : 'Dashboard'
+    },
+    {
+      id: 'intelligent-theme-generator',
+      label: isArabic ? 'مولد الثيمات الذكي' : 'Intelligent Theme Generator',
+      icon: Brain,
+      show: true,
+      badge: isArabic ? 'ذكي' : 'AI'
+    },
+    {
+      id: 'behavioral-theme-learning',
+      label: isArabic ? 'التعلم السلوكي للثيمات' : 'Behavioral Theme Learning',
+      icon: Brain,
+      show: true,
+      badge: isArabic ? 'تكيفي' : 'Adaptive'
+    }
       show: canAccess('settings'),
       badge: isArabic ? 'شامل' : 'Full'
     }

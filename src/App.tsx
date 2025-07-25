@@ -27,7 +27,7 @@ import { ThemeTestingShowcase } from '@/components/showcase/ThemeTestingShowcase
 import { LiveThemePreview } from '@/components/showcase/LiveThemePreview';
 import { ThemeImportExport } from '@/components/showcase/ThemeImportExport';
 import { ComprehensiveThemeManager, AutoThemeScheduler, InteractiveThemeDemo } from '@/components/showcase';
-import { PersonalizedThemeManager, UserProfileTheme, PersonalizedThemesDashboard } from '@/components/themes';
+import { PersonalizedThemeManager, UserProfileTheme, PersonalizedThemesDashboard, IntelligentThemeGenerator, BehavioralThemeLearningSystem } from '@/components/themes';
 import { SmartThemeApplicator } from '@/components/themes/SmartThemeApplicator';
 import { MediaUpload, MediaGenerator, ComprehensiveMediaManager } from '@/components/media';
 import { AudioEditor, AudioLibrary, AudioAnalytics } from '@/components/audio';
@@ -559,6 +559,48 @@ function AppContent() {
       
       case 'personalized-themes-dashboard':
         return <PersonalizedThemesDashboard />;
+      
+      case 'intelligent-theme-generator':
+        return memberUser ? (
+          <IntelligentThemeGenerator
+            userId={memberUser.id}
+            userProfile={memberUser}
+            articles={articles}
+            onThemeGenerated={(theme) => {
+              console.log('Generated theme:', theme);
+              toast.success(`تم توليد ثيم "${theme.nameAr}" بنجاح!`);
+            }}
+          />
+        ) : (
+          <div className="text-center py-12">
+            <h2 className="text-xl font-semibold">مولد الثيمات الذكي</h2>
+            <p className="text-muted-foreground mt-2">يرجى تسجيل الدخول لتوليد ثيمات مخصصة</p>
+            <Button className="mt-4" onClick={() => setShowAuthModal(true)}>
+              تسجيل الدخول
+            </Button>
+          </div>
+        );
+
+      case 'behavioral-theme-learning':
+        return memberUser ? (
+          <BehavioralThemeLearningSystem
+            userId={memberUser.id}
+            userProfile={memberUser}
+            currentArticle={editingArticle}
+            onThemeAdaptation={(adaptedTheme, reasoning) => {
+              console.log('Theme adapted:', { adaptedTheme, reasoning });
+              toast.success('تم تكييف الثيم بناءً على سلوك قراءتك');
+            }}
+          />
+        ) : (
+          <div className="text-center py-12">
+            <h2 className="text-xl font-semibold">نظام التعلم السلوكي للثيمات</h2>
+            <p className="text-muted-foreground mt-2">يرجى تسجيل الدخول لتفعيل التعلم التكيفي</p>
+            <Button className="mt-4" onClick={() => setShowAuthModal(true)}>
+              تسجيل الدخول
+            </Button>
+          </div>
+        );
       
       case 'media':
         return <ComprehensiveMediaManager />;
