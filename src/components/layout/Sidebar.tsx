@@ -23,8 +23,6 @@ import {
   Images,
   Code,
   Medal,
-  Trophy,
-  Award,
   GitMerge,
   Wrench,
   Microphone,
@@ -43,7 +41,8 @@ import {
   Heart,
   Smiley,
   ChartBarHorizontal,
-  MagnifyingGlass
+  MagnifyingGlass,
+  Question
 } from '@phosphor-icons/react';
 
 interface SidebarProps {
@@ -698,10 +697,10 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
               isRTL && "flex-row-reverse"
             )}>
               <SafeIcon 
-                icon={item.icon || Medal} 
+                icon={item.icon || Question} 
                 size={16} 
                 className="h-4 w-4 flex-shrink-0" 
-                fallback={Medal}
+                fallback={Question}
               />
               <span className={cn(
                 "flex-1 truncate font-arabic text-left",

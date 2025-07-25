@@ -59,6 +59,7 @@ import { AutoResourceOptimizerDashboard, ResourceOptimizationConfig, Performance
 import { PerformanceDashboard, EnhancedPerformanceDashboard } from '@/components/performance';
 import { SystemStatus } from '@/components/system';
 import { Article } from '@/types';
+import { UserProfile } from '@/types/membership';
 import { useKV } from '@github/spark/hooks';
 import { mockArticles, mockCategories, mockMediaFiles } from '@/lib/mockData';
 import { normalizeArticles, normalizeDataObject, cn } from '@/lib/utils';
