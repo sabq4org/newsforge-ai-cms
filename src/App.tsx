@@ -23,6 +23,7 @@ import { AIOptimizationEngine } from '@/components/optimization/AIOptimizationEn
 import { ABTestingFramework } from '@/components/optimization/ABTestingFramework';
 import { TypographySettings, GeneralSettings, ThemeColorSettings } from '@/components/settings';
 import { TypographyShowcase } from '@/components/showcase/TypographyShowcase';
+import { ThemeTestingShowcase } from '@/components/showcase/ThemeTestingShowcase';
 import { MediaUpload, MediaGenerator, ComprehensiveMediaManager } from '@/components/media';
 import { AudioEditor, AudioLibrary, AudioAnalytics } from '@/components/audio';
 import { SystemAnalysis, ComprehensiveAnalysisEngine } from '@/components/analysis';
@@ -513,6 +514,9 @@ function AppContent() {
       
       case 'typography-demo':
         return <TypographyShowcase />;
+      
+      case 'theme-testing':
+        return <ThemeTestingShowcase />;
       
       case 'media':
         return <ComprehensiveMediaManager />;

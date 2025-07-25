@@ -435,6 +435,13 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       label: isArabic ? 'عرض الطباعة' : 'Typography Demo',
       icon: Sparkles,
       show: true
+    },
+    {
+      id: 'theme-testing',
+      label: isArabic ? 'تجربة الثيمات الجاهزة' : 'Theme Testing',
+      icon: Palette,
+      show: true,
+      badge: isArabic ? 'تجربة' : 'Test'
     }
   ];
 
