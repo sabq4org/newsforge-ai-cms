@@ -49,6 +49,7 @@ import { PodcastDemo } from '@/components/demo/PodcastDemo';
 import { ErrorChecker } from '@/components/debug/ErrorChecker';
 import { ErrorBoundary } from '@/components/debug/ErrorBoundary';
 import { RuntimeChecker } from '@/components/debug/RuntimeChecker';
+import { ReadingPreferencePrediction, AdvancedMLModelTraining, PredictiveBehaviorEngine } from '@/components/ml';
 import { ExternalDataManager, NewsAggregator } from '@/components/external';
 import { BreakingNewsNotifications, NotificationCenter, LiveNotificationBanner, NotificationPreferences, NotificationAnalytics, SmartNotificationSystem } from '@/components/notifications';
 import { AutoResourceOptimizerDashboard, ResourceOptimizationConfig, PerformanceOptimizationDemo, AutoResourceOptimizationOverview } from '@/components/optimization';
@@ -817,6 +818,15 @@ function AppContent() {
       
       case 'auto-resource-optimization-overview':
         return <AutoResourceOptimizationOverview />;
+      
+      case 'ml-prediction-models':
+        return <ReadingPreferencePrediction />;
+      
+      case 'ml-model-training':
+        return <AdvancedMLModelTraining />;
+      
+      case 'predictive-behavior':
+        return <PredictiveBehaviorEngine />;
       
       case 'smart-recommendations':
         return memberUser ? (

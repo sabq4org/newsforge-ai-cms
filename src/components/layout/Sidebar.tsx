@@ -249,6 +249,27 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       badge: isArabic ? 'شخصي' : 'Personal'
     },
     {
+      id: 'ml-prediction-models',
+      label: isArabic ? 'نماذج التوقع الذكية' : 'ML Prediction Models',
+      icon: Brain,
+      show: canAccess('ai-tools'),
+      badge: isArabic ? 'تنبؤ' : 'ML'
+    },
+    {
+      id: 'ml-model-training',
+      label: isArabic ? 'تدريب النماذج المتقدم' : 'Advanced Model Training',
+      icon: Cpu,
+      show: canAccess('ai-tools'),
+      badge: isArabic ? 'تدريب' : 'Train'
+    },
+    {
+      id: 'predictive-behavior',
+      label: isArabic ? 'محرك التنبؤ السلوكي' : 'Predictive Behavior Engine',
+      icon: TrendingUp,
+      show: canAccess('ai-tools'),
+      badge: isArabic ? 'سلوك' : 'Behavior'
+    },
+    {
       id: 'ai-trend-analysis',
       label: isArabic ? 'تحليل الاتجاهات الذكي' : 'AI Trend Analysis',
       icon: TrendingUp,
