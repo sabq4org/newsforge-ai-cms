@@ -727,11 +727,16 @@ export default function UltimateSafeApp() {
   // Main render logic
   const renderContent = () => {
     switch (currentView) {
-      case 'articles': return renderArticles();
-      case 'analytics': return renderAnalytics();
-      case 'settings': return renderSettings();
-      case 'help': return renderHelp();
-      default: return renderDashboard();
+      case 'articles': 
+        return renderArticles();
+      case 'analytics': 
+        return renderAnalytics();
+      case 'settings': 
+        return renderSettings();
+      case 'help': 
+        return renderHelp();
+      default: 
+        return renderDashboard();
     }
   };
 
