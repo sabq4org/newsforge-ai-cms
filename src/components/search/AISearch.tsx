@@ -26,7 +26,7 @@ import {
 import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
 import { mockArticles, mockCategories, mockTags } from '@/lib/mockData';
-import { normalizeArticles } from '@/lib/utils';
+import { normalizeArticles, safeToLowerCase } from '@/lib/utils';
 import { toast } from 'sonner';
 
 interface SearchResult {
@@ -118,42 +118,42 @@ export function AISearch({ onArticleEdit }: AISearchProps) {
         const matchReasons: string[] = [];
         
         // Title matching (highest weight)
-        if (article.title.toLowerCase().includes(query.toLowerCase())) {
+        if (safeToLowerCase(article.title).includes(safeToLowerCase(query))) {
           relevanceScore += 0.4;
           matchReasons.push('تطابق في العنوان');
         }
         
         // Content matching
-        if (article.content.toLowerCase().includes(query.toLowerCase())) {
+        if (safeToLowerCase(article.content).includes(safeToLowerCase(query))) {
           relevanceScore += 0.3;
           matchReasons.push('تطابق في المحتوى');
         }
         
         // Excerpt matching
-        if (article.excerpt.toLowerCase().includes(query.toLowerCase())) {
+        if (safeToLowerCase(article.excerpt).includes(safeToLowerCase(query))) {
           relevanceScore += 0.2;
           matchReasons.push('تطابق في الملخص');
         }
         
         // Category matching
-        if (article.category?.name.toLowerCase().includes(query.toLowerCase()) ||
-            article.category?.nameAr?.toLowerCase().includes(query.toLowerCase())) {
+        if (safeToLowerCase(article.category?.name).includes(safeToLowerCase(query)) ||
+            safeToLowerCase(article.category?.nameAr).includes(safeToLowerCase(query))) {
           relevanceScore += 0.2;
           matchReasons.push('تطابق في التصنيف');
         }
         
         // Tags matching
         if (article.tags?.some(tag => 
-          tag.name.toLowerCase().includes(query.toLowerCase()) ||
-          tag.nameAr?.toLowerCase().includes(query.toLowerCase())
+          safeToLowerCase(tag.name).includes(safeToLowerCase(query)) ||
+          safeToLowerCase(tag.nameAr).includes(safeToLowerCase(query))
         )) {
           relevanceScore += 0.15;
           matchReasons.push('تطابق في العلامات');
         }
         
         // Author matching
-        if (article.author.name.toLowerCase().includes(query.toLowerCase()) ||
-            article.author.nameAr?.toLowerCase().includes(query.toLowerCase())) {
+        if (safeToLowerCase(article.author.name).includes(safeToLowerCase(query)) ||
+            safeToLowerCase(article.author.nameAr).includes(safeToLowerCase(query))) {
           relevanceScore += 0.1;
           matchReasons.push('تطابق في اسم الكاتب');
         }

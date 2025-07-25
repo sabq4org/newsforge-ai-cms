@@ -61,7 +61,7 @@ import { SystemStatus } from '@/components/system';
 import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
 import { mockArticles, mockCategories, mockMediaFiles } from '@/lib/mockData';
-import { normalizeArticles, normalizeDataObject } from '@/lib/utils';
+import { normalizeArticles, normalizeDataObject, cn } from '@/lib/utils';
 import { UserProfile } from '@/types/membership';
 import { initializeGlobalErrorHandler } from '@/lib/globalErrorHandler';
 import { 

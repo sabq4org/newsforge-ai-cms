@@ -47,6 +47,7 @@ import { AddUserModal } from './AddUserModal';
 import { ImportUsersModal } from './ImportUsersModal';
 import { UserAnalyticsCard } from './UserAnalyticsCard';
 import { UserFiltersPanel } from './UserFiltersPanel';
+import { safeDateFormat, safeToLowerCase } from '@/lib/utils';
 
 // Mock data for demonstration
 const generateMockUsers = (): UserProfile[] => {
@@ -137,13 +138,13 @@ export function UserManagementDashboard() {
 
     // Apply search
     if (searchTerm) {
-      const term = searchTerm.toLowerCase();
+      const term = safeToLowerCase(searchTerm);
       filtered = filtered.filter(user => 
-        user.name.toLowerCase().includes(term) ||
-        user.email.toLowerCase().includes(term) ||
+        safeToLowerCase(user.name).includes(term) ||
+        safeToLowerCase(user.email).includes(term) ||
         user.phone?.includes(term) ||
-        user.country?.toLowerCase().includes(term) ||
-        user.city?.toLowerCase().includes(term)
+        safeToLowerCase(user.country).includes(term) ||
+        safeToLowerCase(user.city).includes(term)
       );
     }
 

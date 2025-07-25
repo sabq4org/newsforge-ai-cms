@@ -12,7 +12,7 @@ import {
   Target,
   Sparkle
 } from '@phosphor-icons/react';
-import { cn } from '@/lib/utils';
+import { cn, safeToLowerCase } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { ar, enUS } from 'date-fns/locale';
 import { Article } from '@/types';
@@ -58,9 +58,9 @@ export function PersonalizedContentBlock({
       article.status === 'published' && 
       article.category && 
       interestCategories.some(interest => 
-        interest.toLowerCase() === article.category?.slug?.toLowerCase() ||
-        interest.toLowerCase() === article.category?.nameAr?.toLowerCase() ||
-        interest.toLowerCase() === article.category?.nameEn?.toLowerCase()
+        safeToLowerCase(interest) === safeToLowerCase(article.category?.slug) ||
+        safeToLowerCase(interest) === safeToLowerCase(article.category?.nameAr) ||
+        safeToLowerCase(interest) === safeToLowerCase(article.category?.nameEn)
       )
     );
 

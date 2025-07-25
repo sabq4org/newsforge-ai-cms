@@ -29,7 +29,7 @@ import {
   Headphones,
   BarChart3
 } from '@phosphor-icons/react';
-import { cn } from '@/lib/utils';
+import { cn, safeToLowerCase } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { ar, enUS } from 'date-fns/locale';
 import { Article } from '@/types';
@@ -94,12 +94,12 @@ export function PublicInterface({ className, articles }: PublicInterfaceProps) {
         const content = isRTL ? article.contentAr || article.content : article.content;
         const excerpt = isRTL ? article.excerptAr || article.excerpt : article.excerpt;
         
-        const searchTerm = query.toLowerCase();
-        return title.toLowerCase().includes(searchTerm) ||
-               content.toLowerCase().includes(searchTerm) ||
-               excerpt.toLowerCase().includes(searchTerm) ||
+        const searchTerm = safeToLowerCase(query);
+        return safeToLowerCase(title).includes(searchTerm) ||
+               safeToLowerCase(content).includes(searchTerm) ||
+               safeToLowerCase(excerpt).includes(searchTerm) ||
                article.tags?.some(tag => 
-                 (isRTL ? tag.nameAr : tag.name).toLowerCase().includes(searchTerm)
+                 safeToLowerCase(isRTL ? tag.nameAr : tag.name).includes(searchTerm)
                );
       });
       setFilteredArticles(filtered);

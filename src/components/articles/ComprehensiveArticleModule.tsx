@@ -11,7 +11,7 @@ import { useOptimizedTypography } from '@/hooks/useOptimizedTypography';
 import { mockArticles, mockCategories } from '@/lib/mockData';
 import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
-import { normalizeArticles, safeDateFormat } from '@/lib/utils';
+import { normalizeArticles, safeDateFormat, safeToLowerCase } from '@/lib/utils';
 import { CategoryDisplay } from '@/components/categories';
 import { toast } from 'sonner';
 import { 
@@ -99,8 +99,8 @@ export function ComprehensiveArticleModule({ onEditArticle, onCreateNew }: Compr
   };
 
   const filteredArticles = articles.filter(article => {
-    const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         article.author.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = safeToLowerCase(article.title).includes(safeToLowerCase(searchTerm)) ||
+                         safeToLowerCase(article.author.name).includes(safeToLowerCase(searchTerm));
     const matchesStatus = statusFilter === 'all' || article.status === statusFilter;
     const matchesCategory = categoryFilter === 'all' || (article.category && article.category.id === categoryFilter);
     
