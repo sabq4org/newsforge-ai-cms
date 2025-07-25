@@ -11,7 +11,7 @@ import {
   Brain, 
   Zap, 
   Settings, 
-  TrendUp,
+  TrendingUp,
   AlertTriangle,
   CheckCircle,
   Clock,
@@ -314,7 +314,7 @@ export function AutoSentimentModeration({
                     <p className="text-sm text-muted-foreground">الكفاءة</p>
                     <p className="text-2xl font-bold">{stats.resolutionRate}%</p>
                   </div>
-                  <TrendUp className="w-8 h-8 text-primary" />
+                  <TrendingUp className="w-8 h-8 text-primary" />
                 </div>
               </CardContent>
             </Card>

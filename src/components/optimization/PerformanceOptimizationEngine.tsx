@@ -11,7 +11,7 @@ import {
   TrendingUp,
   Target,
   Zap,
-  BarChart3,
+  ChartBarHorizontal,
   Settings,
   Info
 } from '@phosphor-icons/react';
@@ -253,7 +253,7 @@ export function PerformanceOptimizationEngine({
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="overview" className="gap-2">
-            <BarChart3 className="h-4 w-4" />
+            <ChartBarHorizontal className="h-4 w-4" />
             Overview
           </TabsTrigger>
           <TabsTrigger value="predictive" className="gap-2">

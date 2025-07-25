@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
-  BarChart3, 
+  ChartBarHorizontal, 
   TrendingUp, 
   Users, 
   FileText, 
@@ -88,7 +88,7 @@ export function RoleBasedDashboard({ onNavigate }: RoleBasedDashboardProps) {
     const actions = {
       'admin': [
         { label: isArabic ? 'إدارة المستخدمين' : 'Manage Users', view: 'users', icon: Users },
-        { label: isArabic ? 'التحليلات المتقدمة' : 'Advanced Analytics', view: 'analytics', icon: BarChart3 },
+        { label: isArabic ? 'التحليلات المتقدمة' : 'Advanced Analytics', view: 'analytics', icon: ChartBarHorizontal },
         { label: isArabic ? 'إعدادات النظام' : 'System Settings', view: 'settings', icon: Target }
       ],
       'editor-in-chief': [
@@ -98,7 +98,7 @@ export function RoleBasedDashboard({ onNavigate }: RoleBasedDashboardProps) {
       ],
       'section-editor': [
         { label: isArabic ? 'مقالات القسم' : 'Section Articles', view: 'articles', icon: FileText },
-        { label: isArabic ? 'التحليلات' : 'Analytics', view: 'analytics', icon: BarChart3 },
+        { label: isArabic ? 'التحليلات' : 'Analytics', view: 'analytics', icon: ChartBarHorizontal },
         { label: isArabic ? 'إنشاء مقال' : 'Create Article', view: 'create-article', icon: Zap }
       ],
       'journalist': [
@@ -112,7 +112,7 @@ export function RoleBasedDashboard({ onNavigate }: RoleBasedDashboardProps) {
         { label: isArabic ? 'أداء المقالات' : 'Article Performance', view: 'analytics', icon: TrendingUp }
       ],
       'analyst': [
-        { label: isArabic ? 'التحليلات المتقدمة' : 'Advanced Analytics', view: 'analytics', icon: BarChart3 },
+        { label: isArabic ? 'التحليلات المتقدمة' : 'Advanced Analytics', view: 'analytics', icon: ChartBarHorizontal },
         { label: isArabic ? 'رؤى الأداء' : 'Performance Insights', view: 'insights', icon: TrendingUp },
         { label: isArabic ? 'التحليل الزمني' : 'Real-time Analytics', view: 'realtime', icon: Eye }
       ]

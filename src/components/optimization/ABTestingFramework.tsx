@@ -14,7 +14,7 @@ import {
   Plus, 
   Play, 
   Pause, 
-  BarChart3,
+  ChartBarHorizontal,
   Medal,
   Users,
   Eye,
@@ -383,7 +383,7 @@ export function ABTestingFramework({
                   <div className="flex items-center gap-2">
                     {test.status === 'running' && (
                       <Button size="sm" onClick={() => simulatePerformanceUpdate(test.id)}>
-                        <BarChart3 className="w-4 h-4" />
+                        <ChartBarHorizontal className="w-4 h-4" />
                       </Button>
                     )}
                     {test.status === 'draft' && (

@@ -9,7 +9,7 @@ import {
   Palette,
   Eye,
   Clock,
-  TrendUp,
+  TrendingUp,
   Sparkle,
   Lightbulb,
   Target,
@@ -23,7 +23,6 @@ import {
   Coffee,
   Sunset,
   Cpu,
-  MemoryStick,
   MagicWand
 } from '@phosphor-icons/react';
 import { useKV } from '@github/spark/hooks';
@@ -489,7 +488,7 @@ export const BehavioralThemeLearningSystem: React.FC<BehavioralThemeLearningSyst
               </div>
               
               <div className="text-center">
-                <MemoryStick className="w-6 h-6 mx-auto mb-1 text-purple-500" />
+                <Cpu className="w-6 h-6 mx-auto mb-1 text-purple-500" />
                 <p className="text-xs text-muted-foreground">السجل</p>
                 <p className="text-sm font-medium">{adaptationHistory.length}</p>
               </div>
@@ -592,7 +591,7 @@ export const BehavioralThemeLearningSystem: React.FC<BehavioralThemeLearningSyst
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <TrendUp className="text-primary" />
+              <TrendingUp className="text-primary" />
               سجل التكيفات
             </CardTitle>
             <CardDescription>

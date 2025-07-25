@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   Activity,
-  MemoryStick,
+  Cpu,
   Cpu,
   Timer,
   Target,
@@ -131,7 +131,7 @@ function MyComponent() {
     {
       title: 'مراقبة الذاكرة',
       description: 'تتبع استخدام الذاكرة للمكونات الثقيلة وقم بتنظيفها عند الحاجة',
-      icon: MemoryStick,
+      icon: Cpu,
       level: 'important'
     },
     {

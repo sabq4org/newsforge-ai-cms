@@ -19,7 +19,7 @@ import {
   MapPin,
   Calendar,
   Activity,
-  BarChart3,
+  ChartBarHorizontal,
   Medal,
   Crown,
   Shield,
@@ -189,7 +189,7 @@ export function UserDetailsModal({ user, onClose, onUserUpdate }: UserDetailsMod
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5" />
+                    <ChartBarHorizontal className="w-5 h-5" />
                     الإحصائيات
                   </CardTitle>
                 </CardHeader>

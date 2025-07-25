@@ -10,11 +10,11 @@ import {
   Heart, 
   ShareNetwork, 
   FileText, 
-  TrendUp, 
+  TrendingUp, 
   TrendDown, 
   Calendar,
   Users,
-  TrendUp,
+  TrendingUp,
   Activity
 } from '@phosphor-icons/react';
 
@@ -94,7 +94,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
                   </p>
                   <div className="flex items-center gap-1 mt-1">
                     {stat.trend === 'up' ? (
-                      <TrendUp size={14} className="text-green-600" />
+                      <TrendingUp size={14} className="text-green-600" />
                     ) : (
                       <TrendDown size={14} className="text-red-600" />
                     )}
@@ -119,7 +119,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
           className="flex items-center gap-2"
           onClick={() => onNavigate?.('analytics')}
         >
-          <TrendUp size={16} />
+          <TrendingUp size={16} />
           {language.code === 'ar' ? 'عرض التحليلات المتقدمة' : 'View Advanced Analytics'}
         </Button>
         <Button 
@@ -157,7 +157,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <TrendUp size={20} />
+                <TrendingUp size={20} />
                 {language.code === 'ar' ? 'أفضل المقالات' : 'Top Articles'}
               </CardTitle>
             </CardHeader>
@@ -175,7 +175,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
                       <Badge variant="outline" className="text-xs">
                         #{index + 1}
                       </Badge>
-                      {article.trend === 'up' && <TrendUp size={16} className="text-green-600" />}
+                      {article.trend === 'up' && <TrendingUp size={16} className="text-green-600" />}
                       {article.trend === 'down' && <TrendDown size={16} className="text-red-600" />}
                     </div>
                   </div>

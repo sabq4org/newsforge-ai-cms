@@ -26,7 +26,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { mockAnalytics, mockArticles } from '@/lib/mockData';
 import { 
-  TrendUp, 
+  TrendingUp, 
   TrendDown, 
   Eye, 
   Heart, 
@@ -206,7 +206,7 @@ export function PerformanceInsights() {
                   </p>
                   <div className="flex items-center gap-1 mt-1">
                     {metric.trend === 'up' ? (
-                      <TrendUp size={14} className="text-green-600" />
+                      <TrendingUp size={14} className="text-green-600" />
                     ) : (
                       <TrendDown size={14} className="text-red-600" />
                     )}

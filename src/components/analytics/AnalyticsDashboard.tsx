@@ -37,7 +37,7 @@ import {
   ShareNetwork, 
   Users,
   Clock,
-  TrendUp,
+  TrendingUp,
   TrendDown,
   Activity,
   Target,
@@ -310,7 +310,7 @@ export function AnalyticsDashboard({ onNavigate }: AnalyticsDashboardProps) {
                   </p>
                   <div className="flex items-center gap-1">
                     {metric.changeType === 'up' ? (
-                      <TrendUp size={14} className="text-green-600" />
+                      <TrendingUp size={14} className="text-green-600" />
                     ) : metric.changeType === 'down' ? (
                       <TrendDown size={14} className="text-red-600" />
                     ) : (

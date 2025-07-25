@@ -10,7 +10,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   Brain, 
   Network, 
-  TrendUp, 
+  TrendingUp, 
   Eye, 
   Users, 
   MessageCircle,
@@ -22,7 +22,7 @@ import {
   RefreshCw,
   AlertTriangle,
   CheckCircle,
-  BarChart3,
+  ChartBarHorizontal,
   Clock,
   FileText,
   Hash,
@@ -293,7 +293,7 @@ export function ComprehensiveDeepAnalysisModule({
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="overview" className="gap-2">
-            <BarChart3 className="w-4 h-4" />
+            <ChartBarHorizontal className="w-4 h-4" />
             {isArabic ? 'نظرة عامة' : 'Overview'}
           </TabsTrigger>
           <TabsTrigger value="analyses" className="gap-2">
@@ -322,7 +322,7 @@ export function ComprehensiveDeepAnalysisModule({
               subtitle={isArabic ? 'تحليل جديد' : 'new analyses'}
             />
             <StatCard
-              icon={TrendUp}
+              icon={TrendingUp}
               title={isArabic ? 'هذا الأسبوع' : 'This Week'}
               value={stats.weekAnalyses}
               subtitle={isArabic ? 'تحليل' : 'analyses'}

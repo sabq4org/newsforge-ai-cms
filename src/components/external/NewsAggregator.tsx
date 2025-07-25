@@ -20,7 +20,7 @@ import {
   CheckCircle,
   XCircle,
   Newspaper,
-  TrendUp,
+  TrendingUp,
   Users,
   Hash
 } from '@phosphor-icons/react';
@@ -308,7 +308,7 @@ export function NewsAggregator() {
             جلب الأخبار
           </Button>
           <Button onClick={generateTrendingTopics} variant="outline" className="gap-2">
-            <TrendUp className="h-4 w-4" />
+            <TrendingUp className="h-4 w-4" />
             تحديث الترندات
           </Button>
         </div>
@@ -497,7 +497,7 @@ export function NewsAggregator() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <TrendUp className="h-5 w-5" />
+                <TrendingUp className="h-5 w-5" />
                 الموضوعات الرائجة
               </CardTitle>
               <CardDescription>الموضوعات الأكثر تداولاً حالياً</CardDescription>
@@ -625,7 +625,7 @@ export function NewsAggregator() {
 
             <Card className="p-4">
               <div className="flex items-center gap-2 mb-2">
-                <TrendUp className="h-4 w-4 text-primary" />
+                <TrendingUp className="h-4 w-4 text-primary" />
                 <h3 className="font-medium">ترندات نشطة</h3>
               </div>
               <p className="text-2xl font-bold">{trendingTopics.length}</p>

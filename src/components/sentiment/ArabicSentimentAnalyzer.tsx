@@ -12,11 +12,11 @@ import {
   Meh, 
   Brain, 
   Eye, 
-  TrendUp,
+  TrendingUp,
   Target,
   Zap,
   MessageCircle,
-  BarChart3,
+  ChartBarHorizontal,
   AlertTriangle
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
@@ -264,7 +264,7 @@ export function ArabicSentimentAnalyzer({
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="w-5 h-5 text-primary" />
+              <ChartBarHorizontal className="w-5 h-5 text-primary" />
               نتائج تحليل المشاعر
             </CardTitle>
           </CardHeader>
@@ -310,7 +310,7 @@ export function ArabicSentimentAnalyzer({
                             {Math.round(result.overall.intensity * 100)}%
                           </p>
                         </div>
-                        <TrendUp className="w-8 h-8 text-blue-500" />
+                        <TrendingUp className="w-8 h-8 text-blue-500" />
                       </div>
                       <Progress 
                         value={result.overall.intensity * 100} 

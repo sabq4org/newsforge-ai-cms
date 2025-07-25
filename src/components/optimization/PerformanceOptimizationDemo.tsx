@@ -14,7 +14,7 @@ import {
   Pause,
   RotateCcw,
   Activity,
-  MemoryStick,
+  Cpu,
   Clock,
   Zap
 } from '@phosphor-icons/react';
@@ -157,7 +157,7 @@ export function PerformanceOptimizationDemo({ className }: PerformanceOptimizati
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">الذاكرة الحالية</CardTitle>
-            <MemoryStick className="w-4 h-4 text-muted-foreground" />
+            <Cpu className="w-4 h-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">

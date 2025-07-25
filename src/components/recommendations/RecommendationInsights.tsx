@@ -12,7 +12,7 @@ import {
   Brain, 
   Users,
   Clock,
-  BarChart3,
+  ChartBarHorizontal,
   PieChart,
   LineChart,
   Zap,
@@ -263,7 +263,7 @@ export function RecommendationInsights({ onInsightAction }: RecommendationInsigh
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'performance': return <BarChart3 size={16} />;
+      case 'performance': return <ChartBarHorizontal size={16} />;
       case 'user-behavior': return <Users size={16} />;
       case 'content-gap': return <AlertCircle size={16} />;
       case 'optimization': return <Zap size={16} />;

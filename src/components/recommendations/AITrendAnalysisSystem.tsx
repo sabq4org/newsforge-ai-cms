@@ -25,7 +25,7 @@ import {
   ArrowDown,
   Minus,
   TrendingUp,
-  BarChart3,
+  ChartBarHorizontal,
   PieChart,
   Activity,
   Lightbulb,
@@ -739,7 +739,7 @@ export function AITrendAnalysisSystem({
         <TabsContent value="content" className="space-y-6">
           {contentTrends.length === 0 ? (
             <div className="text-center py-12">
-              <BarChart3 className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+              <ChartBarHorizontal className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
               <h3 className="text-xl font-semibold mb-2">لا توجد تحليلات محتوى متاحة</h3>
               <p className="text-muted-foreground mb-4">قم بإجراء تحليل جديد لرؤية إمكانيات المحتوى</p>
               <Button onClick={generateTrendAnalysis} disabled={isAnalyzing}>

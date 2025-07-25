@@ -14,7 +14,7 @@ import {
   TrendingUp,
   Target,
   Sparkles,
-  TrendUp,
+  TrendingUp,
   Activity,
   BookOpen,
   Heart,
@@ -398,7 +398,7 @@ export function SmartRecommendationSystem({ userId, articles, onArticleSelect }:
                   <ArrowUp className="w-4 h-4 text-green-600" />
                 </div>
               </div>
-              <TrendUp className="w-8 h-8 text-green-600" />
+              <TrendingUp className="w-8 h-8 text-green-600" />
             </div>
           </CardContent>
         </Card>

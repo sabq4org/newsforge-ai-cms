@@ -8,11 +8,10 @@ import {
   House, 
   FileText, 
   PlusCircle, 
-  BarChart3, 
   Users, 
   FolderOpen, 
   Tag, 
-  Settings,
+  Gear as Settings,
   Calendar,
   Brain,
   TestTube,
@@ -30,14 +29,12 @@ import {
   Wrench,
   Microphone,
   FileAudio,
-  TrendUp,
   Coffee,
   Drop,
   Bell,
   BellRinging,
   Cpu,
   Activity,
-  MemoryStick,
   BookOpen,
   Palette,
   Package,
@@ -116,7 +113,7 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
     {
       id: 'category-statistics',
       label: isArabic ? 'إحصائيات التصنيفات' : 'Category Statistics',
-      icon: TrendUp,
+      icon: TrendingUp,
       show: hasPermission('view', 'analytics')
     },
     {
@@ -166,7 +163,7 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
     {
       id: 'audio-analytics',
       label: isArabic ? 'تحليلات البودكاست' : 'Audio Analytics',
-      icon: BarChart3,
+      icon: ChartBarHorizontal,
       show: hasPermission('read', 'analytics')
     },
     {
@@ -195,7 +192,7 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
     {
       id: 'analytics',
       label: isArabic ? 'التحليلات' : 'Analytics',
-      icon: BarChart3,
+      icon: ChartBarHorizontal,
       show: hasPermission('read', 'analytics')
     },
     {
@@ -390,7 +387,7 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
     {
       id: 'notification-analytics',
       label: isArabic ? 'إحصائيات الإشعارات' : 'Notification Analytics',
-      icon: BarChart3,
+      icon: ChartBarHorizontal,
       show: hasPermission('read', 'analytics'),
       badge: isArabic ? 'تحليل' : 'Analytics'
     }
@@ -422,7 +419,7 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
     {
       id: 'reading-behavior',
       label: isArabic ? 'تحليل سلوك القراءة' : 'Reading Behavior',
-      icon: TrendUp,
+      icon: TrendingUp,
       show: true,
       badge: isArabic ? 'تحليل' : 'Analytics'
     },
@@ -478,7 +475,7 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
     {
       id: 'auto-resource-optimizer',
       label: isArabic ? 'محسن الموارد التلقائي' : 'Auto Resource Optimizer',
-      icon: MemoryStick,
+      icon: Cpu,
       show: canAccess('user-management'),
       badge: isArabic ? 'تلقائي' : 'Auto'
     },
@@ -602,7 +599,7 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
     {
       id: 'personalized-themes-dashboard',
       label: isArabic ? 'لوحة الثيمات الشخصية' : 'Personalized Themes Dashboard',
-      icon: BarChart3,
+      icon: ChartBarHorizontal,
       show: true,
       badge: isArabic ? 'لوحة' : 'Dashboard'
     },

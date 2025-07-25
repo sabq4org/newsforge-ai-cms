@@ -33,7 +33,7 @@ import {
   Heart, 
   ShareNetwork, 
   MessageCircle,
-  TrendUp, 
+  TrendingUp, 
   TrendDown,
   Calendar,
   Users,
@@ -359,7 +359,7 @@ export function CategoryStatistics() {
                     <div className="flex items-center gap-2">
                       {stat.trend === 'up' && (
                         <div className="flex items-center gap-1 text-green-600">
-                          <TrendUp className="w-4 h-4" />
+                          <TrendingUp className="w-4 h-4" />
                           <span className="text-sm">{isArabic ? 'صاعد' : 'Rising'}</span>
                         </div>
                       )}

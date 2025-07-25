@@ -12,7 +12,7 @@ import {
   Sparkle,
   Info,
   Envelope,
-  BarChart3
+  ChartBarHorizontal
 } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
 import { mockCategories } from '@/lib/mockData';
@@ -57,7 +57,7 @@ export function PublicHeader({
       id: 'analysis', 
       labelAr: 'التحليل العميق', 
       labelEn: 'Deep Analysis', 
-      icon: BarChart3,
+      icon: ChartBarHorizontal,
       section: 'analysis'
     },
     { 

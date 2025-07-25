@@ -18,7 +18,7 @@ import {
   Zap,
   Settings,
   BookOpen,
-  BarChart3,
+  ChartBarHorizontal,
   Network,
   Layers,
   FlowArrow,

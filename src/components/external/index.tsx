@@ -18,7 +18,7 @@ import {
   RefreshCw,
   Calendar,
   Clock,
-  TrendUp
+  TrendingUp
 } from '@phosphor-icons/react';
 import { useKV } from '@github/spark/hooks';
 

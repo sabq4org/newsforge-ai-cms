@@ -12,7 +12,7 @@ import {
   Palette,
   Clock,
   Activity,
-  TrendUp,
+  TrendingUp,
   Sun,
   Moon,
   Coffee,
@@ -528,7 +528,7 @@ export function AdaptiveColorLearningSystem({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <TrendUp className="w-5 h-5 text-green-500" />
+            <TrendingUp className="w-5 h-5 text-green-500" />
             تقدم التعلم
           </CardTitle>
         </CardHeader>

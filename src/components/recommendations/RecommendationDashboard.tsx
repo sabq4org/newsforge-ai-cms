@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Brain, 
-  BarChart3, 
+  ChartBarHorizontal, 
   Users, 
   Star,
   TrendingUp,
@@ -18,7 +18,7 @@ import {
   MessageCircle,
   Medal,
   Calendar,
-  TrendUp
+  TrendingUp
 } from '@phosphor-icons/react';
 import { PersonalizedRecommendations } from './PersonalizedRecommendations';
 import { RecommendationEvaluation } from './RecommendationEvaluation';
@@ -159,7 +159,7 @@ export function RecommendationDashboard({ onNavigate, onArticleSelect }: Recomme
               className="h-auto p-4 flex flex-col items-center gap-2"
               onClick={() => setActiveTab('insights')}
             >
-              <BarChart3 size={24} />
+              <ChartBarHorizontal size={24} />
               <div className="text-center">
                 <p className="font-medium">رؤى وتحليلات</p>
                 <p className="text-xs text-muted-foreground">تحليلات متقدمة للأداء</p>
@@ -313,7 +313,7 @@ export function RecommendationDashboard({ onNavigate, onArticleSelect }: Recomme
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview" className="flex items-center gap-2">
-            <BarChart3 size={16} />
+            <ChartBarHorizontal size={16} />
             نظرة عامة
           </TabsTrigger>
           <TabsTrigger value="personalized" className="flex items-center gap-2">
@@ -329,7 +329,7 @@ export function RecommendationDashboard({ onNavigate, onArticleSelect }: Recomme
             التقييم
           </TabsTrigger>
           <TabsTrigger value="insights" className="flex items-center gap-2">
-            <TrendUp size={16} />
+            <TrendingUp size={16} />
             الرؤى
           </TabsTrigger>
         </TabsList>

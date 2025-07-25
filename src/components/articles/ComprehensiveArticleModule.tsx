@@ -25,10 +25,10 @@ import {
   Calendar,
   Clock,
   Plus,
-  TrendUp,
+  TrendingUp,
   FileText,
   Users,
-  BarChart3,
+  ChartBarHorizontal,
   Target,
   EyeSlash,
   Warning,
@@ -198,7 +198,7 @@ export function ComprehensiveArticleModule({ onEditArticle, onCreateNew }: Compr
           </div>
           {trend && (
             <div className="flex items-center gap-1 text-green-600">
-              <TrendUp className="w-4 h-4" />
+              <TrendingUp className="w-4 h-4" />
               <span className="text-sm font-medium">{trend}</span>
             </div>
           )}
@@ -241,7 +241,7 @@ export function ComprehensiveArticleModule({ onEditArticle, onCreateNew }: Compr
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="overview" className="gap-2">
-            <BarChart3 className="w-4 h-4" />
+            <ChartBarHorizontal className="w-4 h-4" />
             {isArabic ? 'نظرة عامة' : 'Overview'}
           </TabsTrigger>
           <TabsTrigger value="articles" className="gap-2">
@@ -294,7 +294,7 @@ export function ComprehensiveArticleModule({ onEditArticle, onCreateNew }: Compr
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="w-5 h-5" />
+                <ChartBarHorizontal className="w-5 h-5" />
                 {isArabic ? 'حالة المقالات' : 'Article Status'}
               </CardTitle>
             </CardHeader>

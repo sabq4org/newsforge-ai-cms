@@ -9,7 +9,7 @@ import {
   Users, 
   Clock, 
   Target, 
-  BarChart3,
+  ChartBarHorizontal,
   Lightbulb,
   Sparkles,
   Brain,
@@ -451,7 +451,7 @@ export function AdvancedAnalytics({
                 <p className="text-sm text-muted-foreground">معدل التفاعل</p>
                 <p className="text-2xl font-bold">{summary.engagementRate.toFixed(1)}%</p>
               </div>
-              <BarChart3 size={24} className="text-green-500" />
+              <ChartBarHorizontal size={24} className="text-green-500" />
             </div>
           </CardContent>
         </Card>
@@ -503,7 +503,7 @@ export function AdvancedAnalytics({
           className="h-auto p-4 flex-col items-start"
           onClick={() => onNavigate?.('category-analytics')}
         >
-          <BarChart3 size={20} className="mb-2" />
+          <ChartBarHorizontal size={20} className="mb-2" />
           <span className="font-medium">تحليلات الأقسام</span>
           <span className="text-sm text-muted-foreground">أداء كل قسم تفصيلياً</span>
         </Button>

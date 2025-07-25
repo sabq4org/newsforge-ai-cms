@@ -9,7 +9,7 @@ import {
   Star,
   Target,
   Eye,
-  BarChart3,
+  ChartBarHorizontal,
   Lightbulb,
   CheckCircle
 } from '@phosphor-icons/react';
@@ -40,7 +40,7 @@ export function RecommendationSystemOverview() {
     {
       title: 'لوحة التحكم المتكاملة',
       description: 'واجهة شاملة لإدارة ومراقبة نظام التوصيات',
-      icon: BarChart3,
+      icon: ChartBarHorizontal,
       features: ['نظرة عامة شاملة', 'مقاييس الأداء', 'التحكم في النظام', 'تصدير التقارير'],
       status: 'مكتمل'
     },
@@ -83,7 +83,7 @@ export function RecommendationSystemOverview() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <BarChart3 size={20} />
+            <ChartBarHorizontal size={20} />
             مقاييس الأداء الرئيسية
           </CardTitle>
         </CardHeader>

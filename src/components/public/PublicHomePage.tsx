@@ -17,7 +17,7 @@ import {
   BookmarkSimple,
   CalendarCheck,
   Microphone,
-  BarChart3
+  ChartBarHorizontal
 } from '@phosphor-icons/react';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
@@ -479,7 +479,7 @@ export function PublicHomePage({
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-3">
-              <BarChart3 className="w-6 h-6 text-primary" />
+              <ChartBarHorizontal className="w-6 h-6 text-primary" />
               <h2 className="text-2xl font-bold text-foreground">
                 {isRTL ? 'التحليل العميق' : 'Deep Analysis'}
               </h2>

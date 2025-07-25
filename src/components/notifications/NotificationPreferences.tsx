@@ -31,7 +31,7 @@ import {
   Calendar,
   MapPin,
   Tag,
-  TrendUp,
+  TrendingUp,
   Shield,
   Heart,
   Share,
@@ -874,7 +874,7 @@ export function NotificationPreferences() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <TrendUp className="w-5 h-5" />
+                  <TrendingUp className="w-5 h-5" />
                   التخصيص الذكي
                 </CardTitle>
               </CardHeader>

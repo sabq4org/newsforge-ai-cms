@@ -10,7 +10,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { useAuth } from '@/contexts/AuthContext';
 import { mockAnalytics } from '@/lib/mockData';
 import { 
-  TrendUp, 
+  TrendingUp, 
   TrendDown, 
   Eye, 
   Heart, 
@@ -96,7 +96,7 @@ export function AnalyticsSummary({ compact = false }: AnalyticsSummaryProps) {
                 </p>
                 <div className="flex items-center gap-1">
                   {metric.trend === 'up' ? (
-                    <TrendUp size={12} className="text-green-600" />
+                    <TrendingUp size={12} className="text-green-600" />
                   ) : (
                     <TrendDown size={12} className="text-red-600" />
                   )}
@@ -130,7 +130,7 @@ export function AnalyticsSummary({ compact = false }: AnalyticsSummaryProps) {
                   </p>
                   <div className="flex items-center gap-1 mt-1">
                     {metric.trend === 'up' ? (
-                      <TrendUp size={14} className="text-green-600" />
+                      <TrendingUp size={14} className="text-green-600" />
                     ) : (
                       <TrendDown size={14} className="text-red-600" />
                     )}

@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
 import { 
-  BarChart3,
+  ChartBarHorizontal,
   TrendingUp,
   Eye,
   Heart,
@@ -289,7 +289,7 @@ export function CategoryAnalytics({
                   <p className="text-sm text-muted-foreground">عدد المقالات</p>
                   <p className="text-2xl font-bold">{selectedCategoryData.totalArticles}</p>
                 </div>
-                <BarChart3 size={24} className="text-blue-500" />
+                <ChartBarHorizontal size={24} className="text-blue-500" />
               </div>
             </CardContent>
           </Card>
@@ -354,7 +354,7 @@ export function CategoryAnalytics({
                       </div>
                       <div>
                         <span className="flex items-center gap-1">
-                          <BarChart3 size={12} />
+                          <ChartBarHorizontal size={12} />
                           {category.articlesCount} مقال
                         </span>
                       </div>

@@ -39,7 +39,7 @@ import {
   Target,
   Zap,
   Activity,
-  BarChart3,
+  ChartBarHorizontal,
   Calendar,
   Filter,
   Download
@@ -352,7 +352,7 @@ export function InteractiveAnalytics({ timeRange = '7d', onExport }: Interactive
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="w-5 h-5" />
+              <ChartBarHorizontal className="w-5 h-5" />
               {language.code === 'ar' ? 'المؤشرات الرئيسية' : 'Key Metrics'}
             </CardTitle>
           </CardHeader>

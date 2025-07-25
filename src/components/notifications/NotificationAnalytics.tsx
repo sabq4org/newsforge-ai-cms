@@ -14,7 +14,7 @@ import {
   Smartphone,
   Mail,
   Globe,
-  BarChart3,
+  ChartBarHorizontal,
   Target,
   TrendingUp,
   Users,
@@ -258,7 +258,7 @@ export function NotificationAnalytics() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="w-5 h-5" />
+              <ChartBarHorizontal className="w-5 h-5" />
               الإشعارات حسب التصنيف
             </CardTitle>
           </CardHeader>

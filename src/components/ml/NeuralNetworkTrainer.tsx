@@ -28,7 +28,7 @@ import {
   CheckCircle,
   Activity,
   Database,
-  BarChart3,
+  ChartBarHorizontal,
   Network,
   Layers,
   Eye,
@@ -767,7 +767,7 @@ export function NeuralNetworkTrainer() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="w-5 h-5" />
+                  <ChartBarHorizontal className="w-5 h-5" />
                   منحنيات التدريب
                 </CardTitle>
               </CardHeader>

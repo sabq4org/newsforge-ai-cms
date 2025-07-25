@@ -16,7 +16,7 @@ import {
   StopCircle, 
   Download, 
   Upload, 
-  BarChart3, 
+  ChartBarHorizontal, 
   Target,
   Zap,
   BookOpen,
@@ -414,7 +414,7 @@ export function ArabicContentClassifier() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="w-5 h-5" />
+                  <ChartBarHorizontal className="w-5 h-5" />
                   سجل التدريب
                 </CardTitle>
                 <CardDescription>
@@ -669,7 +669,7 @@ export function ArabicContentClassifier() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="w-5 h-5" />
+                <ChartBarHorizontal className="w-5 h-5" />
                 أداء التصنيفات
               </CardTitle>
               <CardDescription>

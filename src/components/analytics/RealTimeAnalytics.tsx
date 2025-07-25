@@ -18,7 +18,7 @@ import {
   Filter,
   Download,
   RefreshCw,
-  BarChart3,
+  ChartBarHorizontal,
   LineChart,
   PieChart
 } from '@phosphor-icons/react';
@@ -395,7 +395,7 @@ export function RealTimeAnalytics({ articles = mockArticles }: RealTimeAnalytics
               
               {trendingArticles.length === 0 && (
                 <div className="text-center py-8 text-muted-foreground">
-                  <BarChart3 size={32} className="mx-auto mb-2" />
+                  <ChartBarHorizontal size={32} className="mx-auto mb-2" />
                   <p>لا توجد مقالات متداولة حالياً</p>
                 </div>
               )}
@@ -461,7 +461,7 @@ export function RealTimeAnalytics({ articles = mockArticles }: RealTimeAnalytics
                 <p className="text-2xl font-bold">2.8</p>
                 <p className="text-xs text-green-500">↑ 0.3 من الأمس</p>
               </div>
-              <BarChart3 size={32} className="text-muted-foreground" />
+              <ChartBarHorizontal size={32} className="text-muted-foreground" />
             </div>
           </CardContent>
         </Card>

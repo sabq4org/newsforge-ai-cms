@@ -11,7 +11,7 @@ import {
   Clock, 
   Target, 
   Sparkles, 
-  BarChart3,
+  ChartBarHorizontal,
   Eye,
   Heart,
   Share2,
@@ -462,7 +462,7 @@ export function PersonalizedRecommendations({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <BarChart3 size={20} />
+            <ChartBarHorizontal size={20} />
             نظرة عامة على نمط القراءة
           </CardTitle>
         </CardHeader>

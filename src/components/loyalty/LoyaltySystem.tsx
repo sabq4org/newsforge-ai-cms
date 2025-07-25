@@ -9,7 +9,7 @@ import {
   Star,
   Gift,
   Target,
-  TrendUp,
+  TrendingUp,
   Users,
   Clock,
   Heart,

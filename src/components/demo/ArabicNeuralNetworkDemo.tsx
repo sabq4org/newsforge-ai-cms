@@ -17,7 +17,7 @@ import {
   CheckCircle,
   AlertCircle,
   Activity,
-  BarChart3
+  ChartBarHorizontal
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 
@@ -224,7 +224,7 @@ export function ArabicNeuralNetworkDemo() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="w-5 h-5" />
+                  <ChartBarHorizontal className="w-5 h-5" />
                   نتائج التحليل
                 </CardTitle>
                 <CardDescription>

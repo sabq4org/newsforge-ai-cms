@@ -8,7 +8,7 @@ import { SafeIcon } from '@/components/common';
 import { useAuth } from '@/contexts/AuthContext';
 import { DailyDose } from '@/types';
 import { 
-  BarChart3, 
+  ChartBarHorizontal, 
   TrendingUp,
   TrendingDown,
   Eye,
@@ -322,7 +322,7 @@ export function DoseAnalytics({ doses, timeRange }: DoseAnalyticsProps) {
         </CardHeader>
         <CardContent className="h-[400px] flex items-center justify-center">
           <div className={cn("text-center", isRTL && "text-right")}>
-            <SafeIcon icon={BarChart3} className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+            <SafeIcon icon={ChartBarHorizontal} className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
             <h4 className="font-medium font-arabic mb-2">
               {isArabic ? 'الرسوم البيانية قيد التطوير' : 'Charts Under Development'}
             </h4>

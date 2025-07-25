@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { 
   Brain,
   Cpu,
-  TrendUp,
+  TrendingUp,
   Activity,
   Target,
   Sparkles,

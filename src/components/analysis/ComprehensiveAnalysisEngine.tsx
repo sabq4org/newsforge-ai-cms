@@ -12,7 +12,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   Brain, 
   Network, 
-  TrendUp, 
+  TrendingUp, 
   Eye, 
   Users, 
   MessageCircle,
@@ -522,7 +522,7 @@ export function ComprehensiveAnalysisEngine({
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <TrendUp className="w-5 h-5" />
+                  <TrendingUp className="w-5 h-5" />
                   {language.code === 'ar' ? 'مواضيع مرتبطة' : 'Related Topics'}
                 </CardTitle>
               </CardHeader>

@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Progress } from '@/components/ui/progress';
 import { 
-  BarChart3,
+  ChartBarHorizontal,
   TrendingUp,
   TrendingDown,
   Users,
@@ -645,7 +645,7 @@ export function AudioAnalytics({ projects, selectedProject, onProjectSelect }: A
                 `${currentAnalytics.monetization.revenue} ر.س`,
                 'في آخر 30 يوم',
                 12.5,
-                <BarChart3 className="text-green-500" size={20} />
+                <ChartBarHorizontal className="text-green-500" size={20} />
               )}
               
               {renderMetricCard(

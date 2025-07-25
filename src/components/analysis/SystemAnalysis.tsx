@@ -14,7 +14,7 @@ import {
   Database,
   Brain,
   Users,
-  BarChart3,
+  ChartBarHorizontal,
   Settings,
   Zap,
   Upload,
@@ -393,7 +393,7 @@ export function SystemAnalysis() {
       case 'Editorial Tools': return <Edit className="w-5 h-5" />;
       case 'AI Features': return <Brain className="w-5 h-5" />;
       case 'User Experience': return <Users className="w-5 h-5" />;
-      case 'Analytics': return <BarChart3 className="w-5 h-5" />;
+      case 'Analytics': return <ChartBarHorizontal className="w-5 h-5" />;
       case 'Admin': return <Settings className="w-5 h-5" />;
       case 'Performance': return <Zap className="w-5 h-5" />;
       case 'Media Management': return <Upload className="w-5 h-5" />;
@@ -688,7 +688,7 @@ function ComponentCard({ component, isArabic, showIssues = false }: ComponentCar
       case 'Editorial Tools': return <Edit className="w-5 h-5" />;
       case 'AI Features': return <Brain className="w-5 h-5" />;
       case 'User Experience': return <Users className="w-5 h-5" />;
-      case 'Analytics': return <BarChart3 className="w-5 h-5" />;
+      case 'Analytics': return <ChartBarHorizontal className="w-5 h-5" />;
       case 'Admin': return <Settings className="w-5 h-5" />;
       case 'Performance': return <Zap className="w-5 h-5" />;
       case 'Media Management': return <Upload className="w-5 h-5" />;

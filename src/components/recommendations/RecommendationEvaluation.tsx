@@ -16,7 +16,7 @@ import {
   Target, 
   Clock, 
   Brain,
-  BarChart3,
+  ChartBarHorizontal,
   Users,
   Lightbulb,
   CheckCircle,
@@ -30,7 +30,7 @@ import {
   Filter,
   Calendar,
   Medal,
-  TrendUp
+  TrendingUp
 } from '@phosphor-icons/react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useKV } from '@github/spark/hooks';
@@ -475,7 +475,7 @@ export function RecommendationEvaluation({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <BarChart3 size={20} />
+            <ChartBarHorizontal size={20} />
             أداء التوصيات حسب القسم
           </CardTitle>
         </CardHeader>
@@ -620,7 +620,7 @@ export function RecommendationEvaluation({
             تقييم التوصية
           </TabsTrigger>
           <TabsTrigger value="analytics" className="flex items-center gap-2">
-            <BarChart3 size={16} />
+            <ChartBarHorizontal size={16} />
             تحليلات الأداء
           </TabsTrigger>
         </TabsList>
@@ -633,7 +633,7 @@ export function RecommendationEvaluation({
           {showAnalytics ? renderAnalyticsDashboard() : (
             <Card className="text-center py-12">
               <CardContent>
-                <BarChart3 size={48} className="mx-auto text-muted-foreground mb-4" />
+                <ChartBarHorizontal size={48} className="mx-auto text-muted-foreground mb-4" />
                 <h3 className="text-lg font-semibold mb-2">التحليلات غير متاحة</h3>
                 <p className="text-muted-foreground">
                   ليس لديك صلاحية لعرض تحليلات نظام التوصيات

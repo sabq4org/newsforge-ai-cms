@@ -16,7 +16,7 @@ import {
   Clock, 
   BookOpen,
   Activity,
-  TrendUp,
+  TrendingUp,
   Settings as SettingsIcon,
   Lightbulb,
   Target,
@@ -405,7 +405,7 @@ export function PersonalizedReadingEngine({ userId, onPreferencesChange }: Perso
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <TrendUp className="w-5 h-5" />
+                  <TrendingUp className="w-5 h-5" />
                   التحسينات الأخيرة
                 </CardTitle>
               </CardHeader>

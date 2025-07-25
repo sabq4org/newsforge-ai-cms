@@ -11,7 +11,7 @@ import {
   Palette,
   Clock,
   Activity,
-  TrendUp,
+  TrendingUp,
   Sparkle,
   Target,
   Heart,
@@ -208,7 +208,7 @@ export function AdaptiveLearningDashboard({
                 <p className="text-sm font-medium text-muted-foreground">إجمالي التكييفات</p>
                 <p className="text-2xl font-bold">{systemMetrics.totalAdaptations}</p>
               </div>
-              <TrendUp className="w-8 h-8 text-green-500" />
+              <TrendingUp className="w-8 h-8 text-green-500" />
             </div>
           </CardContent>
         </Card>
@@ -243,7 +243,7 @@ export function AdaptiveLearningDashboard({
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <TrendUp className="w-5 h-5 text-green-500" />
+              <TrendingUp className="w-5 h-5 text-green-500" />
               تحسينات الأداء
             </CardTitle>
             <CardDescription>

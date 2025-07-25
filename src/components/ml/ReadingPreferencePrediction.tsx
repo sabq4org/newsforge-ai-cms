@@ -8,7 +8,7 @@ import {
   Brain, 
   TrendingUp, 
   Target, 
-  BarChart3, 
+  ChartBarHorizontal, 
   Users, 
   Clock,
   BookOpen,
@@ -428,7 +428,7 @@ export function ReadingPreferencePrediction() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="w-5 h-5" />
+                  <ChartBarHorizontal className="w-5 h-5" />
                   أداء النماذج اليومي
                 </CardTitle>
               </CardHeader>

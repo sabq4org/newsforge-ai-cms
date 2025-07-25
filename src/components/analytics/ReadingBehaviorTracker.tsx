@@ -7,7 +7,7 @@ import {
   Eye,
   Clock,
   Calendar,
-  TrendUp,
+  TrendingUp,
   Brain,
   Target,
   Heart,
@@ -370,7 +370,7 @@ export function ReadingBehaviorTracker({ userId, article, onBehaviorUpdate }: Re
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <TrendUp />
+              <TrendingUp />
               الأداء الحالي
             </CardTitle>
           </CardHeader>

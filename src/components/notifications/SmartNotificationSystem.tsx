@@ -15,7 +15,7 @@ import {
   Settings,
   Sparkles,
   Calendar,
-  TrendUp,
+  TrendingUp,
   Heart,
   Eye
 } from '@phosphor-icons/react';
@@ -583,7 +583,7 @@ export function SmartNotificationSystem({ userId, articles, userProfile }: Smart
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <TrendUp />
+                <TrendingUp />
                 تاريخ الإشعارات
               </CardTitle>
             </CardHeader>

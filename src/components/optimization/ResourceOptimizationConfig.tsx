@@ -17,7 +17,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   Settings,
   Cpu,
-  MemoryStick,
+  Cpu,
   Timer,
   Target,
   Zap,
@@ -249,7 +249,7 @@ export function ResourceOptimizationConfig({ className }: ResourceOptimizationCo
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Card className="p-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <MemoryStick className="w-4 h-4 text-blue-600" />
+                    <Cpu className="w-4 h-4 text-blue-600" />
                     <span className="text-sm font-medium">أولوية عالية</span>
                   </div>
                   <Input

@@ -9,7 +9,7 @@ import {
   TrendingUp, 
   Clock, 
   Eye, 
-  BarChart3, 
+  ChartBarHorizontal, 
   Calendar,
   Zap,
   Target,
@@ -157,7 +157,7 @@ export function PredictiveAnalytics({ article, onAnalyticsUpdate }: PredictiveAn
               {/* Performance Factors */}
               <div>
                 <h4 className="font-semibold mb-4 flex items-center gap-2">
-                  <BarChart3 className="h-4 w-4" />
+                  <ChartBarHorizontal className="h-4 w-4" />
                   Performance Factors
                 </h4>
                 <div className="space-y-3">

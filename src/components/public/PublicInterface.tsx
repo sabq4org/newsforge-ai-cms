@@ -27,7 +27,7 @@ import {
   TrendingUp,
   BookOpen,
   Headphones,
-  BarChart3
+  ChartBarHorizontal
 } from '@phosphor-icons/react';
 import { cn, safeToLowerCase } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
@@ -393,7 +393,7 @@ function AnalysisPage({
             </>
           )}
         </Button>
-        <BarChart3 className="w-8 h-8 text-primary" />
+        <ChartBarHorizontal className="w-8 h-8 text-primary" />
         <h1 className="text-3xl font-bold text-foreground">
           {isRTL ? 'التحليل العميق' : 'Deep Analysis'}
         </h1>
@@ -401,7 +401,7 @@ function AnalysisPage({
 
       <Card className="bg-gradient-to-r from-primary/5 to-accent/5 border-primary/20 mb-8">
         <CardContent className="p-8 text-center">
-          <BarChart3 className="w-16 h-16 text-primary mx-auto mb-4" />
+          <ChartBarHorizontal className="w-16 h-16 text-primary mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-foreground mb-4">
             {isRTL ? 'تحليلات مدعومة بالذكاء الاصطناعي' : 'AI-Powered Analysis'}
           </h2>
@@ -685,7 +685,7 @@ function AboutPage({
               </div>
               
               <div className="text-center">
-                <BarChart3 className="w-12 h-12 text-primary mx-auto mb-3" />
+                <ChartBarHorizontal className="w-12 h-12 text-primary mx-auto mb-3" />
                 <h3 className="font-semibold text-foreground mb-2">
                   {isRTL ? 'تحليل عميق' : 'Deep Analysis'}
                 </h3>

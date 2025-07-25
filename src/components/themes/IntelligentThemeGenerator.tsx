@@ -9,7 +9,7 @@ import {
   Palette,
   Eye,
   Clock,
-  TrendUp,
+  TrendingUp,
   Sparkle,
   Lightbulb,
   Target,

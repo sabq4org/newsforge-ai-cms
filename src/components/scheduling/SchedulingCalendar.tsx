@@ -13,7 +13,7 @@ import {
   Plus,
   Edit,
   Trash,
-  TrendUp,
+  TrendingUp,
   Users,
   Bell,
   CheckCircle,
@@ -530,7 +530,7 @@ Return a specific hour (${TIME_SLOTS[timeSlot].optimalHours.join(' or ')}) and e
                   
                   <div className="flex items-center gap-2">
                     <Badge variant="outline">
-                      <TrendUp size={12} className="ml-1" />
+                      <TrendingUp size={12} className="ml-1" />
                       {post.estimatedReach}%
                     </Badge>
                     <Button variant="ghost" size="sm">

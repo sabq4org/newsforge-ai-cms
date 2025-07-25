@@ -25,7 +25,7 @@ import {
   ArrowsClockwise,
   Lightbulb,
   MagicWand,
-  TrendUp,
+  TrendingUp,
   Lightning,
   Cpu,
   ChatCircle,
@@ -1495,7 +1495,7 @@ export function GenerativeAIRecommendationSystem({
 
                 <div className="p-4 border border-orange-200 rounded-lg bg-orange-50">
                   <div className="flex items-start gap-3">
-                    <TrendUp className="h-5 w-5 text-orange-600 mt-1" />
+                    <TrendingUp className="h-5 w-5 text-orange-600 mt-1" />
                     <div>
                       <h4 className="font-medium text-orange-900">توقع أداء</h4>
                       <p className="text-orange-700 text-sm mt-1">

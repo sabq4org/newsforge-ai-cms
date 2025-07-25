@@ -25,7 +25,7 @@ import {
   Mail,
   Globe,
   Calendar,
-  BarChart3,
+  ChartBarHorizontal,
   Settings,
   Shield,
   Eye,

@@ -39,7 +39,7 @@ import {
   Plus,
   Pencil,
   Trash,
-  BarChart3,
+  ChartBarHorizontal,
   TrendingUp,
   Eye,
   Hash,
@@ -321,7 +321,7 @@ export function ComprehensiveCategoryManager() {
             {isArabic ? 'إدارة التصنيفات' : 'Category Management'}
           </TabsTrigger>
           <TabsTrigger value="analytics" className="flex items-center gap-2">
-            <BarChart3 className="w-4 h-4" />
+            <ChartBarHorizontal className="w-4 h-4" />
             {isArabic ? 'إحصائيات الأداء' : 'Performance Analytics'}
           </TabsTrigger>
         </TabsList>
@@ -496,7 +496,7 @@ export function ComprehensiveCategoryManager() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="w-5 h-5" />
+                  <ChartBarHorizontal className="w-5 h-5" />
                   {isArabic ? 'أداء التصنيفات' : 'Category Performance'}
                 </CardTitle>
               </CardHeader>

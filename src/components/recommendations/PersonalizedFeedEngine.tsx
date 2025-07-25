@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Brain,
   Clock,
-  TrendUp,
+  TrendingUp,
   Eye,
   Heart,
   BookOpen,
@@ -495,7 +495,7 @@ export function PersonalizedFeedEngine({ userId, articles, onArticleSelect }: Pe
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <TrendUp />
+                  <TrendingUp />
                   تفضيلات المحتوى
                 </CardTitle>
               </CardHeader>

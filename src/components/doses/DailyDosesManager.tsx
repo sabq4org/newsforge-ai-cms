@@ -22,7 +22,7 @@ import {
   Moon, 
   Plus, 
   Calendar, 
-  BarChart3, 
+  ChartBarHorizontal, 
   Settings,
   Sparkles,
   Play,

@@ -6,8 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArabicSentimentAnalyzer, type SentimentResult } from './ArabicSentimentAnalyzer';
 import { 
-  BarChart3, 
-  TrendUp, 
+  ChartBarHorizontal, 
+  TrendingUp, 
   Users, 
   MessageSquare,
   Calendar,
@@ -303,7 +303,7 @@ export function SentimentDashboard({ articles = [], onAnalysisSelect }: Sentimen
                     <p className="text-sm text-muted-foreground">إجمالي التحليلات</p>
                     <p className="text-2xl font-bold">{stats.totalAnalyses}</p>
                   </div>
-                  <BarChart3 className="w-8 h-8 text-primary" />
+                  <ChartBarHorizontal className="w-8 h-8 text-primary" />
                 </div>
               </CardContent>
             </Card>
@@ -327,7 +327,7 @@ export function SentimentDashboard({ articles = [], onAnalysisSelect }: Sentimen
                     <p className="text-sm text-muted-foreground">متوسط الثقة</p>
                     <p className="text-2xl font-bold">{stats.averageConfidence}%</p>
                   </div>
-                  <TrendUp className="w-8 h-8 text-blue-500" />
+                  <TrendingUp className="w-8 h-8 text-blue-500" />
                 </div>
               </CardContent>
             </Card>
@@ -404,7 +404,7 @@ export function SentimentDashboard({ articles = [], onAnalysisSelect }: Sentimen
             </CardHeader>
             <CardContent>
               <div className="text-center py-12 text-muted-foreground">
-                <TrendUp className="w-12 h-12 mx-auto mb-4" />
+                <TrendingUp className="w-12 h-12 mx-auto mb-4" />
                 <p>سيتم عرض الرسوم البيانية للاتجاهات هنا</p>
                 <p className="text-sm">تحتاج لمزيد من البيانات لعرض الاتجاهات</p>
               </div>
