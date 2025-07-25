@@ -479,6 +479,27 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       icon: Calendar,
       show: true,
       badge: isArabic ? 'تلقائي' : 'Auto'
+    },
+    {
+      id: 'personalized-themes',
+      label: isArabic ? 'الثيمات الشخصية' : 'Personalized Themes',
+      icon: Palette,
+      show: true,
+      badge: isArabic ? 'شخصي' : 'Personal'
+    },
+    {
+      id: 'user-theme-profile',
+      label: isArabic ? 'ملف الثيم الشخصي' : 'User Theme Profile',
+      icon: Users,
+      show: true,
+      badge: isArabic ? 'ملفي' : 'My Profile'
+    },
+    {
+      id: 'personalized-themes-dashboard',
+      label: isArabic ? 'لوحة الثيمات الشخصية' : 'Personalized Themes Dashboard',
+      icon: BarChart3,
+      show: canAccess('settings'),
+      badge: isArabic ? 'شامل' : 'Full'
     }
   ];
 

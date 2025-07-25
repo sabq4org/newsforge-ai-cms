@@ -27,6 +27,8 @@ import { ThemeTestingShowcase } from '@/components/showcase/ThemeTestingShowcase
 import { LiveThemePreview } from '@/components/showcase/LiveThemePreview';
 import { ThemeImportExport } from '@/components/showcase/ThemeImportExport';
 import { ComprehensiveThemeManager, AutoThemeScheduler, InteractiveThemeDemo } from '@/components/showcase';
+import { PersonalizedThemeManager, UserProfileTheme, PersonalizedThemesDashboard } from '@/components/themes';
+import { SmartThemeApplicator } from '@/components/themes/SmartThemeApplicator';
 import { MediaUpload, MediaGenerator, ComprehensiveMediaManager } from '@/components/media';
 import { AudioEditor, AudioLibrary, AudioAnalytics } from '@/components/audio';
 import { SystemAnalysis, ComprehensiveAnalysisEngine } from '@/components/analysis';
@@ -536,6 +538,28 @@ function AppContent() {
       case 'auto-theme-scheduler':
         return <AutoThemeScheduler />;
       
+      case 'personalized-themes':
+        return (
+          <PersonalizedThemeManager 
+            userId={user?.id}
+            currentUser={user}
+          />
+        );
+      
+      case 'user-theme-profile':
+        return (
+          <UserProfileTheme 
+            userId={user?.id || 'guest'}
+            onThemeChange={(themeId) => {
+              console.log('User changed theme to:', themeId);
+              toast.success('تم تطبيق الثيم الشخصي');
+            }}
+          />
+        );
+      
+      case 'personalized-themes-dashboard':
+        return <PersonalizedThemesDashboard />;
+      
       case 'media':
         return <ComprehensiveMediaManager />;
       
@@ -722,6 +746,15 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Smart Theme Applicator - runs in background */}
+      <SmartThemeApplicator 
+        userId={user?.id}
+        userProfile={memberUser || undefined}
+        currentContext={activeView === 'articles' || activeView === 'editor' ? 'editing' : 
+                       activeView === 'deep-analysis' ? 'analysis' :
+                       activeView.includes('analytics') ? 'dashboard' : 'reading'}
+      />
+      
       <div className="flex h-screen">
         <Sidebar 
           activeView={activeView}
