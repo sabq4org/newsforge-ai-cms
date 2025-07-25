@@ -44,6 +44,7 @@ import { ErrorBoundary } from '@/components/debug/ErrorBoundary';
 import { RuntimeChecker } from '@/components/debug/RuntimeChecker';
 import { ExternalDataManager, NewsAggregator } from '@/components/external';
 import { BreakingNewsNotifications, NotificationCenter, LiveNotificationBanner, NotificationPreferences, NotificationAnalytics, SmartNotificationSystem } from '@/components/notifications';
+import { AutoResourceOptimizerDashboard, ResourceOptimizationConfig, PerformanceOptimizationDemo, AutoResourceOptimizationOverview } from '@/components/optimization';
 import { PerformanceDashboard, EnhancedPerformanceDashboard } from '@/components/performance';
 import { SystemStatus } from '@/components/system';
 import { Article } from '@/types';
@@ -61,6 +62,10 @@ import {
   DataCache,
   initializePerformanceOptimizer 
 } from '@/lib/performanceOptimizer';
+import { 
+  initializeAutoResourceOptimizer,
+  useResourceOptimization 
+} from '@/lib/autoResourceOptimizer';
 
 // Initialize global error handler for date formatting issues
 initializeGlobalErrorHandler();
@@ -68,9 +73,13 @@ initializeGlobalErrorHandler();
 // Initialize performance optimization system
 initializePerformanceOptimizer();
 
+// Initialize auto resource optimizer
+initializeAutoResourceOptimizer();
+
 function AppContent() {
   // Performance monitoring for this component
   usePerformanceMonitor('AppContent');
+  useResourceOptimization('AppContent');
   
   const { isAuthenticated, user, canAccess } = useAuth();
   const [activeView, setActiveView] = useState('dashboard');
@@ -647,6 +656,18 @@ function AppContent() {
       
       case 'performance-dashboard':
         return <EnhancedPerformanceDashboard />;
+      
+      case 'auto-resource-optimizer':
+        return <AutoResourceOptimizerDashboard />;
+      
+      case 'resource-optimization-config':
+        return <ResourceOptimizationConfig />;
+      
+      case 'performance-optimization-demo':
+        return <PerformanceOptimizationDemo />;
+      
+      case 'auto-resource-optimization-overview':
+        return <AutoResourceOptimizationOverview />;
       
       case 'smart-recommendations':
         return memberUser ? (

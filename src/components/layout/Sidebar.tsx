@@ -33,7 +33,10 @@ import {
   Drop,
   Bell,
   BellRinging,
-  Cpu
+  Cpu,
+  Activity,
+  MemoryStick,
+  BookOpen
 } from '@phosphor-icons/react';
 
 interface SidebarProps {
@@ -377,6 +380,34 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       icon: Activity,
       show: canAccess('user-management'),
       badge: isArabic ? 'أداء' : 'Perf'
+    },
+    {
+      id: 'auto-resource-optimizer',
+      label: isArabic ? 'محسن الموارد التلقائي' : 'Auto Resource Optimizer',
+      icon: MemoryStick,
+      show: canAccess('user-management'),
+      badge: isArabic ? 'تلقائي' : 'Auto'
+    },
+    {
+      id: 'resource-optimization-config',
+      label: isArabic ? 'إعدادات تحسين الموارد' : 'Resource Config',
+      icon: Settings,
+      show: canAccess('user-management'),
+      badge: isArabic ? 'إعدادات' : 'Config'
+    },
+    {
+      id: 'performance-optimization-demo',
+      label: isArabic ? 'عرض تحسين الأداء' : 'Performance Demo',
+      icon: Activity,
+      show: true,
+      badge: isArabic ? 'عرض' : 'Demo'
+    },
+    {
+      id: 'auto-resource-optimization-overview',
+      label: isArabic ? 'دليل التحسين التلقائي' : 'Auto Optimization Guide',
+      icon: BookOpen,
+      show: true,
+      badge: isArabic ? 'دليل' : 'Guide'
     },
     {
       id: 'settings',
