@@ -104,39 +104,20 @@ function AppContent() {
     // Update page title based on language
     document.title = isArabic ? 'سبق الذكية - نظام إدارة المحتوى الذكي' : 'Sabq Althakiyah - AI-Powered CMS';
     
-    // More aggressive zoom and viewport control
-    const setZoomStyles = (element: HTMLElement) => {
-      element.style.zoom = "1";
-      element.style.webkitZoom = "1";
-      element.style.mozZoom = "1";
-      element.style.msZoom = "1";
-      element.style.transform = "none";
-      element.style.webkitTransform = "none";
-      element.style.mozTransform = "none";
-      element.style.msTransform = "none";
-      element.style.scale = "1";
-      element.style.webkitScale = "1";
-      element.style.minZoom = "1";
-      element.style.maxZoom = "1";
-      element.style.userZoom = "fixed";
-      element.style.webkitUserZoom = "fixed";
-      element.style.mozUserZoom = "fixed";
+    // Simple and effective zoom control
+    const resetZoom = () => {
+      document.documentElement.style.zoom = "1";
+      document.body.style.zoom = "1";
+      document.documentElement.style.transform = "none";
+      document.body.style.transform = "none";
     };
     
-    // Apply to document elements
-    setZoomStyles(document.documentElement);
-    setZoomStyles(document.body);
+    resetZoom();
     
-    // Ensure viewport meta is properly set for dashboard
+    // Ensure viewport meta is properly set
     const viewportMeta = document.querySelector('meta[name="viewport"]');
     if (viewportMeta) {
       viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no, viewport-fit=cover');
-    }
-    
-    // Apply to root element
-    const rootElement = document.getElementById('root');
-    if (rootElement) {
-      setZoomStyles(rootElement);
     }
   }, [isRTL, language.code, isArabic]);
   
@@ -172,73 +153,20 @@ function AppContent() {
     console.log('AppContent: Memory cleanup performed');
   });
 
-  // Additional effect to ensure proper zoom level on mount and updates
+  // Simple zoom control effect
   React.useEffect(() => {
-    const resetZoom = () => {
-      // More comprehensive zoom reset function
-      const setNoZoom = (element: HTMLElement) => {
-        element.style.zoom = "1";
-        element.style.webkitZoom = "1";
-        element.style.mozZoom = "1";
-        element.style.msZoom = "1";
-        element.style.webkitTransform = "none";
-        element.style.mozTransform = "none";
-        element.style.msTransform = "none";
-        element.style.transform = "none";
-        element.style.scale = "1";
-        element.style.webkitScale = "1";
-        element.style.minZoom = "1";
-        element.style.maxZoom = "1";
-        element.style.userZoom = "fixed";
-        element.style.webkitUserZoom = "fixed";
-        element.style.mozUserZoom = "fixed";
-      };
-      
-      // Reset body zoom
-      setNoZoom(document.body);
-      setNoZoom(document.documentElement);
-      
-      // Reset root element zoom
-      const rootElement = document.getElementById('root');
-      if (rootElement) {
-        setNoZoom(rootElement);
+    const intervalId = setInterval(() => {
+      // Periodically ensure zoom is maintained at 1
+      if (document.documentElement.style.zoom !== "1") {
+        document.documentElement.style.zoom = "1";
       }
-      
-      // Reset all dashboard-related elements
-      const dashboardElements = document.querySelectorAll('.dashboard, .admin-panel, .cms-interface, .app-container, .main-layout, .sidebar, .content-area');
-      dashboardElements.forEach(element => {
-        setNoZoom(element as HTMLElement);
-      });
-      
-      // Reset any shadcn components that might have transforms
-      const shadcnElements = document.querySelectorAll('[data-radix-popper-content-wrapper], [data-radix-scroll-area-viewport], .animate-in, .animate-out');
-      shadcnElements.forEach(element => {
-        const el = element as HTMLElement;
-        el.style.transform = "none";
-        el.style.webkitTransform = "none";
-        el.style.scale = "1";
-        el.style.zoom = "1";
-      });
-    };
+      if (document.body.style.zoom !== "1") {
+        document.body.style.zoom = "1";
+      }
+    }, 1000); // Check every second
     
-    resetZoom();
-    
-    // Reset zoom after any layout changes
-    const observer = new MutationObserver(() => {
-      resetZoom();
-    });
-    
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['style', 'class']
-    });
-    
-    return () => {
-      observer.disconnect();
-    };
-  }, [activeView]); // Reset when view changes
+    return () => clearInterval(intervalId);
+  }, [activeView]);
 
   // Membership handlers
   const handleMemberLogin = (userData: UserProfile) => {

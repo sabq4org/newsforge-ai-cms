@@ -22,7 +22,7 @@
     /* Prevent zoom on touch devices */
     touch-action: manipulation;
     
-    /* Fix dashboard zoom level - more aggressive approach */
+    /* Fix dashboard zoom level - most aggressive approach */
     zoom: 1 !important;
     -webkit-user-zoom: fixed !important;
     -moz-user-zoom: fixed !important;
@@ -35,6 +35,12 @@
     -ms-transform: none !important;
     scale: 1 !important;
     -webkit-scale: 1 !important;
+    min-zoom: 1 !important;
+    max-zoom: 1 !important;
+    
+    /* Comprehensive font size control */
+    font-size: 16px !important;
+    font-size-adjust: none !important;
   }
   
   html[dir="rtl"] {
@@ -49,16 +55,10 @@
     font-kerning: normal;
     
     /* Prevent zoom and improve stability */
-    -webkit-text-size-adjust: 100%;
-    -moz-text-size-adjust: 100%;
-    text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100% !important;
+    -moz-text-size-adjust: 100% !important;
+    text-size-adjust: 100% !important;
     touch-action: manipulation;
-    
-    /* Prevent unwanted zoom on mobile */
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
     
     /* Allow text selection where needed */
     -webkit-user-select: text;
@@ -66,7 +66,7 @@
     -ms-user-select: text;
     user-select: text;
     
-    /* Force no transform or zoom - more aggressive */
+    /* Force no transform or zoom - most aggressive */
     transform: none !important;
     -webkit-transform: none !important;
     -moz-transform: none !important;
@@ -84,7 +84,15 @@
     /* Prevent any viewport scaling */
     min-zoom: 1 !important;
     max-zoom: 1 !important;
-    user-zoom: fixed !important;
+    
+    /* Font size consistency */
+    font-size: 16px !important;
+    font-size-adjust: none !important;
+    
+    /* Viewport width control */
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden;
   }
   
   .rtl {
@@ -413,18 +421,29 @@
   input,
   select,
   textarea,
-  .clickable {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    touch-action: manipulation;
-    -webkit-text-size-adjust: 100%;
-    -moz-text-size-adjust: 100%;
-    text-size-adjust: 100%;
+  .clickable,
+  .sidebar-button,
+  .dashboard-component,
+  .admin-interface {
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    touch-action: manipulation !important;
+    -webkit-text-size-adjust: 100% !important;
+    -moz-text-size-adjust: 100% !important;
+    text-size-adjust: 100% !important;
     transform: none !important;
     -webkit-transform: none !important;
+    -moz-transform: none !important;
     zoom: 1 !important;
+    -webkit-zoom: 1 !important;
+    scale: 1 !important;
+    -webkit-user-zoom: fixed !important;
+    -moz-user-zoom: fixed !important;
+    user-zoom: fixed !important;
+    min-zoom: 1 !important;
+    max-zoom: 1 !important;
   }
 
   /* Re-enable text selection for content areas */
@@ -681,15 +700,32 @@
     }
   }
   
-  /* Enhanced desktop dashboard optimization */
+  /* Enhanced desktop dashboard optimization with strict zoom control */
   @media (min-width: 1024px) {
-    .dashboard-container,
-    .admin-interface,
-    .cms-interface {
+    html, body {
+      font-size: 16px !important;
       zoom: 1 !important;
       -webkit-zoom: 1 !important;
       transform: none !important;
       scale: 1 !important;
+    }
+    
+    .dashboard-container,
+    .admin-interface,
+    .cms-interface,
+    .app-container,
+    .main-layout,
+    .sidebar,
+    .content-area {
+      zoom: 1 !important;
+      -webkit-zoom: 1 !important;
+      transform: none !important;
+      scale: 1 !important;
+      -webkit-user-zoom: fixed !important;
+      -moz-user-zoom: fixed !important;
+      user-zoom: fixed !important;
+      min-zoom: 1 !important;
+      max-zoom: 1 !important;
     }
     
     /* Ensure sidebar and content areas maintain proper proportions */

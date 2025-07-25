@@ -8,8 +8,7 @@ import {
   TrendingUp,
   BarChart3,
   Activity,
-  ChartLineUp,
-  ChartLine,
+  ChartBarHorizontal,
   Trophy,
   Award,
   House,
@@ -44,7 +43,9 @@ import {
   Bell,
   BellRinging,
   Cpu,
-  MemoryStick
+  MemoryStick,
+  PlusCircle,
+  MagnifyingGlass
 } from '@phosphor-icons/react';
 import { safeToLowerCase } from '@/lib/utils';
 
@@ -60,10 +61,12 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
   alert: AlertTriangle,
   
   // Chart icons
-  chartline: ChartLine,
-  'chart-line': ChartLine,
-  chartlineup: ChartLineUp,
-  'chart-line-up': ChartLineUp,
+  chartline: ChartBarHorizontal,
+  'chart-line': ChartBarHorizontal,
+  chartlineup: ChartBarHorizontal,
+  'chart-line-up': ChartBarHorizontal,
+  chartbarhorizontal: ChartBarHorizontal,
+  'chart-bar-horizontal': ChartBarHorizontal,
   trending: TrendingUp,
   chart: BarChart3,
   activity: Activity,
@@ -87,6 +90,14 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
   view: Eye,
   calendar: Calendar,
   schedule: Calendar,
+  pluscircle: PlusCircle,
+  'plus-circle': PlusCircle,
+  plus: PlusCircle,
+  add: PlusCircle,
+  create: PlusCircle,
+  magnifyingglass: MagnifyingGlass,
+  'magnifying-glass': MagnifyingGlass,
+  search: MagnifyingGlass,
   
   // Content icons
   folderopen: FolderOpen,
@@ -208,10 +219,7 @@ export function SafeIcon({
     }
   }
   
-  // No valid icon provided, use fallback with minimal logging
-  if (process.env.NODE_ENV === 'development' && (icon !== undefined || name !== undefined)) {
-    console.warn('SafeIcon: No valid icon provided, using fallback', { icon: typeof icon, name });
-  }
+  // No valid icon provided, use fallback
   const FallbackIcon = fallback;
   return <FallbackIcon size={size} className={className} />;
 }
