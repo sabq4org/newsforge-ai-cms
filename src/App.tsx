@@ -62,7 +62,7 @@ import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
 import { mockArticles, mockCategories, mockMediaFiles } from '@/lib/mockData';
 import { normalizeArticles, normalizeDataObject, cn } from '@/lib/utils';
-import { UserProfile } from '@/types/membership';
+import { ZIndexManager, DirectReadingScaleController, QuantumColorAdaptationSystem, ReadingScaleIndicator, ColorAdaptationIndicator, ErrorMitigationSystem } from '@/components/common';
 import { initializeGlobalErrorHandler } from '@/lib/globalErrorHandler';
 import { 
   MemoryManager, 
@@ -922,6 +922,25 @@ function AppContent() {
 
   return (
     <div className={cn("min-h-screen bg-background no-zoom app-container admin-interface no-transform no-zoom-animations", isRTL && "rtl")} dir={isRTL ? "rtl" : "ltr"}>
+      {/* Error Mitigation System */}
+      <ErrorMitigationSystem />
+      
+      {/* Z-Index Manager for floating UI elements */}
+      <ZIndexManager />
+      
+      {/* Direct Reading Scale Controller */}
+      <DirectReadingScaleController 
+        userId={memberUser?.id || user?.id || 'guest'}
+        autoAdjust={true}
+      />
+      
+      {/* Quantum Color Adaptation System */}
+      <QuantumColorAdaptationSystem 
+        userId={memberUser?.id || user?.id || 'guest'}
+        enableLearning={true}
+        adaptationSpeed={0.5}
+      />
+      
       {/* Smart Theme Applicator - runs in background */}
       <SmartThemeApplicator 
         userId={user?.id}
@@ -940,7 +959,7 @@ function AppContent() {
           onClose={() => setIsMobileMenuOpen(false)}
         />
         
-        <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 flex flex-col overflow-hidden main-content">
           {/* Live Notification Banner */}
           <LiveNotificationBanner />
           
@@ -977,6 +996,12 @@ function AppContent() {
       
       {/* Notification Center */}
       <NotificationCenter />
+      
+      {/* Reading Scale Indicator */}
+      <ReadingScaleIndicator userId={memberUser?.id || user?.id || 'guest'} />
+      
+      {/* Color Adaptation Indicator */}
+      <ColorAdaptationIndicator userId={memberUser?.id || user?.id || 'guest'} />
       
       {/* Membership Authentication Modal */}
       {showAuthModal && (

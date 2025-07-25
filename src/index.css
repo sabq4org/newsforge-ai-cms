@@ -739,9 +739,42 @@
       min-width: 0; /* Prevent flex item overflow */
     }
     
+    /* Critical: Force all floating UI to respect sidebar boundaries */
+    [data-radix-popper-content-wrapper],
+    [data-radix-select-content],
+    [data-radix-dropdown-menu-content],
+    [data-radix-popover-content],
+    [data-radix-tooltip-content],
+    [data-radix-hover-card-content],
+    [data-radix-context-menu-content] {
+      z-index: 35 !important;
+      max-width: calc(100vw - 300px) !important;
+      position: fixed !important;
+    }
+    
+    /* LTR: Push floating elements away from left sidebar */
+    html[dir="ltr"] [data-radix-popper-content-wrapper],
+    html[dir="ltr"] [data-radix-select-content],
+    html[dir="ltr"] [data-radix-dropdown-menu-content],
+    html[dir="ltr"] [data-radix-popover-content] {
+      left: 300px !important;
+      right: auto !important;
+      max-width: calc(100vw - 320px) !important;
+    }
+    
+    /* RTL: Push floating elements away from right sidebar */
+    html[dir="rtl"] [data-radix-popper-content-wrapper],
+    html[dir="rtl"] [data-radix-select-content],
+    html[dir="rtl"] [data-radix-dropdown-menu-content],
+    html[dir="rtl"] [data-radix-popover-content] {
+      right: 300px !important;
+      left: auto !important;
+      max-width: calc(100vw - 320px) !important;
+    }
+    
     /* Prevent popovers from covering sidebar */
     [data-radix-popper-content-wrapper] {
-      z-index: 25 !important; /* Lower than sidebar z-30 */
+      z-index: 25 !important; /* Lower than sidebar z-50 */
     }
     
     [data-radix-toast-viewport] {
@@ -750,13 +783,13 @@
     
     /* Fix floating elements z-index to prevent overlay issues */
     .floating-elements,
-    [role="dialog"],
+    [role="dialog"]:not([data-radix-dialog-content]),
     [role="tooltip"],
     [role="popover"],
     .dropdown-menu,
     .select-content,
     .popover-content {
-      z-index: 25 !important; /* Ensure they don't cover sidebar */
+      z-index: 35 !important; /* Ensure they don't cover sidebar */
     }
     
     /* Ensure modal dialogs stay on top */
@@ -771,43 +804,227 @@
     [data-radix-alert-dialog-content] {
       z-index: 101 !important;
     }
+    
+    /* Force positioning for common UI elements */
+    .admin-interface [data-radix-select-trigger] ~ [data-radix-select-content] {
+      margin-left: 20px !important;
+    }
+    
+    html[dir="rtl"] .admin-interface [data-radix-select-trigger] ~ [data-radix-select-content] {
+      margin-right: 20px !important;
+      margin-left: 0 !important;
+    }
   }
   
-  /* Z-index management for admin interface */
-  .admin-sidebar {
-    z-index: 30 !important;
+  /* Enhanced Z-index management for admin interface */
+  .admin-sidebar,
+  .sidebar {
+    z-index: 50 !important; /* Higher priority for sidebar */
+    position: relative;
   }
   
   .admin-header {
-    z-index: 40 !important;
+    z-index: 45 !important;
   }
   
   .admin-content {
     z-index: 10 !important;
   }
   
-  /* Prevent floating UI elements from covering sidebar */
+  /* Comprehensive floating UI element management */
   .floating-ui,
   [data-floating-ui-portal],
   [data-radix-popper-content-wrapper],
+  [data-radix-select-content],
+  [data-radix-dropdown-menu-content],
+  [data-radix-popover-content],
+  [data-radix-tooltip-content],
+  [data-radix-hover-card-content],
+  [data-radix-context-menu-content],
+  [data-radix-menubar-content],
+  [data-radix-navigation-menu-content],
   .select-trigger,
   .select-content,
   .dropdown-content,
   .popover-content,
-  .tooltip {
-    z-index: 25 !important; /* Below sidebar but above content */
+  .tooltip,
+  .dropdown-menu-content,
+  .context-menu-content,
+  .hover-card-content {
+    z-index: 35 !important; /* Below sidebar but above content */
+    max-width: calc(100vw - 320px) !important; /* Account for sidebar width + padding */
+  }
+  
+  /* Critical: Prevent floating elements from appearing over sidebar */
+  .admin-interface [data-radix-popper-content-wrapper],
+  .admin-interface [data-radix-select-content],
+  .admin-interface [data-radix-dropdown-menu-content],
+  .admin-interface [data-radix-popover-content] {
+    z-index: 35 !important;
+    position: fixed !important;
+  }
+  
+  /* Force positioning away from sidebar on desktop */
+  @media (min-width: 1024px) {
+    .admin-interface [data-radix-popper-content-wrapper],
+    .admin-interface [data-radix-select-content],
+    .admin-interface [data-radix-dropdown-menu-content],
+    .admin-interface [data-radix-popover-content] {
+      margin-left: 20px !important; /* LTR: push away from left sidebar */
+      margin-right: 20px !important; /* RTL: push away from right sidebar */
+    }
+    
+    html[dir="rtl"] .admin-interface [data-radix-popper-content-wrapper],
+    html[dir="rtl"] .admin-interface [data-radix-select-content],
+    html[dir="rtl"] .admin-interface [data-radix-dropdown-menu-content],
+    html[dir="rtl"] .admin-interface [data-radix-popover-content] {
+      left: auto !important;
+      right: 300px !important; /* Position away from right sidebar */
+      margin-right: 0 !important;
+      margin-left: 20px !important;
+    }
+  }
+  
+  /* RTL-specific adjustments for floating elements */
+  html[dir="rtl"] .floating-ui,
+  html[dir="rtl"] [data-floating-ui-portal],
+  html[dir="rtl"] [data-radix-popper-content-wrapper],
+  html[dir="rtl"] [data-radix-select-content],
+  html[dir="rtl"] [data-radix-dropdown-menu-content],
+  html[dir="rtl"] [data-radix-popover-content] {
+    transform-origin: top left !important;
+    left: auto !important;
+    right: 320px !important; /* Position away from right sidebar */
   }
   
   /* Special handling for dropdown menus to respect sidebar boundaries */
-  .admin-interface .dropdown-content {
-    max-width: calc(100vw - 300px); /* Account for sidebar width */
+  .admin-interface .dropdown-content,
+  .admin-interface [data-radix-dropdown-menu-content],
+  .admin-interface [data-radix-select-content] {
+    max-width: calc(100vw - 350px) !important; /* Account for sidebar width + extra space */
+    max-height: calc(100vh - 100px) !important;
+    overflow-y: auto !important;
   }
   
-  .admin-interface.rtl .dropdown-content {
-    max-width: calc(100vw - 300px);
-    transform-origin: top right;
+  .admin-interface.rtl .dropdown-content,
+  .admin-interface.rtl [data-radix-dropdown-menu-content],
+  .admin-interface.rtl [data-radix-select-content] {
+    max-width: calc(100vw - 350px) !important;
+    transform-origin: top left !important;
+    right: 320px !important;
+    left: auto !important;
+  }
+  
+  /* Ensure floating elements don't interfere with sidebar navigation */
+  .sidebar-nav {
+    z-index: 55 !important;
+    position: relative;
+  }
+  
+  /* Force containment for admin interface */
+  .admin-interface {
+    contain: layout style paint;
+    isolation: isolate;
+  }
+  
+  /* Create stacking context for main content area */
+  .main-content,
+  .content-area {
+    position: relative;
+    z-index: 20;
+    isolation: isolate;
+  }
+  
+  /* Ensure Radix UI portal containers respect boundaries */
+  body > [data-radix-portal] {
+    z-index: 35 !important;
+  }
+  
+  /* Handle specific Radix Select and Dropdown positioning */
+  [data-radix-select-viewport],
+  [data-radix-dropdown-menu-viewport] {
+    max-width: calc(100vw - 320px) !important;
+  }
+  
+  /* Sidebar has highest priority among non-modal elements */
+  .sidebar,
+  .admin-sidebar,
+  [data-sidebar] {
+    z-index: 50 !important;
+    position: relative;
+    isolation: isolate;
   }
 }
+
+  /* Global reading scale and adaptive color system */
+  :root {
+    /* Direct reading scale variables */
+    --reading-scale-base: 1;
+    --reading-scale-current: var(--reading-scale-base);
+    --adaptive-color-intensity: 1;
+    --adaptive-color-warmth: 0;
+    --adaptive-color-contrast: 1;
+    
+    /* Quantum color adaptation system */
+    --quantum-color-red: 0;
+    --quantum-color-green: 0;
+    --quantum-color-blue: 0;
+    --quantum-adaptation-speed: 0.3s;
+  }
+  
+  /* Live reading scale adjustment */
+  .reading-scale-active {
+    font-size: calc(1rem * var(--reading-scale-current));
+    line-height: calc(1.5 * var(--reading-scale-current));
+    transition: font-size var(--quantum-adaptation-speed) ease, 
+                line-height var(--quantum-adaptation-speed) ease;
+  }
+  
+  /* Adaptive color learning system */
+  .adaptive-colors {
+    filter: hue-rotate(calc(var(--quantum-color-red) * 1deg)) 
+            saturate(calc(1 + var(--adaptive-color-intensity) * 0.2)) 
+            contrast(calc(var(--adaptive-color-contrast))) 
+            brightness(calc(1 + var(--adaptive-color-warmth) * 0.1));
+    transition: filter var(--quantum-adaptation-speed) ease;
+  }
+  
+  /* Quantum color adaptation classes */
+  .quantum-red-boost { --quantum-color-red: calc(var(--quantum-color-red) + 5); }
+  .quantum-green-boost { --quantum-color-green: calc(var(--quantum-color-green) + 5); }
+  .quantum-blue-boost { --quantum-color-blue: calc(var(--quantum-color-blue) + 5); }
+  
+  /* Environmental context classes */
+  .context-morning {
+    --adaptive-color-warmth: 0.2;
+    --adaptive-color-contrast: 1.1;
+  }
+  
+  .context-evening {
+    --adaptive-color-warmth: -0.1;
+    --adaptive-color-contrast: 0.9;
+  }
+  
+  .context-night {
+    --adaptive-color-warmth: -0.3;
+    --adaptive-color-contrast: 0.8;
+  }
+  
+  /* Reading comfort optimization */
+  .reading-comfort-high {
+    --adaptive-color-intensity: 0.7;
+    --reading-scale-current: 1.1;
+  }
+  
+  .reading-comfort-medium {
+    --adaptive-color-intensity: 0.85;
+    --reading-scale-current: 1.05;
+  }
+  
+  .reading-comfort-low {
+    --adaptive-color-intensity: 1;
+    --reading-scale-current: 1;
+  }
 
 :root {
   /* Sabq Althakiyah editorial color scheme */
