@@ -15,7 +15,7 @@ import { useOptimizedTypography } from '@/hooks/useOptimizedTypography';
 import { useKV } from '@github/spark/hooks';
 import { mockCategories, mockArticles } from '@/lib/mockData';
 import { Article, Category, User } from '@/types';
-import { cn } from '@/lib/utils';
+import { cn, safeToLowerCase } from '@/lib/utils';
 import {
   Search,
   Brain,
@@ -232,7 +232,7 @@ export function ComprehensiveSearch({ onArticleEdit }: ComprehensiveSearchProps)
             }
 
             // Content match
-            if (article.content.toLowerCase().includes(query)) {
+            if (safeToLowerCase(article.content).includes(query)) {
               score += 30;
               highlights.push(isArabic ? 'تطابق في المحتوى' : 'Content match');
             }

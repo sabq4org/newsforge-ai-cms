@@ -5,7 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/contexts/AuthContext';
 import { useOptimizedTypography } from '@/hooks/useOptimizedTypography';
 import { useFocusModeSettings, useFocusModeStats } from '@/hooks/useFocusModeSettings';
-import { cn } from '@/lib/utils';
+import { cn, safeTimeFormat } from '@/lib/utils';
 import { 
   X, 
   Eye, 
@@ -27,7 +27,7 @@ import {
   TextAlignCenter,
   Target,
   Timer,
-  ChartLine
+  ChartLineUp
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
 
@@ -292,7 +292,7 @@ export function FocusMode({
             {/* Last saved indicator */}
             {lastSaved && (
               <div className="text-xs text-muted-foreground">
-                {isArabic ? 'آخر حفظ:' : 'Saved:'} {lastSaved.toLocaleTimeString(isArabic ? 'ar-SA' : 'en-US')}
+                {isArabic ? 'آخر حفظ:' : 'Saved:'} {safeTimeFormat(lastSaved, isArabic ? 'ar-SA' : 'en-US')}
               </div>
             )}
             

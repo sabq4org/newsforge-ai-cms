@@ -23,6 +23,7 @@ import {
   Save
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
+import { safeTimeFormat } from '@/lib/utils';
 import { useThemeScheduler, ThemeSchedule } from '@/hooks/useThemeScheduler';
 
 export function AutoThemeScheduler() {
@@ -108,7 +109,7 @@ export function AutoThemeScheduler() {
 
   const getCurrentTime = () => {
     const now = new Date();
-    return now.toLocaleTimeString('ar-SA', { 
+    return safeTimeFormat(now, 'ar-SA', { 
       hour: '2-digit', 
       minute: '2-digit',
       hour12: false 

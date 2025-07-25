@@ -40,7 +40,7 @@ import {
 import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
 import { mockArticles } from '@/lib/mockData';
-import { normalizeArticles } from '@/lib/utils';
+import { normalizeArticles, safeTimeFormat, safeToLowerCase } from '@/lib/utils';
 import { toast } from 'sonner';
 
 interface GenerativeRecommendation {
@@ -189,7 +189,7 @@ export function GenerativeAIRecommendationSystem({
       أنماط القراءة: ${JSON.stringify(userPersona.readingPatterns)}
       التفضيلات العاطفية: ${userPersona.emotionalPreferences.join(', ')}
       
-      الوقت الحالي: ${new Date().toLocaleTimeString('ar-SA')}
+      الوقت الحالي: ${safeTimeFormat(new Date(), 'ar-SA')}
       السياق الإضافي: ${contextualPrompt || 'لا يوجد'}
       
       قدم تحليلاً شاملاً لما يحتاجه المستخدم الآن ونوع المحتوى المناسب.
@@ -723,7 +723,7 @@ export function GenerativeAIRecommendationSystem({
       const fallbackRecs = articles
         .filter(article => 
           article.title.toLowerCase().includes(currentQuery.toLowerCase()) ||
-          article.excerpt.toLowerCase().includes(currentQuery.toLowerCase()) ||
+          safeToLowerCase(article.excerpt).includes(currentQuery.toLowerCase()) ||
           userPersona.interests.some(interest => 
             article.category?.name.includes(interest) || article.title.includes(interest)
           )

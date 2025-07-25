@@ -31,8 +31,7 @@ import {
   X
 } from '@phosphor-icons/react';
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
-import { safeDateFormat } from '@/lib/utils';
+import { cn, safeDateFormat, safeToLowerCase } from '@/lib/utils';
 
 interface PhraseLibraryProps {
   phrases: DosePhrase[];
@@ -62,7 +61,7 @@ export function PhraseLibrary({ phrases, onPhrasesUpdate }: PhraseLibraryProps) 
   const filteredPhrases = phrases.filter(phrase => {
     const matchesSearch = searchQuery === '' || 
       phrase.textAr.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      phrase.text.toLowerCase().includes(searchQuery.toLowerCase());
+      phrase.text.toLowerCase().includes(safeToLowerCase(searchQuery));
     
     const matchesCategory = selectedCategory === 'all' || phrase.category === selectedCategory;
     const matchesType = selectedType === 'all' || phrase.type === selectedType;

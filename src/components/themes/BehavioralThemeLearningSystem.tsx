@@ -28,6 +28,7 @@ import {
 } from '@phosphor-icons/react';
 import { useKV } from '@github/spark/hooks';
 import { useTheme, ThemeColors } from '@/contexts/ThemeContext';
+import { safeTimeFormat, safeDateFormat } from '@/lib/utils';
 import { Article } from '@/types';
 import { UserProfile, ReadingSession } from '@/types/membership';
 import { toast } from 'sonner';
@@ -605,8 +606,8 @@ export const BehavioralThemeLearningSystem: React.FC<BehavioralThemeLearningSyst
                   <div className="flex items-start justify-between mb-2">
                     <div>
                       <p className="text-sm font-medium">
-                        {adaptation.timestamp && !isNaN(new Date(adaptation.timestamp).getTime()) ? 
-                          new Date(adaptation.timestamp).toLocaleTimeString('ar-SA') : 
+                        {adaptation.timestamp ? 
+                          safeTimeFormat(adaptation.timestamp, 'ar-SA') : 
                           'غير متاح'}
                       </p>
                       <p className="text-xs text-muted-foreground">

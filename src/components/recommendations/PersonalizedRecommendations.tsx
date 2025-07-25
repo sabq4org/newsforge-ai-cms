@@ -21,6 +21,7 @@ import {
 } from '@phosphor-icons/react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useKV } from '@github/spark/hooks';
+import { safeToLowerCase } from '@/lib/utils';
 import { Article, User } from '@/types';
 import { mockArticles, mockCategories } from '@/lib/mockData';
 
@@ -118,8 +119,8 @@ export function PersonalizedRecommendations({
     const userInterests = preferences.preferredCategories.concat(preferences.contentTypes);
     const tagOverlap = article.tags?.filter(tag => 
       userInterests.some(interest => 
-        interest.toLowerCase().includes(tag.toLowerCase()) || 
-        tag.toLowerCase().includes(interest.toLowerCase())
+        interest.toLowerCase().includes(safeToLowerCase(tag)) || 
+        safeToLowerCase(tag).includes(interest.toLowerCase())
       )
     ).length || 0;
     

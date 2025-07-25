@@ -23,6 +23,7 @@ import {
 import { useKV } from '@github/spark/hooks';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCollaborative } from '@/contexts/CollaborativeContext';
+import { safeTimeFormat, safeDateFormat } from '@/lib/utils';
 import { Article } from '@/types';
 import { toast } from 'sonner';
 
@@ -325,7 +326,7 @@ Return JSON format:
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {conflict.conflicts.user2.timestamp ? 
-                        conflict.conflicts.user2.timestamp.toLocaleTimeString('ar-SA') : 
+                        safeTimeFormat(conflict.conflicts.user2.timestamp, 'ar-SA') : 
                         'غير متاح'}
                     </p>
                   </div>
@@ -488,7 +489,7 @@ Return JSON format:
                        `قبول ${conflict.conflicts.user2.name}`}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      حلها {conflict.resolvedBy} في {conflict.resolvedAt?.toLocaleTimeString('ar-SA')}
+                      حلها {conflict.resolvedBy} في {conflict.resolvedAt ? safeTimeFormat(conflict.resolvedAt, 'ar-SA') : 'غير متاح'}
                     </p>
                   </div>
                   

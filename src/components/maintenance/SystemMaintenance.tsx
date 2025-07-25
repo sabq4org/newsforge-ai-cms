@@ -29,7 +29,7 @@ import {
 import { useKV } from '@github/spark/hooks';
 import { useAuth } from '@/contexts/AuthContext';
 import { Article, Category } from '@/types';
-import { normalizeArticles, normalizeActivityTimestamps } from '@/lib/utils';
+import { normalizeArticles, normalizeActivityTimestamps, safeTimeFormat, safeDateFormat } from '@/lib/utils';
 import { mockCategories, mockArticles } from '@/lib/mockData';
 import { toast } from 'sonner';
 
@@ -478,7 +478,7 @@ export function SystemMaintenance() {
                 <CardContent>
                   <p className="text-sm text-muted-foreground mb-2">{check.details}</p>
                   <p className="text-xs text-muted-foreground">
-                    آخر فحص: {check.lastChecked.toLocaleTimeString('ar-SA')}
+                    آخر فحص: {safeTimeFormat(check.lastChecked, 'ar-SA')}
                   </p>
                   
                   {check.metrics && (
@@ -526,7 +526,7 @@ export function SystemMaintenance() {
                       <div className="text-xs text-muted-foreground">
                         <p>المكونات المتأثرة: {issue.affectedComponents.join(', ')}</p>
                         <p>الحل المقترح: {issue.suggestedFix}</p>
-                        <p>تم الاكتشاف: {issue.detectedAt.toLocaleTimeString('ar-SA')}</p>
+                        <p>تم الاكتشاف: {safeTimeFormat(issue.detectedAt, 'ar-SA')}</p>
                       </div>
                     </div>
                     
@@ -577,7 +577,7 @@ export function SystemMaintenance() {
                       <div>
                         <h3 className="font-medium">{component.name}</h3>
                         <p className="text-sm text-muted-foreground">
-                          آخر فحص: {new Date().toLocaleTimeString('ar-SA')}
+                          آخر فحص: {safeTimeFormat(new Date(), 'ar-SA')}
                         </p>
                       </div>
                     </div>

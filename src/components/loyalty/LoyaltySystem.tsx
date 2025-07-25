@@ -25,8 +25,7 @@ import {
   MessageCircle,
   ThumbsUp,
   Calendar,
-  CheckCircle,
-  Medal // Use Medal instead of Trophy
+  CheckCircle
 } from '@phosphor-icons/react';
 import { useKV } from '@github/spark/hooks';
 import { useAuth } from '@/contexts/AuthContext';

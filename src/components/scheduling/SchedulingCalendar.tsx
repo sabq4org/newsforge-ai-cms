@@ -21,6 +21,7 @@ import {
   Zap
 } from '@phosphor-icons/react';
 import { Article } from '@/types';
+import { safeTimeFormat, safeDateFormat } from '@/lib/utils';
 import { useKV } from '@github/spark/hooks';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -416,7 +417,7 @@ Return a specific hour (${TIME_SLOTS[timeSlot].optimalHours.join(' or ')}) and e
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>
-              {selectedDate.toLocaleDateString('ar-SA', { month: 'long', year: 'numeric' })}
+              {safeDateFormat(selectedDate, 'ar-SA', { month: 'long', year: 'numeric' })}
             </CardTitle>
             <div className="flex gap-2">
               <Button
@@ -515,8 +516,8 @@ Return a specific hour (${TIME_SLOTS[timeSlot].optimalHours.join(' or ')}) and e
                       <p className="font-medium">{post.article.title}</p>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Clock size={14} />
-                        {new Date(post.scheduledFor).toLocaleDateString('ar-SA')} - 
-                        {new Date(post.scheduledFor).toLocaleTimeString('ar-SA', { 
+                        {safeDateFormat(post.scheduledFor, 'ar-SA')} - 
+                        {safeTimeFormat(post.scheduledFor, 'ar-SA', { 
                           hour: '2-digit', 
                           minute: '2-digit' 
                         })}
