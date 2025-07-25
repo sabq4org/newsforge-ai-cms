@@ -41,6 +41,7 @@ import { PersonalizedFeedEngine } from '@/components/recommendations/Personalize
 import { RecommendationEvaluation, RecommendationInsights, RecommendationDashboard, RecommendationSystemOverview, GenerativeAIRecommendationSystem, SmartContentPersonalizationEngine, AITrendAnalysisSystem } from '@/components/recommendations';
 import { ReadingBehaviorTracker } from '@/components/analytics/ReadingBehaviorTracker';
 import { ContentModeration } from '@/components/moderation/ContentModeration';
+import { ArabicSentimentAnalyzer, SentimentDashboard, AutoSentimentModeration } from '@/components/sentiment';
 import { SchedulingCalendar } from '@/components/scheduling';
 import { CategoryManager, CategoryStatistics, ComprehensiveCategoryManager } from '@/components/categories';
 import { LoyaltySystem } from '@/components/loyalty';
@@ -842,6 +843,15 @@ function AppContent() {
       
       case 'neural-network-demo':
         return <ArabicNeuralNetworkDemo />;
+      
+      case 'arabic-sentiment-analyzer':
+        return <ArabicSentimentAnalyzer />;
+      
+      case 'sentiment-dashboard':
+        return <SentimentDashboard articles={articles} />;
+      
+      case 'auto-sentiment-moderation':
+        return <AutoSentimentModeration articles={articles} />;
       
       case 'smart-recommendations':
         return memberUser ? (

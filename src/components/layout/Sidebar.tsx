@@ -40,7 +40,9 @@ import {
   Palette,
   Package,
   Play,
-  PlayCircle
+  PlayCircle,
+  Heart,
+  Smiley
 } from '@phosphor-icons/react';
 
 interface SidebarProps {
@@ -296,6 +298,27 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       icon: Brain,
       show: canAccess('ai-tools'),
       badge: isArabic ? 'تجربة' : 'Demo'
+    },
+    {
+      id: 'arabic-sentiment-analyzer',
+      label: isArabic ? 'محلل المشاعر العربي' : 'Arabic Sentiment Analyzer',
+      icon: Heart,
+      show: true,
+      badge: isArabic ? 'مشاعر' : 'Sentiment'
+    },
+    {
+      id: 'sentiment-dashboard',
+      label: isArabic ? 'لوحة تحليل المشاعر' : 'Sentiment Dashboard',
+      icon: Smiley,
+      show: true,
+      badge: isArabic ? 'لوحة' : 'Dashboard'
+    },
+    {
+      id: 'auto-sentiment-moderation',
+      label: isArabic ? 'الرقابة التلقائية على المشاعر' : 'Auto Sentiment Moderation',
+      icon: Shield,
+      show: canAccess('moderation'),
+      badge: isArabic ? 'رقابة' : 'Auto'
     },
     {
       id: 'predictive-behavior',
