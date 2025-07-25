@@ -739,15 +739,23 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       
       {/* Sidebar */}
       <aside className={cn(
-        "fixed top-0 z-50 h-full w-72 bg-card border-r border-border transform transition-transform duration-200 ease-in-out lg:relative lg:translate-x-0 no-zoom admin-sidebar sidebar",
+        "fixed top-0 z-50 h-full w-72 bg-card border-r border-border transform transition-transform duration-200 ease-in-out lg:relative lg:translate-x-0 no-zoom admin-sidebar sidebar sidebar-protected",
         isRTL ? "right-0 border-l border-r-0" : "left-0",
         isOpen 
           ? "translate-x-0" 
           : isRTL 
             ? "translate-x-full" 
             : "-translate-x-full"
-      )}>
-        <div className="flex flex-col h-full">
+      )}
+      style={{
+        zIndex: 50,
+        position: 'relative',
+        isolation: 'isolate',
+        contain: 'layout style'
+      }}
+      data-sidebar="true"
+      >
+        <div className="flex flex-col h-full sidebar-content">
           {/* Header */}
           <div className={cn("p-4 border-b border-border", isRTL && "text-right")}>
             <div className={cn("flex items-center gap-3", isRTL && "flex-row-reverse")}>

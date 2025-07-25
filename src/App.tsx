@@ -62,7 +62,7 @@ import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
 import { mockArticles, mockCategories, mockMediaFiles } from '@/lib/mockData';
 import { normalizeArticles, normalizeDataObject, cn } from '@/lib/utils';
-import { ZIndexManager, DirectReadingScaleController, QuantumColorAdaptationSystem, ReadingScaleIndicator, ColorAdaptationIndicator, ErrorMitigationSystem } from '@/components/common';
+import { ZIndexManager, DirectReadingScaleController, QuantumColorAdaptationSystem, ReadingScaleIndicator, ColorAdaptationIndicator, ErrorMitigationSystem, SidebarProtector, useSidebarProtection } from '@/components/common';
 import { initializeGlobalErrorHandler } from '@/lib/globalErrorHandler';
 import { 
   MemoryManager, 
@@ -91,6 +91,9 @@ function AppContent() {
   // Performance monitoring for this component
   usePerformanceMonitor('AppContent');
   useResourceOptimization('AppContent');
+  
+  // Enhanced sidebar protection
+  useSidebarProtection();
   
   const { isAuthenticated, user, canAccess, language } = useAuth();
   const isRTL = language.direction === 'rtl';
@@ -924,6 +927,9 @@ function AppContent() {
     <div className={cn("min-h-screen bg-background no-zoom app-container admin-interface no-transform no-zoom-animations", isRTL && "rtl")} dir={isRTL ? "rtl" : "ltr"}>
       {/* Error Mitigation System */}
       <ErrorMitigationSystem />
+      
+      {/* Sidebar Protection System */}
+      <SidebarProtector />
       
       {/* Z-Index Manager for floating UI elements */}
       <ZIndexManager />

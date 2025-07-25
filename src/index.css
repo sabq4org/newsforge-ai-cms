@@ -739,42 +739,83 @@
       min-width: 0; /* Prevent flex item overflow */
     }
     
-    /* Critical: Force all floating UI to respect sidebar boundaries */
+    /* CRITICAL: Comprehensive floating UI sidebar protection */
+    /* Force all floating elements to stay away from sidebar */
     [data-radix-popper-content-wrapper],
     [data-radix-select-content],
     [data-radix-dropdown-menu-content],
     [data-radix-popover-content],
     [data-radix-tooltip-content],
     [data-radix-hover-card-content],
-    [data-radix-context-menu-content] {
-      z-index: 35 !important;
-      max-width: calc(100vw - 300px) !important;
+    [data-radix-context-menu-content],
+    [data-radix-menubar-content],
+    [data-radix-navigation-menu-content],
+    [role="listbox"],
+    [role="menu"],
+    [role="tooltip"],
+    [role="dialog"]:not([data-radix-dialog-overlay]),
+    .dropdown-menu,
+    .select-content,
+    .popover-content,
+    .tooltip,
+    .floating-ui,
+    [data-floating-ui-portal] {
+      z-index: 25 !important; /* Always below sidebar z-50 */
       position: fixed !important;
+      contain: layout style paint !important;
     }
     
-    /* LTR: Push floating elements away from left sidebar */
+    /* LTR: Force positioning away from left sidebar */
     html[dir="ltr"] [data-radix-popper-content-wrapper],
     html[dir="ltr"] [data-radix-select-content],
     html[dir="ltr"] [data-radix-dropdown-menu-content],
-    html[dir="ltr"] [data-radix-popover-content] {
-      left: 300px !important;
+    html[dir="ltr"] [data-radix-popover-content],
+    html[dir="ltr"] [data-radix-tooltip-content],
+    html[dir="ltr"] [data-radix-hover-card-content],
+    html[dir="ltr"] [data-radix-context-menu-content],
+    html[dir="ltr"] [role="listbox"],
+    html[dir="ltr"] [role="menu"],
+    html[dir="ltr"] .dropdown-menu,
+    html[dir="ltr"] .select-content,
+    html[dir="ltr"] .popover-content {
+      left: 320px !important;
       right: auto !important;
-      max-width: calc(100vw - 320px) !important;
+      max-width: calc(100vw - 340px) !important;
+      transform: translateX(0) !important;
     }
     
-    /* RTL: Push floating elements away from right sidebar */
+    /* RTL: Force positioning away from right sidebar */
     html[dir="rtl"] [data-radix-popper-content-wrapper],
     html[dir="rtl"] [data-radix-select-content],
     html[dir="rtl"] [data-radix-dropdown-menu-content],
-    html[dir="rtl"] [data-radix-popover-content] {
-      right: 300px !important;
+    html[dir="rtl"] [data-radix-popover-content],
+    html[dir="rtl"] [data-radix-tooltip-content],
+    html[dir="rtl"] [data-radix-hover-card-content],
+    html[dir="rtl"] [data-radix-context-menu-content],
+    html[dir="rtl"] [role="listbox"],
+    html[dir="rtl"] [role="menu"],
+    html[dir="rtl"] .dropdown-menu,
+    html[dir="rtl"] .select-content,
+    html[dir="rtl"] .popover-content {
+      right: 320px !important;
       left: auto !important;
-      max-width: calc(100vw - 320px) !important;
+      max-width: calc(100vw - 340px) !important;
+      transform: translateX(0) !important;
     }
     
-    /* Prevent popovers from covering sidebar */
+    /* Prevent popovers from covering sidebar - CRITICAL */
     [data-radix-popper-content-wrapper] {
-      z-index: 25 !important; /* Lower than sidebar z-50 */
+      z-index: 20 !important; /* Much lower than sidebar z-50 */
+    }
+    
+    /* Sidebar and navigation elements have highest priority */
+    .sidebar,
+    .admin-sidebar,
+    .sidebar-nav,
+    [data-sidebar] {
+      z-index: 50 !important;
+      position: relative;
+      isolation: isolate;
     }
     
     [data-radix-toast-viewport] {
@@ -789,7 +830,7 @@
     .dropdown-menu,
     .select-content,
     .popover-content {
-      z-index: 35 !important; /* Ensure they don't cover sidebar */
+      z-index: 20 !important; /* Ensure they don't cover sidebar */
     }
     
     /* Ensure modal dialogs stay on top */
@@ -816,11 +857,12 @@
     }
   }
   
-  /* Enhanced Z-index management for admin interface */
+  /* Enhanced Z-index management for admin interface - STRICT HIERARCHY */
   .admin-sidebar,
   .sidebar {
-    z-index: 50 !important; /* Higher priority for sidebar */
+    z-index: 50 !important; /* Highest priority for sidebar */
     position: relative;
+    isolation: isolate;
   }
   
   .admin-header {
@@ -831,7 +873,7 @@
     z-index: 10 !important;
   }
   
-  /* Comprehensive floating UI element management */
+  /* Comprehensive floating UI element management - BELOW SIDEBAR */
   .floating-ui,
   [data-floating-ui-portal],
   [data-radix-popper-content-wrapper],
@@ -851,16 +893,16 @@
   .dropdown-menu-content,
   .context-menu-content,
   .hover-card-content {
-    z-index: 35 !important; /* Below sidebar but above content */
-    max-width: calc(100vw - 320px) !important; /* Account for sidebar width + padding */
+    z-index: 20 !important; /* Well below sidebar */
+    max-width: calc(100vw - 350px) !important; /* Account for sidebar width + padding */
   }
   
-  /* Critical: Prevent floating elements from appearing over sidebar */
+  /* CRITICAL: Prevent floating elements from appearing over sidebar */
   .admin-interface [data-radix-popper-content-wrapper],
   .admin-interface [data-radix-select-content],
   .admin-interface [data-radix-dropdown-menu-content],
   .admin-interface [data-radix-popover-content] {
-    z-index: 35 !important;
+    z-index: 20 !important; /* Well below sidebar */
     position: fixed !important;
   }
   
@@ -870,8 +912,8 @@
     .admin-interface [data-radix-select-content],
     .admin-interface [data-radix-dropdown-menu-content],
     .admin-interface [data-radix-popover-content] {
-      margin-left: 20px !important; /* LTR: push away from left sidebar */
-      margin-right: 20px !important; /* RTL: push away from right sidebar */
+      margin-left: 30px !important; /* LTR: push away from left sidebar */
+      margin-right: 30px !important; /* RTL: push away from right sidebar */
     }
     
     html[dir="rtl"] .admin-interface [data-radix-popper-content-wrapper],
@@ -879,13 +921,13 @@
     html[dir="rtl"] .admin-interface [data-radix-dropdown-menu-content],
     html[dir="rtl"] .admin-interface [data-radix-popover-content] {
       left: auto !important;
-      right: 300px !important; /* Position away from right sidebar */
+      right: 350px !important; /* Position away from right sidebar with more space */
       margin-right: 0 !important;
-      margin-left: 20px !important;
+      margin-left: 30px !important;
     }
   }
   
-  /* RTL-specific adjustments for floating elements */
+  /* RTL-specific adjustments for floating elements - ENHANCED */
   html[dir="rtl"] .floating-ui,
   html[dir="rtl"] [data-floating-ui-portal],
   html[dir="rtl"] [data-radix-popper-content-wrapper],
@@ -894,7 +936,8 @@
   html[dir="rtl"] [data-radix-popover-content] {
     transform-origin: top left !important;
     left: auto !important;
-    right: 320px !important; /* Position away from right sidebar */
+    right: 350px !important; /* Position away from right sidebar with more space */
+    z-index: 20 !important; /* Ensure below sidebar */
   }
   
   /* Special handling for dropdown menus to respect sidebar boundaries */
@@ -935,24 +978,197 @@
     isolation: isolate;
   }
   
-  /* Ensure Radix UI portal containers respect boundaries */
+  /* Ensure Radix UI portal containers respect boundaries - STRICT */
   body > [data-radix-portal] {
-    z-index: 35 !important;
+    z-index: 20 !important; /* Below sidebar */
   }
   
-  /* Handle specific Radix Select and Dropdown positioning */
+  /* Handle specific Radix Select and Dropdown positioning - ENHANCED */
   [data-radix-select-viewport],
   [data-radix-dropdown-menu-viewport] {
-    max-width: calc(100vw - 320px) !important;
+    max-width: calc(100vw - 350px) !important;
+    z-index: 20 !important;
   }
   
-  /* Sidebar has highest priority among non-modal elements */
+  /* Sidebar has highest priority among non-modal elements - REINFORCED */
   .sidebar,
   .admin-sidebar,
   [data-sidebar] {
     z-index: 50 !important;
     position: relative;
     isolation: isolate;
+  }
+  
+  /* Ensure sidebar navigation stays on top */
+  .sidebar-nav {
+    z-index: 55 !important;
+    position: relative;
+  }
+  
+  /* ULTIMATE SIDEBAR PROTECTION - STRICT BOUNDARY ENFORCEMENT */
+  
+  /* Force all possible floating elements to never overlap sidebar */
+  body [data-radix-popper-content-wrapper],
+  body [data-radix-select-content],
+  body [data-radix-dropdown-menu-content],
+  body [data-radix-popover-content],
+  body [data-radix-tooltip-content],
+  body [data-radix-hover-card-content],
+  body [data-radix-context-menu-content],
+  body [data-radix-menubar-content],
+  body [data-radix-navigation-menu-content],
+  body [data-floating-ui-portal],
+  body [role="listbox"],
+  body [role="menu"],
+  body [role="tooltip"],
+  body [role="combobox"],
+  body [aria-expanded="true"]:not(.sidebar):not(.sidebar *),
+  body .dropdown-menu,
+  body .select-content,
+  body .popover-content,
+  body .tooltip,
+  body .floating-ui,
+  body .menu-content,
+  body .listbox-content {
+    z-index: 15 !important; /* Well below sidebar */
+    max-width: calc(100vw - 400px) !important; /* Extra safe margin */
+    contain: layout style paint !important;
+    isolation: isolate !important;
+  }
+  
+  /* Sidebar protection boundary for RTL - ULTIMATE */
+  html[dir="rtl"] body [data-radix-popper-content-wrapper],
+  html[dir="rtl"] body [data-radix-select-content],
+  html[dir="rtl"] body [data-radix-dropdown-menu-content],
+  html[dir="rtl"] body [data-radix-popover-content],
+  html[dir="rtl"] body [data-radix-tooltip-content],
+  html[dir="rtl"] body [role="listbox"],
+  html[dir="rtl"] body [role="menu"],
+  html[dir="rtl"] body .dropdown-menu,
+  html[dir="rtl"] body .select-content {
+    right: 400px !important; /* Extra safe margin from right sidebar */
+    left: auto !important;
+    max-width: calc(100vw - 420px) !important;
+    transform: none !important;
+    z-index: 15 !important;
+  }
+  
+  /* Sidebar protection boundary for LTR - ULTIMATE */
+  html[dir="ltr"] body [data-radix-popper-content-wrapper],
+  html[dir="ltr"] body [data-radix-select-content],
+  html[dir="ltr"] body [data-radix-dropdown-menu-content],
+  html[dir="ltr"] body [data-radix-popover-content],
+  html[dir="ltr"] body [data-radix-tooltip-content],
+  html[dir="ltr"] body [role="listbox"],
+  html[dir="ltr"] body [role="menu"],
+  html[dir="ltr"] body .dropdown-menu,
+  html[dir="ltr"] body .select-content {
+    left: 400px !important; /* Extra safe margin from left sidebar */
+    right: auto !important;
+    max-width: calc(100vw - 420px) !important;
+    transform: none !important;
+    z-index: 15 !important;
+  }
+  
+  /* CRITICAL: Sidebar must always win - ABSOLUTE PRIORITY */
+  .sidebar,
+  .admin-sidebar,
+  .sidebar-nav,
+  [data-sidebar],
+  .sidebar *,
+  .admin-sidebar *,
+  .sidebar-nav * {
+    z-index: 50 !important;
+    position: relative;
+    isolation: isolate;
+  }
+  .admin-sidebar,
+  [data-sidebar] {
+    z-index: 50 !important;
+    position: relative;
+    isolation: isolate;
+  }
+  
+  /* EMERGENCY SIDEBAR PROTECTION - LAST RESORT MEASURES */
+  
+  /* Force all floating elements to respect sidebar boundaries using CSS has() selector */
+  body:has(.sidebar) [data-radix-popper-content-wrapper],
+  body:has(.admin-sidebar) [data-radix-select-content],
+  body:has(.sidebar) [data-radix-dropdown-menu-content],
+  body:has(.sidebar) [data-radix-popover-content] {
+    z-index: 10 !important;
+    position: fixed !important;
+    transform: none !important;
+  }
+  
+  /* RTL Emergency Protection */
+  html[dir="rtl"] body:has(.sidebar) [data-radix-popper-content-wrapper],
+  html[dir="rtl"] body:has(.admin-sidebar) [data-radix-select-content],
+  html[dir="rtl"] body:has(.sidebar) [data-radix-dropdown-menu-content] {
+    right: var(--sidebar-protection-right, 400px) !important;
+    left: auto !important;
+    max-width: calc(100vw - 450px) !important;
+  }
+  
+  /* LTR Emergency Protection */
+  html[dir="ltr"] body:has(.sidebar) [data-radix-popper-content-wrapper],
+  html[dir="ltr"] body:has(.admin-sidebar) [data-radix-select-content],
+  html[dir="ltr"] body:has(.sidebar) [data-radix-dropdown-menu-content] {
+    left: var(--sidebar-protection-left, 400px) !important;
+    right: auto !important;
+    max-width: calc(100vw - 450px) !important;
+  }
+  
+  /* Force sidebar to create its own stacking context */
+  .sidebar,
+  .admin-sidebar,
+  .sidebar-protected {
+    z-index: 50 !important;
+    position: relative !important;
+    isolation: isolate !important;
+    contain: layout style !important;
+  }
+  
+  /* Sidebar content protection */
+  .sidebar-content,
+  .sidebar-nav,
+  .sidebar * {
+    z-index: 51 !important;
+    position: relative;
+  }
+  
+  /* Additional protection classes */
+  .sidebar-protected {
+    background: var(--card) !important;
+    border: 1px solid var(--border) !important;
+  }
+  
+  /* Ensure floating elements never overlap sidebar-protected areas */
+  body:has(.sidebar-protected) [data-radix-popper-content-wrapper],
+  body:has(.sidebar-protected) [data-radix-select-content],
+  body:has(.sidebar-protected) [data-radix-dropdown-menu-content],
+  body:has(.sidebar-protected) [data-radix-popover-content],
+  body:has(.sidebar-protected) [role="listbox"],
+  body:has(.sidebar-protected) [role="menu"] {
+    z-index: 5 !important;
+    position: fixed !important;
+    transform: none !important;
+  }
+  
+  /* RTL specific protection for sidebar-protected */
+  html[dir="rtl"] body:has(.sidebar-protected) [data-radix-popper-content-wrapper],
+  html[dir="rtl"] body:has(.sidebar-protected) [data-radix-select-content] {
+    right: 350px !important;
+    left: auto !important;
+    max-width: calc(100vw - 400px) !important;
+  }
+  
+  /* LTR specific protection for sidebar-protected */
+  html[dir="ltr"] body:has(.sidebar-protected) [data-radix-popper-content-wrapper],
+  html[dir="ltr"] body:has(.sidebar-protected) [data-radix-select-content] {
+    left: 350px !important;
+    right: auto !important;
+    max-width: calc(100vw - 400px) !important;
   }
 }
 
