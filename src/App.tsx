@@ -44,7 +44,7 @@ import { ErrorBoundary } from '@/components/debug/ErrorBoundary';
 import { RuntimeChecker } from '@/components/debug/RuntimeChecker';
 import { ExternalDataManager, NewsAggregator } from '@/components/external';
 import { BreakingNewsNotifications, NotificationCenter, LiveNotificationBanner, NotificationPreferences, NotificationAnalytics, SmartNotificationSystem } from '@/components/notifications';
-import { PerformanceDashboard } from '@/components/performance';
+import { PerformanceDashboard, EnhancedPerformanceDashboard } from '@/components/performance';
 import { SystemStatus } from '@/components/system';
 import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
@@ -646,7 +646,7 @@ function AppContent() {
         return <PredictiveUserAnalytics />;
       
       case 'performance-dashboard':
-        return <PerformanceDashboard />;
+        return <EnhancedPerformanceDashboard />;
       
       case 'smart-recommendations':
         return memberUser ? (

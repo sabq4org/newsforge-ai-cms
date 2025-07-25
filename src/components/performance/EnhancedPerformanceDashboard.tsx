@@ -21,7 +21,9 @@ import {
   Monitor,
   Zap,
   Database,
-  WifiHigh
+  WifiHigh,
+  ChartLineUp,
+  ShieldCheck
 } from '@phosphor-icons/react';
 import { 
   MemoryManager, 
@@ -56,7 +58,7 @@ interface SystemPerformance {
   componentCount: number;
 }
 
-export function PerformanceDashboard() {
+export function EnhancedPerformanceDashboard() {
   const [metrics, setMetrics] = useState<Record<string, PerformanceMetric>>({});
   const [memoryInfo, setMemoryInfo] = useState<MemoryInfo | null>(null);
   const [networkInfo, setNetworkInfo] = useState<NetworkInfo | null>(null);
@@ -69,6 +71,12 @@ export function PerformanceDashboard() {
   const [cacheStats, setCacheStats] = useState({ size: 0, keys: [] as string[] });
   const [isMonitoring, setIsMonitoring] = useState(true);
   const [alerts, setAlerts] = useState<string[]>([]);
+  const [realTimeData, setRealTimeData] = useState<Array<{
+    timestamp: Date;
+    memory: number;
+    renderTime: number;
+    cacheSize: number;
+  }>>([]);
 
   // Performance monitoring callback
   const updatePerformanceMetrics = useCallback(() => {
@@ -88,13 +96,15 @@ export function PerformanceDashboard() {
     }));
 
     // Get memory info if available
+    let currentMemoryInfo: MemoryInfo | null = null;
     if ('memory' in performance) {
       const memory = (performance as any).memory;
-      setMemoryInfo({
+      currentMemoryInfo = {
         used: Math.round(memory.usedJSHeapSize / 1048576), // MB
         total: Math.round(memory.totalJSHeapSize / 1048576), // MB
         limit: Math.round(memory.jsHeapSizeLimit / 1048576) // MB
-      });
+      };
+      setMemoryInfo(currentMemoryInfo);
     }
 
     // Get network info if available
@@ -108,27 +118,46 @@ export function PerformanceDashboard() {
     }
 
     // Get cache stats
-    setCacheStats(DataCache.getStats());
+    const currentCacheStats = DataCache.getStats();
+    setCacheStats(currentCacheStats);
+
+    // Update real-time data
+    setRealTimeData(prev => {
+      const newData = [...prev, {
+        timestamp: new Date(),
+        memory: currentMemoryInfo ? (currentMemoryInfo.used / currentMemoryInfo.limit) * 100 : 0,
+        renderTime: totalRenderTime / Math.max(componentCount, 1),
+        cacheSize: currentCacheStats.size
+      }].slice(-20); // Keep last 20 data points
+      return newData;
+    });
 
     // Generate alerts
     const newAlerts: string[] = [];
-    if (memoryInfo && getMemoryUsagePercentage() > 85) {
+    const memoryUsage = currentMemoryInfo ? (currentMemoryInfo.used / currentMemoryInfo.limit) * 100 : 0;
+    const avgRenderTime = totalRenderTime / Math.max(componentCount, 1);
+    
+    if (memoryUsage > 85) {
       newAlerts.push('استخدام الذاكرة مرتفع جداً');
     }
-    if (totalRenderTime > 50) {
+    if (avgRenderTime > 30) {
       newAlerts.push('وقت العرض بطيء قد يؤثر على التجربة');
     }
-    if (componentCount > 20) {
+    if (componentCount > 25) {
       newAlerts.push('عدد كبير من المكونات النشطة');
     }
+    if (currentCacheStats.size > 100) {
+      newAlerts.push('حجم التخزين المؤقت كبير جداً');
+    }
     setAlerts(newAlerts);
-  }, [memoryInfo]);
+  }, []);
 
   // Update metrics every 3 seconds for real-time monitoring
   useEffect(() => {
     if (!isMonitoring) return;
 
     const interval = setInterval(updatePerformanceMetrics, 3000);
+    updatePerformanceMetrics(); // Initial call
     return () => clearInterval(interval);
   }, [isMonitoring, updatePerformanceMetrics]);
 
@@ -151,7 +180,6 @@ export function PerformanceDashboard() {
     // Clear old performance metrics
     Object.keys(metrics).forEach(key => {
       if (metrics[key].count > 50) {
-        // Reset metrics that have too many data points
         console.log(`Resetting metrics for: ${key}`);
       }
     });
@@ -171,11 +199,6 @@ export function PerformanceDashboard() {
     toast.info('تم إجراء فحص شامل للنظام');
   };
 
-  const getMemoryUsagePercentage = () => {
-    if (!memoryInfo) return 0;
-    return (memoryInfo.used / memoryInfo.limit) * 100;
-  };
-
   const handleForceGC = () => {
     if ('gc' in window && typeof (window as any).gc === 'function') {
       (window as any).gc();
@@ -183,6 +206,11 @@ export function PerformanceDashboard() {
     } else {
       toast.info('جامع القمامة غير متاح في هذا المتصفح');
     }
+  };
+
+  const getMemoryUsagePercentage = () => {
+    if (!memoryInfo) return 0;
+    return (memoryInfo.used / memoryInfo.limit) * 100;
   };
 
   const getSystemHealthStatus = () => {
@@ -208,15 +236,35 @@ export function PerformanceDashboard() {
     if (time < 33) return 'text-yellow-600'; // Acceptable (30fps)
     return 'text-red-600'; // Poor
   };
+
+  return (
+    <div className="container mx-auto p-6 space-y-6" dir="rtl">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">لوحة تحكم الأداء</h1>
+          <h1 className="text-3xl font-bold">لوحة تحكم الأداء المتقدمة</h1>
           <p className="text-muted-foreground">
-            مراقبة أداء النظام وإدارة الذاكرة
+            مراقبة شاملة لأداء النظام وإدارة الذاكرة والموارد
           </p>
         </div>
         
         <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={handleRunDiagnostics}
+            className="gap-2"
+          >
+            <Monitor className="w-4 h-4" />
+            فحص شامل
+          </Button>
+          
+          <Button
+            onClick={handleOptimizeSystem}
+            className="gap-2"
+          >
+            <Zap className="w-4 h-4" />
+            تحسين النظام
+          </Button>
+          
           <Button
             variant={isMonitoring ? "destructive" : "default"}
             onClick={() => setIsMonitoring(!isMonitoring)}
@@ -225,20 +273,26 @@ export function PerformanceDashboard() {
             {isMonitoring ? <Activity className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
             {isMonitoring ? 'إيقاف المراقبة' : 'تشغيل المراقبة'}
           </Button>
-          
-          <Button
-            variant="outline"
-            onClick={() => window.location.reload()}
-            className="gap-2"
-          >
-            <RefreshCw className="w-4 h-4" />
-            إعادة تحميل
-          </Button>
         </div>
       </div>
 
-      {/* Overall System Status */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* System Alerts */}
+      {alerts.length > 0 && (
+        <Alert className="border-yellow-200 bg-yellow-50">
+          <AlertTriangle className="h-4 w-4 text-yellow-600" />
+          <AlertDescription className="text-yellow-800">
+            <div className="space-y-1">
+              <span className="font-medium">تنبيهات النظام:</span>
+              {alerts.map((alert, index) => (
+                <div key={index} className="text-sm">• {alert}</div>
+              ))}
+            </div>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Enhanced System Status Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
@@ -248,11 +302,13 @@ export function PerformanceDashboard() {
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-green-600" />
-              <span className="text-lg font-semibold">نشط</span>
+              <CheckCircle className={`w-5 h-5 ${getHealthColor(getSystemHealthStatus())}`} />
+              <span className={`text-lg font-semibold ${getHealthColor(getSystemHealthStatus())}`}>
+                {getSystemHealthStatus()}
+              </span>
             </div>
             <p className="text-sm text-muted-foreground mt-1">
-              النظام يعمل بشكل طبيعي
+              التقييم العام للنظام
             </p>
           </CardContent>
         </Card>
@@ -275,7 +331,7 @@ export function PerformanceDashboard() {
                   className="mt-2"
                 />
                 <p className="text-sm text-muted-foreground mt-1">
-                  من {memoryInfo.limit} MB
+                  {getMemoryUsagePercentage().toFixed(1)}% من {memoryInfo.limit} MB
                 </p>
               </>
             ) : (
@@ -289,43 +345,58 @@ export function PerformanceDashboard() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Activity className="w-4 h-4" />
-              المكونات النشطة
+              <Cpu className="w-4 h-4" />
+              أداء العرض
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-lg font-semibold">
-              {Object.keys(metrics).length}
+              {systemPerf.fps.toFixed(0)} FPS
             </div>
             <p className="text-sm text-muted-foreground mt-1">
-              مكونات تحت المراقبة
+              {systemPerf.componentCount} مكون نشط
             </p>
+            <div className="text-xs text-muted-foreground mt-1">
+              متوسط وقت العرض: {(systemPerf.totalRenderTime / Math.max(systemPerf.componentCount, 1)).toFixed(1)}ms
+            </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Cpu className="w-4 h-4" />
-              التخزين المؤقت
+              <WifiHigh className="w-4 h-4" />
+              الشبكة
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-lg font-semibold">
-              {cacheStats.size}
-            </div>
-            <p className="text-sm text-muted-foreground mt-1">
-              عناصر محفوظة
-            </p>
+            {networkInfo ? (
+              <>
+                <div className="text-lg font-semibold capitalize">
+                  {networkInfo.effectiveType}
+                </div>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {networkInfo.downlink} Mbps
+                </p>
+                <div className="text-xs text-muted-foreground">
+                  زمن الاستجابة: {networkInfo.rtt}ms
+                </div>
+              </>
+            ) : (
+              <div className="text-sm text-muted-foreground">
+                معلومات الشبكة غير متاحة
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
 
       <Tabs defaultValue="metrics" className="space-y-4">
-        <TabsList className="grid grid-cols-4 w-full">
+        <TabsList className="grid grid-cols-5 w-full">
           <TabsTrigger value="metrics">مقاييس الأداء</TabsTrigger>
           <TabsTrigger value="memory">إدارة الذاكرة</TabsTrigger>
           <TabsTrigger value="cache">التخزين المؤقت</TabsTrigger>
+          <TabsTrigger value="realtime">المراقبة المباشرة</TabsTrigger>
           <TabsTrigger value="actions">إجراءات الصيانة</TabsTrigger>
         </TabsList>
 
@@ -472,6 +543,77 @@ export function PerformanceDashboard() {
           </Card>
         </TabsContent>
 
+        <TabsContent value="realtime" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <ChartLineUp className="w-5 h-5" />
+                المراقبة المباشرة
+              </CardTitle>
+              <CardDescription>
+                رسوم بيانية مباشرة لأداء النظام
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {/* Memory Usage Chart */}
+                <div>
+                  <h4 className="font-medium mb-2">استخدام الذاكرة بمرور الوقت</h4>
+                  <div className="h-32 border rounded-lg p-4 bg-muted/20">
+                    <div className="h-full flex items-end gap-1">
+                      {realTimeData.map((point, index) => (
+                        <div
+                          key={index}
+                          className="bg-blue-500 min-w-[4px] rounded-t"
+                          style={{ height: `${point.memory}%` }}
+                          title={`${point.memory.toFixed(1)}% في ${point.timestamp.toLocaleTimeString()}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Render Time Chart */}
+                <div>
+                  <h4 className="font-medium mb-2">متوسط وقت العرض</h4>
+                  <div className="h-32 border rounded-lg p-4 bg-muted/20">
+                    <div className="h-full flex items-end gap-1">
+                      {realTimeData.map((point, index) => (
+                        <div
+                          key={index}
+                          className={`min-w-[4px] rounded-t ${
+                            point.renderTime < 16 ? 'bg-green-500' :
+                            point.renderTime < 33 ? 'bg-yellow-500' : 'bg-red-500'
+                          }`}
+                          style={{ height: `${Math.min(100, (point.renderTime / 50) * 100)}%` }}
+                          title={`${point.renderTime.toFixed(1)}ms في ${point.timestamp.toLocaleTimeString()}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Cache Size */}
+                <div>
+                  <h4 className="font-medium mb-2">حجم التخزين المؤقت</h4>
+                  <div className="h-32 border rounded-lg p-4 bg-muted/20">
+                    <div className="h-full flex items-end gap-1">
+                      {realTimeData.map((point, index) => (
+                        <div
+                          key={index}
+                          className="bg-purple-500 min-w-[4px] rounded-t"
+                          style={{ height: `${Math.min(100, (point.cacheSize / 100) * 100)}%` }}
+                          title={`${point.cacheSize} عنصر في ${point.timestamp.toLocaleTimeString()}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         <TabsContent value="actions" className="space-y-4">
           <Card>
             <CardHeader>
@@ -483,11 +625,22 @@ export function PerformanceDashboard() {
             <CardContent>
               <div className="space-y-4">
                 <div className="p-4 rounded-lg border">
+                  <h4 className="font-medium mb-2">تحسين شامل للنظام</h4>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    إجراء عملية تحسين شاملة للذاكرة والتخزين المؤقت والمؤقتات
+                  </p>
+                  <Button onClick={handleOptimizeSystem} className="gap-2">
+                    <Zap className="w-4 h-4" />
+                    تحسين شامل
+                  </Button>
+                </div>
+
+                <div className="p-4 rounded-lg border">
                   <h4 className="font-medium mb-2">مسح التخزين المؤقت</h4>
                   <p className="text-sm text-muted-foreground mb-3">
                     مسح جميع البيانات المحفوظة في التخزين المؤقت
                   </p>
-                  <Button onClick={handleClearCache} className="gap-2">
+                  <Button onClick={handleClearCache} variant="outline" className="gap-2">
                     <Trash2 className="w-4 h-4" />
                     مسح التخزين المؤقت
                   </Button>
@@ -498,7 +651,7 @@ export function PerformanceDashboard() {
                   <p className="text-sm text-muted-foreground mb-3">
                     إلغاء جميع المؤقتات والفترات النشطة
                   </p>
-                  <Button onClick={handleClearTimers} className="gap-2">
+                  <Button onClick={handleClearTimers} variant="outline" className="gap-2">
                     <Clock className="w-4 h-4" />
                     مسح المؤقتات
                   </Button>
