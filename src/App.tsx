@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { CollaborativeProvider } from '@/contexts/CollaborativeContext';
 import { CollaborativeManager } from '@/components/collaborative';
 import { TypographyProvider } from '@/contexts/TypographyContext';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { RegisterForm, UserProfilePage, SmartRecommendationDashboard } from '@/components/membership';
 import { UserManagementDashboard } from '@/components/user-management';
@@ -20,7 +21,7 @@ import { ComprehensiveDeepAnalysisModule } from '@/components/analysis';
 import { ComprehensiveArticleEditor } from '@/components/editor/ComprehensiveArticleEditor';
 import { AIOptimizationEngine } from '@/components/optimization/AIOptimizationEngine';
 import { ABTestingFramework } from '@/components/optimization/ABTestingFramework';
-import { TypographySettings, GeneralSettings } from '@/components/settings';
+import { TypographySettings, GeneralSettings, ThemeColorSettings } from '@/components/settings';
 import { TypographyShowcase } from '@/components/showcase/TypographyShowcase';
 import { MediaUpload, MediaGenerator, ComprehensiveMediaManager } from '@/components/media';
 import { AudioEditor, AudioLibrary, AudioAnalytics } from '@/components/audio';
@@ -501,6 +502,9 @@ function AppContent() {
         }
         return <UserManagementDashboard />;
       
+      case 'theme-settings':
+        return <ThemeColorSettings />;
+      
       case 'settings':
         return <TypographySettings />;
       
@@ -776,17 +780,19 @@ function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
-        <TypographyProvider>
-          <CollaborativeProvider>
-            <AppContent />
-            <Toaster 
-              position="top-right"
-              toastOptions={{
-                duration: 3000,
-              }}
-            />
-          </CollaborativeProvider>
-        </TypographyProvider>
+        <ThemeProvider>
+          <TypographyProvider>
+            <CollaborativeProvider>
+              <AppContent />
+              <Toaster 
+                position="top-right"
+                toastOptions={{
+                  duration: 3000,
+                }}
+              />
+            </CollaborativeProvider>
+          </TypographyProvider>
+        </ThemeProvider>
       </AuthProvider>
     </ErrorBoundary>
   );

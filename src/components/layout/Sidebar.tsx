@@ -36,7 +36,8 @@ import {
   Cpu,
   Activity,
   MemoryStick,
-  BookOpen
+  BookOpen,
+  Palette
 } from '@phosphor-icons/react';
 
 interface SidebarProps {
@@ -411,9 +412,16 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
     },
     {
       id: 'settings',
-      label: isArabic ? 'إعدادات النظام' : 'Typography Settings',
+      label: isArabic ? 'إعدادات الطباعة' : 'Typography Settings',
       icon: Settings,
       show: canAccess('settings')
+    },
+    {
+      id: 'theme-settings',
+      label: isArabic ? 'إعدادات الثيم والألوان' : 'Theme & Colors',
+      icon: Palette,
+      show: canAccess('settings'),
+      badge: isArabic ? 'ثيم' : 'Theme'
     },
     {
       id: 'general-settings',
