@@ -14,7 +14,7 @@ import {
   Activity,
   Target,
   Sparkles,
-  ChartLineUp,
+  TrendingUp,
   Timer,
   Lightbulb,
   Network,
@@ -777,7 +777,7 @@ export function MachineLearningEngine({ userId, articles, onArticleSelect }: Mac
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <ChartLineUp />
+                  <TrendingUp />
                   إجمالي عينات التدريب
                 </CardTitle>
               </CardHeader>

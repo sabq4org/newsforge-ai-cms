@@ -11,7 +11,7 @@ import {
   Cpu,
   Database,
   Network,
-  ChartLineUp,
+  TrendingUp,
   Target,
   Sparkles,
   TrendUp,
@@ -652,7 +652,7 @@ export function SmartRecommendationSystem({ userId, articles, onArticleSelect }:
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <ChartLineUp />
+                  <TrendingUp />
                   أداء النماذج
                 </CardTitle>
               </CardHeader>

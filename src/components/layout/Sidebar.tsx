@@ -372,6 +372,13 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
       show: canAccess('user-management')
     },
     {
+      id: 'performance-dashboard',
+      label: isArabic ? 'لوحة تحكم الأداء' : 'Performance Dashboard',
+      icon: Activity,
+      show: canAccess('user-management'),
+      badge: isArabic ? 'أداء' : 'Perf'
+    },
+    {
       id: 'settings',
       label: isArabic ? 'الإعدادات' : 'Settings',
       icon: Settings,

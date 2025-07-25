@@ -30,7 +30,7 @@ import {
   Cpu,
   ChatCircle,
   Heart,
-  Trophy,
+  Medal,
   FunnelSimple,
   MagnifyingGlass,
   Calendar,
@@ -1471,7 +1471,7 @@ export function GenerativeAIRecommendationSystem({
 
                 <div className="p-4 border border-green-200 rounded-lg bg-green-50">
                   <div className="flex items-start gap-3">
-                    <Trophy className="h-5 w-5 text-green-600 mt-1" />
+                    <Medal className="h-5 w-5 text-green-600 mt-1" />
                     <div>
                       <h4 className="font-medium text-green-900">توصية للتحسين</h4>
                       <p className="text-green-700 text-sm mt-1">

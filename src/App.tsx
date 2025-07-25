@@ -44,21 +44,40 @@ import { ErrorBoundary } from '@/components/debug/ErrorBoundary';
 import { RuntimeChecker } from '@/components/debug/RuntimeChecker';
 import { ExternalDataManager, NewsAggregator } from '@/components/external';
 import { BreakingNewsNotifications, NotificationCenter, LiveNotificationBanner, NotificationPreferences, NotificationAnalytics, SmartNotificationSystem } from '@/components/notifications';
+import { PerformanceDashboard } from '@/components/performance';
+import { SystemStatus } from '@/components/system';
 import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
 import { mockArticles, mockCategories, mockMediaFiles } from '@/lib/mockData';
 import { normalizeArticles, normalizeDataObject } from '@/lib/utils';
 import { UserProfile } from '@/types/membership';
 import { initializeGlobalErrorHandler } from '@/lib/globalErrorHandler';
+import { 
+  MemoryManager, 
+  PerformanceMonitor, 
+  usePerformanceMonitor, 
+  useMemoryCleanup, 
+  useDebouncedCallback,
+  DataCache,
+  initializePerformanceOptimizer 
+} from '@/lib/performanceOptimizer';
 
 // Initialize global error handler for date formatting issues
 initializeGlobalErrorHandler();
 
+// Initialize performance optimization system
+initializePerformanceOptimizer();
+
 function AppContent() {
+  // Performance monitoring for this component
+  usePerformanceMonitor('AppContent');
+  
   const { isAuthenticated, user, canAccess } = useAuth();
   const [activeView, setActiveView] = useState('dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState<Article | undefined>();
+  
+  // Cached and normalized articles with performance optimization
   const [rawArticles, setRawArticles] = useKV<Article[]>('sabq-articles', mockArticles);
   const articles = normalizeArticles(normalizeDataObject(rawArticles || []));
   const [isPublicView, setIsPublicView] = useState(false);
@@ -71,12 +90,20 @@ function AppContent() {
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
   const [memberUser, setMemberUser] = useKV<UserProfile | null>('current-member-user', null);
   
-  const setArticles = (updater: (currentArticles: Article[]) => Article[]) => {
+  // Performance optimized callback functions
+  const setArticles = useDebouncedCallback((updater: (currentArticles: Article[]) => Article[]) => {
     setRawArticles(currentArticles => {
       const normalized = normalizeArticles(normalizeDataObject(currentArticles || []));
       return updater(normalized);
     });
-  };
+  }, 300);
+
+  // Memory cleanup for component lifecycle
+  useMemoryCleanup(() => {
+    // Cleanup any subscriptions, timers, etc.
+    DataCache.clear();
+    console.log('AppContent: Memory cleanup performed');
+  });
 
   // Membership handlers
   const handleMemberLogin = (userData: UserProfile) => {
@@ -442,12 +469,7 @@ function AppContent() {
         return <CollaborativeManager article={editingArticle} onConflictResolved={(resolution) => console.log('Conflict resolved:', resolution)} />;
 
       case 'system-maintenance':
-        return (
-          <div className="text-center py-12">
-            <h2 className="text-xl font-semibold">صيانة النظام</h2>
-            <p className="text-muted-foreground mt-2">أدوات صيانة وإدارة النظام</p>
-          </div>
-        );
+        return <SystemStatus />;
       
       case 'podcast-demo':
         return (
@@ -498,7 +520,7 @@ function AppContent() {
       
       case 'scheduled':
         return (
-          <ArticleList 
+          <ComprehensiveArticleModule 
             onEditArticle={handleEditArticle}
             onCreateNew={handleCreateNew}
             filter="scheduled"
@@ -622,6 +644,9 @@ function AppContent() {
       
       case 'predictive-user-analytics':
         return <PredictiveUserAnalytics />;
+      
+      case 'performance-dashboard':
+        return <PerformanceDashboard />;
       
       case 'smart-recommendations':
         return memberUser ? (
