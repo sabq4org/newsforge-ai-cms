@@ -7,6 +7,7 @@ import {
   CheckCircle,
   AlertTriangle
 } from '@phosphor-icons/react';
+import { safeToLowerCase } from '@/lib/utils';
 
 // Safe icon mapping to prevent runtime errors
 const ICON_MAP: Record<string, React.ComponentType<any>> = {
@@ -20,7 +21,8 @@ const ICON_MAP: Record<string, React.ComponentType<any>> = {
 };
 
 interface SafeIconProps {
-  name: string;
+  name?: string;
+  icon?: React.ComponentType<any>; // Direct icon component
   size?: number;
   className?: string;
   fallback?: React.ComponentType<any>;
@@ -32,19 +34,40 @@ interface SafeIconProps {
  */
 export function SafeIcon({ 
   name, 
+  icon,
   size = 16, 
   className = '', 
   fallback = Medal 
 }: SafeIconProps) {
-  const IconComponent = ICON_MAP[name.toLowerCase()] || fallback;
-  
-  try {
-    return <IconComponent size={size} className={className} />;
-  } catch (error) {
-    console.warn(`SafeIcon: Error rendering icon "${name}", using fallback:`, error);
-    const FallbackIcon = fallback;
-    return <FallbackIcon size={size} className={className} />;
+  // Handle direct icon component first
+  if (icon && typeof icon === 'function') {
+    try {
+      const IconComponent = icon;
+      return <IconComponent size={size} className={className} />;
+    } catch (error) {
+      console.warn(`SafeIcon: Error rendering direct icon component, using fallback:`, error);
+      const FallbackIcon = fallback;
+      return <FallbackIcon size={size} className={className} />;
+    }
   }
+  
+  // Handle named icon with safe checking
+  if (name && typeof name === 'string') {
+    try {
+      const safeName = safeToLowerCase(name);
+      const IconComponent = ICON_MAP[safeName] || fallback;
+      return <IconComponent size={size} className={className} />;
+    } catch (error) {
+      console.warn(`SafeIcon: Error rendering named icon "${name}", using fallback:`, error);
+      const FallbackIcon = fallback;
+      return <FallbackIcon size={size} className={className} />;
+    }
+  }
+  
+  // No valid icon provided, use fallback
+  console.warn('SafeIcon: No valid icon provided, using fallback');
+  const FallbackIcon = fallback;
+  return <FallbackIcon size={size} className={className} />;
 }
 
 export default SafeIcon;

@@ -1,4 +1,5 @@
 import { Article, Category } from '@/types';
+import { safeToLowerCase, safeToString } from '@/lib/utils';
 
 export function applyCategoryToArticles(articles: Article[], categories: Category[]): Article[] {
   // خوارزمية ذكية لتطبيق التصنيفات على المقالات بناءً على المحتوى والعناوين
@@ -23,7 +24,7 @@ export function applyCategoryToArticles(articles: Article[], categories: Categor
     }
 
     // البحث عن تصنيف مناسب بناءً على المحتوى
-    const searchText = (article.title + ' ' + article.content + ' ' + article.excerpt).toLowerCase();
+    const searchText = safeToLowerCase(`${safeToString(article.title)} ${safeToString(article.content)} ${safeToString(article.excerpt)}`);
     
     let bestMatch = categories[0]; // التصنيف الافتراضي الأول
     let bestScore = 0;
@@ -40,7 +41,8 @@ export function applyCategoryToArticles(articles: Article[], categories: Categor
 
       // إضافة نقاط إضافية إذا كان الكلمة في العنوان
       keywords.forEach(keyword => {
-        if (article.title.toLowerCase().includes(keyword)) {
+        const safeTitle = safeToLowerCase(safeToString(article.title));
+        if (safeTitle.includes(keyword)) {
           score += 2;
         }
       });

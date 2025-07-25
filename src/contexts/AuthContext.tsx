@@ -89,11 +89,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useKV<User | null>('sabq-user', null);
   const [language, setLanguage] = useKV<Language>('sabq-language', languages.ar); // Default to Arabic
 
+  // Ensure language object is always valid
+  useEffect(() => {
+    if (!language || typeof language !== 'object' || !language.code || !language.direction) {
+      console.warn('AuthProvider: Invalid language object detected, resetting to Arabic');
+      setLanguage(languages.ar);
+    }
+  }, [language, setLanguage]);
+
   useEffect(() => {
     // Apply language and direction to document
-    document.documentElement.setAttribute('lang', language.code);
-    document.documentElement.setAttribute('dir', language.direction);
-    document.body.className = language.direction === 'rtl' ? 'rtl' : 'ltr';
+    const safeLanguage = language || languages.ar;
+    document.documentElement.setAttribute('lang', safeLanguage.code || 'ar');
+    document.documentElement.setAttribute('dir', safeLanguage.direction || 'rtl');
+    document.body.className = (safeLanguage.direction || 'rtl') === 'rtl' ? 'rtl' : 'ltr';
   }, [language]);
 
   const login = async (email: string, password: string): Promise<boolean> => {
@@ -167,5 +176,11 @@ export function useAuth() {
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
-  return context;
+  
+  // Ensure context values are always properly defined
+  return {
+    ...context,
+    language: context.language || languages.ar,
+    user: context.user || null
+  };
 }

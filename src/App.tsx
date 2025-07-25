@@ -49,6 +49,7 @@ import { DailyDosesManager } from '@/components/doses';
 import { PodcastDemo, ArabicNeuralNetworkDemo } from '@/components/demo';
 import { ErrorChecker } from '@/components/debug/ErrorChecker';
 import { ErrorBoundary } from '@/components/debug/ErrorBoundary';
+import { RuntimeErrorBoundary } from '@/components/debug/RuntimeErrorBoundary';
 import { RuntimeChecker } from '@/components/debug/RuntimeChecker';
 import { ReadingPreferencePrediction, AdvancedMLModelTraining, PredictiveBehaviorEngine, NeuralNetworkTrainer, TransformerTrainingStudio, DeepLearningPipelineManager, ArabicContentClassifier } from '@/components/ml';
 import { ExternalDataManager, NewsAggregator } from '@/components/external';
@@ -965,23 +966,30 @@ function AppContent() {
 
 function App() {
   return (
-    <ErrorBoundary>
-      <AuthProvider>
-        <ThemeProvider>
-          <TypographyProvider>
-            <CollaborativeProvider>
-              <AppContent />
-              <Toaster 
-                position="top-right"
-                toastOptions={{
-                  duration: 3000,
-                }}
-              />
-            </CollaborativeProvider>
-          </TypographyProvider>
-        </ThemeProvider>
-      </AuthProvider>
-    </ErrorBoundary>
+    <RuntimeErrorBoundary
+      onError={(error, errorInfo) => {
+        console.error('App-level runtime error:', error, errorInfo);
+        // Could send to error reporting service here
+      }}
+    >
+      <ErrorBoundary>
+        <AuthProvider>
+          <ThemeProvider>
+            <TypographyProvider>
+              <CollaborativeProvider>
+                <AppContent />
+                <Toaster 
+                  position="top-right"
+                  toastOptions={{
+                    duration: 3000,
+                  }}
+                />
+              </CollaborativeProvider>
+            </TypographyProvider>
+          </ThemeProvider>
+        </AuthProvider>
+      </ErrorBoundary>
+    </RuntimeErrorBoundary>
   );
 }
 

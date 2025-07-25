@@ -28,6 +28,7 @@ import {
 import { Article } from '@/types';
 import { useKV } from '@github/spark/hooks';
 import { mockMediaFiles } from '@/lib/mockData';
+import { safeToLowerCase, safeToString } from '@/lib/utils';
 import { toast } from 'sonner';
 
 interface MediaFile {
@@ -220,8 +221,10 @@ export function MediaUpload() {
 
   const filteredFiles = mediaFiles.filter(file => {
     const matchesFilter = filter === 'all' || file.type === filter;
-    const matchesSearch = file.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         file.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+    const safeName = safeToLowerCase(safeToString(file.name));
+    const safeSearchTerm = safeToLowerCase(safeToString(searchTerm));
+    const matchesSearch = safeName.includes(safeSearchTerm) ||
+                         file.tags.some(tag => safeToLowerCase(safeToString(tag)).includes(safeSearchTerm));
     return matchesFilter && matchesSearch;
   });
 

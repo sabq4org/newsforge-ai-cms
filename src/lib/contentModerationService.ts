@@ -1,4 +1,5 @@
 import { Article, ModerationFlag, ContentAnalysis } from '@/types';
+import { safeToLowerCase, safeToString } from '@/lib/utils';
 
 export interface ModerationRule {
   id: string;
@@ -365,7 +366,7 @@ export class ContentModerationService {
    */
   private async applyModerationRules(article: Article, languageDetection: ModerationResult['languageDetection']): Promise<ModerationFlag[]> {
     const flags: ModerationFlag[] = [];
-    const fullText = `${article.title} ${article.content} ${article.excerpt}`.toLowerCase();
+    const fullText = safeToLowerCase(`${safeToString(article.title)} ${safeToString(article.content)} ${safeToString(article.excerpt)}`);
     
     for (const rule of this.moderationRules) {
       if (!rule.active || !this.settings.enabledRules.includes(rule.id)) continue;
@@ -376,7 +377,8 @@ export class ContentModerationService {
       // Check keywords based on detected language
       if (languageDetection.primary === 'ar' && rule.keywordsAr) {
         for (const keyword of rule.keywordsAr) {
-          if (fullText.includes(keyword.toLowerCase())) {
+          const safeKeyword = safeToLowerCase(safeToString(keyword));
+          if (fullText.includes(safeKeyword)) {
             matched = true;
             matchedTerms.push(keyword);
           }
@@ -385,7 +387,8 @@ export class ContentModerationService {
       
       if ((languageDetection.primary === 'en' || languageDetection.primary === 'mixed') && rule.keywords) {
         for (const keyword of rule.keywords) {
-          if (fullText.includes(keyword.toLowerCase())) {
+          const safeKeyword = safeToLowerCase(safeToString(keyword));
+          if (fullText.includes(safeKeyword)) {
             matched = true;
             matchedTerms.push(keyword);
           }
@@ -666,7 +669,9 @@ export class ContentModerationService {
       
       const keywords = [...(rule.keywords || []), ...(rule.keywordsAr || [])];
       for (const keyword of keywords) {
-        if (text.toLowerCase().includes(keyword.toLowerCase())) {
+        const safeText = safeToLowerCase(safeToString(text));
+        const safeKeyword = safeToLowerCase(safeToString(keyword));
+        if (safeText.includes(safeKeyword)) {
           issues.push(`Potential ${rule.type}: ${keyword}`);
           if (rule.severity === 'critical' || rule.severity === 'high') {
             maxSeverity = 'high';

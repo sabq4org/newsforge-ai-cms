@@ -50,14 +50,17 @@ window.addEventListener('error', (event) => {
     event.message.includes('toLocaleTimeString') ||
     event.message.includes('is not a function') ||
     event.message.includes('undefined is not an object') ||
-    event.message.includes("Can't find variable")
+    event.message.includes("Can't find variable") ||
+    event.message.includes('toLowerCase') ||
+    event.message.includes('Cannot read propert')
   )) {
     console.error('Global error caught:', {
       message: event.message,
       filename: event.filename,
       lineno: event.lineno,
       colno: event.colno,
-      error: event.error
+      error: event.error,
+      stack: event.error?.stack
     });
     
     performanceErrorCount++;
@@ -79,11 +82,14 @@ window.addEventListener('unhandledrejection', (event) => {
     event.reason.message.includes('toLocaleDateString') ||
     event.reason.message.includes('toLocaleTimeString') ||
     event.reason.message.includes('is not a function') ||
-    event.reason.message.includes('undefined is not an object')
+    event.reason.message.includes('undefined is not an object') ||
+    event.reason.message.includes('toLowerCase') ||
+    event.reason.message.includes('Cannot read propert')
   )) {
     console.error('Global async error caught:', {
       reason: event.reason,
-      promise: event.promise
+      promise: event.promise,
+      stack: event.reason?.stack
     });
     
     performanceErrorCount++;

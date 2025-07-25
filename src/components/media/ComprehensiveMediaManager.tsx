@@ -16,7 +16,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useOptimizedTypography } from '@/hooks/useOptimizedTypography';
 import { useKV } from '@github/spark/hooks';
 import { MediaFile, ImageOptimization, BulkOperation } from '@/types';
-import { cn } from '@/lib/utils';
+import { cn, safeToLowerCase, safeToString } from '@/lib/utils';
 import {
   Upload,
   Image as ImageIcon,
@@ -83,11 +83,11 @@ export function ComprehensiveMediaManager({ onImageSelect, selectionMode = false
   const filteredFiles = mediaFiles
     .filter(file => {
       // Search filter
-      const searchLower = searchTerm.toLowerCase();
-      const matchesSearch = file.filename.toLowerCase().includes(searchLower) ||
-                           file.alt?.toLowerCase().includes(searchLower) ||
-                           file.caption?.toLowerCase().includes(searchLower) ||
-                           file.tags.some(tag => tag.toLowerCase().includes(searchLower));
+      const searchLower = safeToLowerCase(safeToString(searchTerm));
+      const matchesSearch = safeToLowerCase(safeToString(file.filename)).includes(searchLower) ||
+                           safeToLowerCase(safeToString(file.alt)).includes(searchLower) ||
+                           safeToLowerCase(safeToString(file.caption)).includes(searchLower) ||
+                           file.tags.some(tag => safeToLowerCase(safeToString(tag)).includes(searchLower));
 
       // Type filter
       const matchesType = filterType === 'all' || file.mimeType.startsWith(filterType === 'document' ? 'application' : filterType);

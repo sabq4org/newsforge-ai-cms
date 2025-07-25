@@ -1,4 +1,5 @@
 import { Article, Category, Tag, MediaFile, User } from '@/types';
+import { safeToLowerCase, safeToString } from '@/lib/utils';
 
 export interface SearchQuery {
   text: string;
@@ -446,8 +447,9 @@ export class SearchService {
    * Helper methods
    */
   private tokenize(text: string): string[] {
-    // Enhanced tokenization for Arabic and English
-    return text.toLowerCase()
+    // Enhanced tokenization for Arabic and English with safe string handling
+    const safeText = safeToString(text);
+    return safeToLowerCase(safeText)
       .replace(/[^\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFFa-zA-Z0-9\s]/g, ' ')
       .split(/\s+/)
       .filter(term => term.length > 1);
@@ -469,7 +471,9 @@ export class SearchService {
   }
 
   private matchesPartial(text: string, partial: string): boolean {
-    return text.toLowerCase().includes(partial.toLowerCase());
+    const safeText = safeToLowerCase(safeToString(text));
+    const safePartial = safeToLowerCase(safeToString(partial));
+    return safeText.includes(safePartial);
   }
 
   private calculateSuggestionRelevance(suggestion: SearchSuggestion, query: string): number {
@@ -503,10 +507,11 @@ export class SearchService {
     const queryTerms = this.tokenize(query);
     
     // Extract highlighted snippets from content
-    const contentWords = article.content.split(' ');
+    const contentWords = safeToString(article.content).split(' ');
     queryTerms.forEach(term => {
       for (let i = 0; i < contentWords.length; i++) {
-        if (contentWords[i].toLowerCase().includes(term)) {
+        const safeWord = safeToLowerCase(contentWords[i]);
+        if (safeWord.includes(term)) {
           const start = Math.max(0, i - 3);
           const end = Math.min(contentWords.length, i + 4);
           const snippet = contentWords.slice(start, end).join(' ');
@@ -521,11 +526,12 @@ export class SearchService {
 
   private generateMediaHighlights(media: MediaFile, query: string): string[] {
     const highlights: string[] = [];
+    const safeQuery = safeToLowerCase(safeToString(query));
     
-    if (media.alt && media.alt.toLowerCase().includes(query.toLowerCase())) {
+    if (media.alt && safeToLowerCase(safeToString(media.alt)).includes(safeQuery)) {
       highlights.push(media.alt);
     }
-    if (media.caption && media.caption.toLowerCase().includes(query.toLowerCase())) {
+    if (media.caption && safeToLowerCase(safeToString(media.caption)).includes(safeQuery)) {
       highlights.push(media.caption);
     }
     

@@ -198,6 +198,52 @@ export function safeTimeFormat(
   }
 }
 
+/**
+ * Safely call toLowerCase on a string with fallback
+ */
+export function safeToLowerCase(value: any): string {
+  if (value === null || value === undefined) {
+    console.warn('safeToLowerCase: Received null/undefined value, returning empty string');
+    return '';
+  }
+  
+  if (typeof value === 'string') {
+    return value.toLowerCase();
+  }
+  
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return String(value).toLowerCase();
+  }
+  
+  // For objects, try to convert to string first
+  try {
+    return String(value).toLowerCase();
+  } catch (error) {
+    console.warn('safeToLowerCase: Error converting value to string:', value, error);
+    return '';
+  }
+}
+
+/**
+ * Safely call toString on any value
+ */
+export function safeToString(value: any): string {
+  if (value === null || value === undefined) {
+    return '';
+  }
+  
+  if (typeof value === 'string') {
+    return value;
+  }
+  
+  try {
+    return String(value);
+  } catch (error) {
+    console.warn('safeToString: Error converting value to string:', value, error);
+    return '';
+  }
+}
+
 export function normalizeActivityTimestamps(activities: any[]): any[] {
   if (!Array.isArray(activities)) {
     console.warn('normalizeActivityTimestamps: Expected array, got:', typeof activities);

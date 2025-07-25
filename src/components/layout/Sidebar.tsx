@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import { cn, safeToString } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -632,46 +632,81 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
     }
   ];
 
-  const renderMenuSection = (items: any[], title?: string) => (
-    <div className="space-y-1">
-      {title && (
-        <>
-          <div className="px-2 py-1">
-            <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider font-arabic">
-              {title}
-            </h3>
-          </div>
-        </>
-      )}
-      {items.filter(item => item.show).map((item) => (
-        <Button
-          key={item.id}
-          variant={activeView === item.id ? "secondary" : "ghost"}
-          className={cn(
-            "w-full justify-start h-9 text-sm font-arabic",
-            isRTL && "justify-end flex-row-reverse"
-          )}
-          onClick={() => {
-            onViewChange(item.id);
-            onClose();
-          }}
-        >
-          <SafeIcon icon={item.icon} className="h-4 w-4" />
-          <span className={cn(
-            "flex-1 font-arabic",
-            isRTL ? "text-right mr-2" : "text-left ml-2"
-          )}>
-            {item.label}
-          </span>
-          {item.badge && (
-            <Badge variant="secondary" className="text-xs h-4 px-1 font-arabic">
-              {item.badge}
-            </Badge>
-          )}
-        </Button>
-      ))}
-    </div>
-  );
+  const renderMenuSection = (items: any[], title?: string) => {
+    // Safe filter to ensure only valid items are processed
+    const validItems = (Array.isArray(items) ? items : []).filter(item => {
+      try {
+        // Check if item exists and has required properties
+        if (!item || typeof item !== 'object') {
+          console.warn('renderMenuSection: Invalid item found:', item);
+          return false;
+        }
+        
+        // Check if item has required properties
+        if (!item.id || !item.label || typeof item.show !== 'boolean') {
+          console.warn('renderMenuSection: Item missing required properties:', item);
+          return false;
+        }
+        
+        // Additional safety checks for icon
+        if (item.icon && typeof item.icon !== 'function') {
+          console.warn('renderMenuSection: Invalid icon type for item:', item.id, typeof item.icon);
+        }
+        
+        return item.show;
+      } catch (error) {
+        console.error('renderMenuSection: Error checking item validity:', error, item);
+        return false;
+      }
+    });
+
+    return (
+      <div className="space-y-1">
+        {title && (
+          <>
+            <div className="px-2 py-1">
+              <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider font-arabic">
+                {title}
+              </h3>
+            </div>
+          </>
+        )}
+        {validItems.map((item) => (
+          <Button
+            key={item.id || 'unknown'}
+            variant={activeView === item.id ? "secondary" : "ghost"}
+            className={cn(
+              "w-full justify-start h-9 text-sm font-arabic",
+              isRTL && "justify-end flex-row-reverse"
+            )}
+            onClick={() => {
+              try {
+                if (item.id) {
+                  onViewChange(item.id);
+                  onClose();
+                }
+              } catch (error) {
+                console.error('renderMenuSection: Error handling click:', error);
+              }
+            }}
+          >
+            <SafeIcon icon={item.icon} className="h-4 w-4" />
+            <span className={cn(
+              "flex-1 font-arabic",
+              isRTL ? "text-right mr-2" : "text-left ml-2"
+            )}>
+              {item.label || 'Unknown'}
+            </span>
+            {item.badge && (
+              <Badge variant="secondary" className="text-xs h-4 px-1 font-arabic">
+                {item.badge}
+              </Badge>
+            )}
+          </Button>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <>
@@ -747,12 +782,12 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
             <div className={cn("flex items-center gap-2 p-2 rounded-lg bg-muted/50 font-arabic", isRTL && "flex-row-reverse")}>
               <div className="w-6 h-6 bg-accent rounded-full flex items-center justify-center">
                 <span className="text-xs font-bold text-accent-foreground font-arabic">
-                  {user?.name?.charAt(0) || user?.nameAr?.charAt(0) || 'U'}
+                  {safeToString(user?.name || user?.nameAr || 'U').charAt(0).toUpperCase()}
                 </span>
               </div>
               <div className={cn("flex-1 min-w-0 font-arabic", isRTL && "text-right")}>
                 <p className="text-xs font-medium truncate font-arabic">
-                  {isArabic ? user?.nameAr : user?.name}
+                  {safeToString(isArabic ? (user?.nameAr || user?.name) : (user?.name || user?.nameAr)) || 'مستخدم'}
                 </p>
                 <p className="text-xs text-muted-foreground font-arabic">
                   {user?.role === 'admin' ? (isArabic ? 'مدير' : 'Administrator') :
@@ -760,7 +795,8 @@ export function Sidebar({ activeView, onViewChange, isOpen, onClose }: SidebarPr
                    user?.role === 'section-editor' ? (isArabic ? 'محرر قسم' : 'Section Editor') :
                    user?.role === 'journalist' ? (isArabic ? 'صحفي' : 'Journalist') :
                    user?.role === 'opinion-writer' ? (isArabic ? 'كاتب رأي' : 'Opinion Writer') :
-                   user?.role === 'analyst' ? (isArabic ? 'محلل' : 'Analyst') : user?.role}
+                   user?.role === 'analyst' ? (isArabic ? 'محلل' : 'Analyst') : 
+                   safeToString(user?.role) || (isArabic ? 'مستخدم' : 'User')}
                 </p>
               </div>
               <Globe 
