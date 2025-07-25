@@ -101,4 +101,5 @@ export const SafeChartLine: React.FC<Omit<SafeIconProps, 'name'>> = (props) =>
 export const SafeChart: React.FC<Omit<SafeIconProps, 'name'>> = (props) => 
   <EnhancedSafeIcon name="ChartBar" {...props} />;
 
+export { SafeIcon };
 export default SafeIcon;

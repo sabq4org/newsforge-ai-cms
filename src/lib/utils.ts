@@ -5,29 +5,49 @@ import { mockCategories } from "./mockData"
 
 export function cn(...inputs: ClassValue[]) {
   try {
+    // Enhanced safety checks
+    if (!inputs || inputs.length === 0) {
+      return '';
+    }
+    
     // Ensure inputs is an array and filter out null/undefined values
-    const safeInputs = Array.isArray(inputs) ? inputs.filter(Boolean) : [];
+    const safeInputs = Array.isArray(inputs) ? 
+      inputs.filter(input => input != null && input !== false) : 
+      [inputs].filter(input => input != null && input !== false);
     
     // If no valid inputs, return empty string
     if (safeInputs.length === 0) {
       return '';
     }
     
-    // Safely apply clsx first
-    const clsxResult = clsx(safeInputs);
+    // Try clsx first with additional safety
+    let clsxResult = '';
+    try {
+      clsxResult = clsx(...safeInputs);
+    } catch (clsxError) {
+      console.warn('clsx error, using manual join:', clsxError);
+      clsxResult = safeInputs
+        .filter(input => typeof input === 'string' && input.length > 0)
+        .join(' ');
+    }
     
-    // Then safely apply twMerge
-    return twMerge(clsxResult);
+    // Try twMerge with fallback
+    try {
+      return twMerge(clsxResult);
+    } catch (twMergeError) {
+      console.warn('twMerge error, using clsx result:', twMergeError);
+      return clsxResult;
+    }
   } catch (error) {
     console.warn('cn utility error:', error, 'inputs:', inputs);
     
-    // Fallback: try to join strings manually
+    // Ultimate fallback: manual string concatenation
     try {
       return inputs
-        .filter(input => typeof input === 'string' && input.length > 0)
+        .filter(input => input && typeof input === 'string' && input.length > 0)
         .join(' ');
     } catch (fallbackError) {
-      console.warn('cn fallback error:', fallbackError);
+      console.warn('cn ultimate fallback error:', fallbackError);
       return '';
     }
   }

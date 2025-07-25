@@ -1,100 +1,206 @@
 import React from 'react';
 
+/**
+ * MinimalStartup - Ultra-minimal React app for debugging
+ */
 const MinimalStartup: React.FC = () => {
+  const [testsPassed, setTestsPassed] = React.useState<Record<string, boolean>>({});
+  
+  React.useEffect(() => {
+    // Run basic compatibility tests
+    const tests: Record<string, () => boolean> = {
+      'React': () => typeof React !== 'undefined',
+      'useState': () => typeof React.useState === 'function',
+      'useEffect': () => typeof React.useEffect === 'function',
+      'Array.forEach': () => typeof Array.prototype.forEach === 'function',
+      'String.toLowerCase': () => typeof String.prototype.toLowerCase === 'function',
+      'JSON': () => typeof JSON !== 'undefined',
+      'localStorage': () => typeof localStorage !== 'undefined',
+      'fetch': () => typeof fetch !== 'undefined'
+    };
+    
+    const results: Record<string, boolean> = {};
+    
+    Object.entries(tests).forEach(([testName, testFn]) => {
+      try {
+        results[testName] = testFn();
+      } catch (error) {
+        console.error(`Test ${testName} failed:`, error);
+        results[testName] = false;
+      }
+    });
+    
+    setTestsPassed(results);
+  }, []);
+  
+  const allTestsPassed = Object.values(testsPassed).every(Boolean);
+  
   return (
-    <div style={{ 
-      minHeight: '100vh', 
-      backgroundColor: '#ffffff',
-      padding: '2rem',
-      fontFamily: 'system-ui, sans-serif'
+    <div style={{
+      minHeight: '100vh',
+      backgroundColor: '#f8f9fa',
+      padding: '20px',
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      direction: 'rtl'
     }}>
-      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-        <h1 style={{ 
-          fontSize: '2rem', 
-          fontWeight: 'bold', 
-          marginBottom: '1rem',
-          color: '#1f2937'
+      <div style={{
+        maxWidth: '800px',
+        margin: '0 auto',
+        backgroundColor: 'white',
+        borderRadius: '8px',
+        padding: '30px',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+      }}>
+        <h1 style={{
+          fontSize: '24px',
+          color: '#333',
+          marginBottom: '20px',
+          textAlign: 'center'
         }}>
-          سبق الذكية - التحقق من النظام
+          🚀 تشخيص النظام - سبق الذكية
         </h1>
         
         <div style={{
-          padding: '1rem',
-          border: '1px solid #d1d5db',
-          borderRadius: '0.5rem',
-          backgroundColor: '#f9fafb',
-          marginBottom: '1rem'
+          backgroundColor: allTestsPassed ? '#d4edda' : '#f8d7da',
+          border: `1px solid ${allTestsPassed ? '#c3e6cb' : '#f5c6cb'}`,
+          borderRadius: '6px',
+          padding: '15px',
+          marginBottom: '25px',
+          textAlign: 'center'
         }}>
-          <h2 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>System Status</h2>
-          <ul style={{ listStyle: 'none', padding: 0 }}>
-            <li>✅ React rendering</li>
-            <li>✅ Basic styling</li>
-            <li>✅ Arabic text support</li>
-            <li>✅ Page structure</li>
-          </ul>
+          <h2 style={{
+            fontSize: '18px',
+            color: allTestsPassed ? '#155724' : '#721c24',
+            margin: '0'
+          }}>
+            {allTestsPassed ? '✅ جميع الاختبارات نجحت' : '❌ يوجد مشاكل في النظام'}
+          </h2>
         </div>
         
         <div style={{
-          padding: '1rem',
-          border: '1px solid #3b82f6',
-          borderRadius: '0.5rem',
-          backgroundColor: '#eff6ff'
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: '15px',
+          marginBottom: '30px'
         }}>
-          <h3 style={{ marginBottom: '0.5rem' }}>Navigation Options</h3>
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <button 
-              onClick={() => window.location.search = '?safe=true'}
+          {Object.entries(testsPassed).map(([testName, passed]) => (
+            <div
+              key={testName}
               style={{
-                padding: '0.5rem 1rem',
-                border: '1px solid #3b82f6',
-                borderRadius: '0.25rem',
-                backgroundColor: '#3b82f6',
-                color: 'white',
-                cursor: 'pointer'
+                padding: '12px',
+                border: '1px solid #dee2e6',
+                borderRadius: '6px',
+                backgroundColor: passed ? '#f8fff9' : '#fff5f5',
+                textAlign: 'center'
               }}
             >
-              Safe Mode
-            </button>
-            <button 
-              onClick={() => window.location.search = '?test=true'}
-              style={{
-                padding: '0.5rem 1rem',
-                border: '1px solid #10b981',
-                borderRadius: '0.25rem',
-                backgroundColor: '#10b981',
-                color: 'white',
-                cursor: 'pointer'
-              }}
-            >
-              Test Mode
-            </button>
-            <button 
-              onClick={() => window.location.search = ''}
-              style={{
-                padding: '0.5rem 1rem',
-                border: '1px solid #6b7280',
-                borderRadius: '0.25rem',
-                backgroundColor: '#6b7280',
-                color: 'white',
-                cursor: 'pointer'
-              }}
-            >
-              Full App
-            </button>
-          </div>
+              <div style={{
+                fontSize: '20px',
+                marginBottom: '5px'
+              }}>
+                {passed ? '✅' : '❌'}
+              </div>
+              <div style={{
+                fontSize: '14px',
+                fontWeight: '500',
+                color: '#333'
+              }}>
+                {testName}
+              </div>
+            </div>
+          ))}
         </div>
         
         <div style={{
-          marginTop: '2rem',
-          padding: '1rem',
-          backgroundColor: '#fef3c7',
-          border: '1px solid #f59e0b',
-          borderRadius: '0.5rem'
+          display: 'flex',
+          gap: '10px',
+          justifyContent: 'center',
+          flexWrap: 'wrap'
         }}>
-          <p style={{ margin: 0, color: '#92400e' }}>
-            <strong>إرشادات:</strong> إذا ظهرت هذه الصفحة، فإن React يعمل بشكل صحيح. 
-            اختبر الأوضاع المختلفة لتحديد مصدر المشكلة في التطبيق الرئيسي.
-          </p>
+          <button
+            onClick={() => window.location.search = ''}
+            style={{
+              backgroundColor: '#007bff',
+              color: 'white',
+              border: 'none',
+              padding: '12px 24px',
+              borderRadius: '6px',
+              fontSize: '14px',
+              cursor: 'pointer',
+              fontWeight: '500'
+            }}
+          >
+            🚀 تشغيل التطبيق الكامل
+          </button>
+          
+          <button
+            onClick={() => window.location.search = '?test=true'}
+            style={{
+              backgroundColor: '#28a745',
+              color: 'white',
+              border: 'none',
+              padding: '12px 24px',
+              borderRadius: '6px',
+              fontSize: '14px',
+              cursor: 'pointer',
+              fontWeight: '500'
+            }}
+          >
+            🧪 الوضع التجريبي
+          </button>
+          
+          <button
+            onClick={() => window.location.search = '?safe=true'}
+            style={{
+              backgroundColor: '#ffc107',
+              color: '#212529',
+              border: 'none',
+              padding: '12px 24px',
+              borderRadius: '6px',
+              fontSize: '14px',
+              cursor: 'pointer',
+              fontWeight: '500'
+            }}
+          >
+            🛡️ الوضع الآمن
+          </button>
+          
+          <button
+            onClick={() => {
+              localStorage.clear();
+              sessionStorage.clear();
+              window.location.reload();
+            }}
+            style={{
+              backgroundColor: '#dc3545',
+              color: 'white',
+              border: 'none',
+              padding: '12px 24px',
+              borderRadius: '6px',
+              fontSize: '14px',
+              cursor: 'pointer',
+              fontWeight: '500'
+            }}
+          >
+            🗑️ مسح البيانات وإعادة التشغيل
+          </button>
+        </div>
+        
+        <div style={{
+          marginTop: '30px',
+          padding: '15px',
+          backgroundColor: '#f8f9fa',
+          borderRadius: '6px',
+          fontSize: '12px',
+          color: '#6c757d'
+        }}>
+          <strong>معلومات النظام:</strong>
+          <br />
+          المتصفح: {navigator.userAgent}
+          <br />
+          الوقت: {new Date().toLocaleString('ar-SA')}
+          <br />
+          الرابط: {window.location.href}
         </div>
       </div>
     </div>

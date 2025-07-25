@@ -2,7 +2,8 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Trophy, Medal, ChartLine, Globe, Settings } from '@phosphor-icons/react';
+import { Medal, Globe, Settings, TrendingUp, BarChart } from '@phosphor-icons/react';
+import { SafeTrophy, SafeChartLine } from '@/components/common';
 import { cn } from '@/lib/utils';
 
 const TestAppContent: React.FC = () => {
@@ -12,14 +13,14 @@ const TestAppContent: React.FC = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Trophy size={24} />
+              <SafeTrophy size={24} />
               تطبيق اختبار "سبق الذكية"
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="flex flex-col items-center gap-2 p-4 border rounded-lg">
-                <Trophy size={32} className="text-primary" />
+                <SafeTrophy size={32} className="text-primary" />
                 <span className="text-sm">Trophy Icon</span>
               </div>
               
@@ -29,7 +30,7 @@ const TestAppContent: React.FC = () => {
               </div>
               
               <div className="flex flex-col items-center gap-2 p-4 border rounded-lg">
-                <ChartLine size={32} className="text-primary" />
+                <SafeChartLine size={32} className="text-primary" />
                 <span className="text-sm">ChartLine Icon</span>
               </div>
               

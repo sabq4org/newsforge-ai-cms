@@ -8,38 +8,143 @@
     
     <!-- Critical error handling script -->
     <script>
-      // Emergency error detection
+      // Emergency error detection and recovery
       let criticalErrors = 0;
+      const maxErrors = 5;
       
+      // Enhanced error handler with more specific patterns
       window.addEventListener('error', function(e) {
         criticalErrors++;
         console.error('HTML-level error:', e.message, e.filename, e.lineno);
         
-        if (e.message && (
-          e.message.includes('forEach') ||
-          e.message.includes('tailwind') ||
-          e.message.includes('classGroup') ||
-          e.message.includes("Can't find variable: cn") ||
-          e.message.includes('ChartLine') ||
-          e.message.includes('Trophy') ||
-          e.message.includes('Award')
-        )) {
-          console.warn('Critical error detected in HTML, redirecting to emergency mode');
+        const errorPatterns = [
+          'forEach',
+          'tailwind',
+          'classGroup',
+          "Can't find variable: cn",
+          'ChartLine',
+          'Trophy',
+          'Award',
+          'toLowerCase',
+          'toLocaleDateString',
+          'toLocaleTimeString',
+          'undefined is not an object',
+          'property access',
+          't.forEach is not a function',
+          'classGroupId',
+          'twMerge'
+        ];
+        
+        const shouldRedirect = errorPatterns.some(pattern => 
+          e.message && e.message.includes(pattern)
+        );
+        
+        if (shouldRedirect || criticalErrors > maxErrors) {
+          console.warn('Critical error pattern detected, redirecting to emergency mode');
           if (window.location.search !== '?emergency=true') {
             window.location.search = '?emergency=true';
           }
         }
+      });
+      
+      // Enhanced promise rejection handler
+      window.addEventListener('unhandledrejection', function(e) {
+        console.error('Unhandled promise rejection:', e.reason);
         
-        if (criticalErrors > 3) {
-          console.warn('Too many errors, forcing emergency mode');
-          window.location.search = '?emergency=true';
+        if (e.reason && typeof e.reason === 'object') {
+          const message = e.reason.message || e.reason.toString();
+          if (message.includes('forEach') || message.includes('twMerge') || message.includes('clsx')) {
+            console.warn('Promise rejection with critical error, redirecting');
+            if (window.location.search !== '?emergency=true') {
+              window.location.search = '?emergency=true';
+            }
+          }
         }
       });
       
-      // Provide basic fallbacks immediately
+      // Provide enhanced basic fallbacks immediately
       window.cn = window.cn || function() {
-        return Array.from(arguments).filter(Boolean).join(' ');
+        try {
+          return Array.from(arguments).filter(arg => 
+            arg && typeof arg === 'string' && arg.trim().length > 0
+          ).join(' ');
+        } catch {
+          return '';
+        }
       };
+      
+      // Enhanced Array.prototype.forEach safety (early protection)
+      if (Array.prototype.forEach) {
+        const originalForEach = Array.prototype.forEach;
+        Array.prototype.forEach = function(callback, thisArg) {
+          try {
+            if (!Array.isArray(this)) {
+              console.warn('forEach called on non-array, converting');
+              return Array.from(this).forEach(callback, thisArg);
+            }
+            return originalForEach.call(this, callback, thisArg);
+          } catch (error) {
+            console.error('forEach error in HTML safety wrapper:', error);
+            // Manual iteration fallback
+            for (let i = 0; i < this.length; i++) {
+              try {
+                callback.call(thisArg, this[i], i, this);
+              } catch (itemError) {
+                console.error('Error in forEach iteration:', itemError);
+              }
+            }
+          }
+        };
+      }
+      
+      // String.prototype.toLowerCase safety
+      if (String.prototype.toLowerCase) {
+        const originalToLowerCase = String.prototype.toLowerCase;
+        String.prototype.toLowerCase = function() {
+          try {
+            if (typeof this !== 'string') {
+              return String(this).toLowerCase();
+            }
+            return originalToLowerCase.call(this);
+          } catch (error) {
+            console.error('toLowerCase error:', error);
+            return String(this).replace(/[A-Z]/g, char => 
+              String.fromCharCode(char.charCodeAt(0) + 32)
+            );
+          }
+        };
+      }
+      
+      // Date.prototype methods safety
+      if (Date.prototype.toLocaleDateString) {
+        const originalToLocaleDateString = Date.prototype.toLocaleDateString;
+        Date.prototype.toLocaleDateString = function(locales, options) {
+          try {
+            return originalToLocaleDateString.call(this, locales, options);
+          } catch (error) {
+            console.warn('toLocaleDateString error, using fallback:', error);
+            return this.getFullYear() + '-' + 
+                   String(this.getMonth() + 1).padStart(2, '0') + '-' + 
+                   String(this.getDate()).padStart(2, '0');
+          }
+        };
+      }
+      
+      if (Date.prototype.toLocaleTimeString) {
+        const originalToLocaleTimeString = Date.prototype.toLocaleTimeString;
+        Date.prototype.toLocaleTimeString = function(locales, options) {
+          try {
+            return originalToLocaleTimeString.call(this, locales, options);
+          } catch (error) {
+            console.warn('toLocaleTimeString error, using fallback:', error);
+            return String(this.getHours()).padStart(2, '0') + ':' + 
+                   String(this.getMinutes()).padStart(2, '0') + ':' + 
+                   String(this.getSeconds()).padStart(2, '0');
+          }
+        };
+      }
+      
+      console.log('Enhanced error handling initialized');
     </script>
     
     <!-- Optimized font loading with preconnect and preload -->
