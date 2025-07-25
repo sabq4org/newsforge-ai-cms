@@ -6,6 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { safeDateFormat, safeTimeFormat } from '@/lib/utils';
+import { safeProperty } from '@/lib/safeComponentRenderer';
 import { 
   Brain,
   Eye,
@@ -341,7 +342,7 @@ export function AdaptiveColorLearningSystem({
       const adaptationFactor = adaptationStrength[0] / 100;
       if (adaptationFactor > 0.5) {
         applyTheme(colors);
-        onColorAdaptation?.(colors, reasoning.join('; '));
+        onColorAdaptation?.(colors, Array.isArray(reasoning) && reasoning.length > 0 ? reasoning.join('; ') : 'تكييف تلقائي للألوان');
         
         // Record successful adaptation
         const newPreference: ColorPreference = {
@@ -356,7 +357,7 @@ export function AdaptiveColorLearningSystem({
         
         setColorPreferences(prev => [...prev.slice(-19), newPreference]);
         
-        toast.success(`تم تكييف الألوان تلقائياً - ${reasoning[0] || 'تحسين تجربة القراءة'}`);
+        toast.success(`تم تكييف الألوان تلقائياً - ${Array.isArray(reasoning) && reasoning.length > 0 ? reasoning[0] : 'تحسين تجربة القراءة'}`);
       }
     }, 30000); // Check every 30 seconds
     
@@ -371,12 +372,12 @@ export function AdaptiveColorLearningSystem({
       const { colors, reasoning } = await generateAdaptiveColors(context, currentMetrics, learningPatterns);
       
       applyTheme(colors);
-      onColorAdaptation?.(colors, reasoning.join('; '));
+      onColorAdaptation?.(colors, Array.isArray(reasoning) && reasoning.length > 0 ? reasoning.join('; ') : 'تكييف يدوي للألوان');
       
       setAdaptationHistory(prev => [...prev.slice(-9), {
         timestamp: new Date(),
         colors,
-        reasoning,
+        reasoning: Array.isArray(reasoning) ? reasoning : ['تكييف يدوي للألوان'],
         context,
         metrics: currentMetrics
       }]);
@@ -572,9 +573,13 @@ export function AdaptiveColorLearningSystem({
               {adaptationHistory.slice(-5).reverse().map((adaptation, index) => (
                 <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-full" style={{ backgroundColor: adaptation.colors?.accent || '#999999' }} />
+                    <div className="w-6 h-6 rounded-full" style={{ backgroundColor: safeProperty(adaptation.colors, 'accent', '#999999') }} />
                     <div>
-                      <div className="font-medium">{adaptation.reasoning[0]}</div>
+                      <div className="font-medium">
+                        {adaptation.reasoning && adaptation.reasoning.length > 0 
+                          ? adaptation.reasoning[0] 
+                          : 'تكييف تلقائي للألوان'}
+                      </div>
                       <div className="text-sm text-muted-foreground">
                         {safeDateFormat(adaptation.timestamp, 'ar-SA', {
                           year: 'numeric',

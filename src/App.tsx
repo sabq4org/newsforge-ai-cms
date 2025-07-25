@@ -64,6 +64,7 @@ import { mockArticles, mockCategories, mockMediaFiles } from '@/lib/mockData';
 import { normalizeArticles, normalizeDataObject, cn } from '@/lib/utils';
 import { ZIndexManager, DirectReadingScaleController, QuantumColorAdaptationSystem, ReadingScaleIndicator, ColorAdaptationIndicator, ErrorMitigationSystem, SidebarProtector, useSidebarProtection } from '@/components/common';
 import { initializeGlobalErrorHandler } from '@/lib/globalErrorHandler';
+import '@/lib/runtimeErrorFixes'; // Import runtime error fixes
 import { 
   MemoryManager, 
   PerformanceMonitor, 

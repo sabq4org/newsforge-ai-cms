@@ -20,14 +20,14 @@ import {
   Monitor,
   Sun,
   Moon,
-  Coffee,
-  Sunset
+  Coffee
 } from '@phosphor-icons/react';
 import { useKV } from '@github/spark/hooks';
 import { useTheme, ThemeColors, ThemePreset } from '@/contexts/ThemeContext';
 import { Article } from '@/types';
 import { UserProfile, ReadingSession } from '@/types/membership';
 import { toast } from 'sonner';
+import { safeArray, safeProperty, safeDisplayValue, safeColors, safeExecute } from '@/lib/safeComponentRenderer';
 
 interface IntelligentThemeGeneratorProps {
   userId: string;
@@ -271,9 +271,15 @@ export const IntelligentThemeGenerator: React.FC<IntelligentThemeGeneratorProps>
 
   // Generate intelligent themes based on behavior patterns
   const generateIntelligentThemes = async (pattern: ReadingBehaviorPattern) => {
-    setIsGenerating(true);
-    
-    const themes: GeneratedTheme[] = [];
+    try {
+      setIsGenerating(true);
+      
+      // Validate pattern object
+      if (!pattern || !pattern.timePreferences || !pattern.visualPreferences) {
+        throw new Error('Invalid behavior pattern data');
+      }
+      
+      const themes: GeneratedTheme[] = [];
     
     // Theme 1: Time-optimized theme
     const peakTime = Object.keys(pattern.timePreferences).reduce((a, b) => 
@@ -424,6 +430,11 @@ export const IntelligentThemeGenerator: React.FC<IntelligentThemeGeneratorProps>
       setIsGenerating(false);
       toast.success(`تم توليد ${themes.length} ثيمات ذكية بناءً على سلوك قراءتك!`);
     }, 3000);
+    } catch (error) {
+      console.error('Error generating intelligent themes:', error);
+      setIsGenerating(false);
+      toast.error('حدث خطأ في توليد الثيمات الذكية');
+    }
   };
 
   // Apply generated theme
@@ -505,7 +516,7 @@ export const IntelligentThemeGenerator: React.FC<IntelligentThemeGeneratorProps>
                     <Progress value={33} className="w-64" />
                   </div>
                 </div>
-              ) : behaviorPattern ? (
+              ) : behaviorPattern && behaviorPattern.timePreferences ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Time Preferences */}
                   <div className="space-y-3">
@@ -514,12 +525,16 @@ export const IntelligentThemeGenerator: React.FC<IntelligentThemeGeneratorProps>
                       تفضيلات الوقت
                     </h4>
                     <div className="space-y-2">
-                      {Object.entries(behaviorPattern.timePreferences).map(([time, percentage]) => (
+                      {safeExecute(
+                        () => Object.entries(behaviorPattern.timePreferences || {}),
+                        [],
+                        'Failed to load time preferences'
+                      ).map(([time, percentage]) => (
                         <div key={time} className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             {time === 'morning' && <Coffee className="w-4 h-4 text-orange-500" />}
                             {time === 'afternoon' && <Sun className="w-4 h-4 text-yellow-500" />}
-                            {time === 'evening' && <Sunset className="w-4 h-4 text-orange-600" />}
+                            {time === 'evening' && <Sun className="w-4 h-4 text-orange-600" />}
                             {time === 'night' && <Moon className="w-4 h-4 text-blue-500" />}
                             <span className="text-sm">
                               {time === 'morning' ? 'الصباح' : 
@@ -528,8 +543,8 @@ export const IntelligentThemeGenerator: React.FC<IntelligentThemeGeneratorProps>
                             </span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <Progress value={percentage} className="w-20" />
-                            <span className="text-xs font-medium">{Math.round(percentage)}%</span>
+                            <Progress value={percentage || 0} className="w-20" />
+                            <span className="text-xs font-medium">{safeDisplayValue(Math.round(percentage || 0))}%</span>
                           </div>
                         </div>
                       ))}
@@ -750,19 +765,19 @@ export const IntelligentThemeGenerator: React.FC<IntelligentThemeGeneratorProps>
                     <div className="flex gap-2 mb-4">
                       <div 
                         className="w-8 h-8 rounded-full border-2 border-white shadow-sm"
-                        style={{ backgroundColor: theme.colors?.primary || '#000' }}
+                        style={{ backgroundColor: safeProperty(theme.colors, 'primary', '#3b82f6') }}
                       />
                       <div 
                         className="w-8 h-8 rounded-full border-2 border-white shadow-sm"
-                        style={{ backgroundColor: theme.colors?.accent || '#999' }}
+                        style={{ backgroundColor: safeProperty(theme.colors, 'accent', '#f59e0b') }}
                       />
                       <div 
                         className="w-8 h-8 rounded-full border-2 border-white shadow-sm"
-                        style={{ backgroundColor: theme.colors?.secondary || '#666' }}
+                        style={{ backgroundColor: safeProperty(theme.colors, 'secondary', '#6b7280') }}
                       />
                       <div 
                         className="w-8 h-8 rounded-full border-2 border-white shadow-sm"
-                        style={{ backgroundColor: theme.colors?.background || '#fff' }}
+                        style={{ backgroundColor: safeProperty(theme.colors, 'background', '#ffffff') }}
                       />
                     </div>
 
@@ -773,7 +788,7 @@ export const IntelligentThemeGenerator: React.FC<IntelligentThemeGeneratorProps>
                         سبب التوليد
                       </h5>
                       <ul className="space-y-1">
-                        {theme.reasoning.map((reason, index) => (
+                        {(theme.reasoning && Array.isArray(theme.reasoning) ? theme.reasoning : ['تم توليد الثيم تلقائياً']).map((reason, index) => (
                           <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
                             <span className="text-primary">•</span>
                             {reason}
@@ -786,7 +801,7 @@ export const IntelligentThemeGenerator: React.FC<IntelligentThemeGeneratorProps>
                     <div>
                       <h5 className="font-medium mb-2">مبني على الأنماط:</h5>
                       <div className="flex flex-wrap gap-2">
-                        {theme.basedOn.map((pattern, index) => (
+                        {(theme.basedOn && Array.isArray(theme.basedOn) ? theme.basedOn : []).map((pattern, index) => (
                           <Badge key={index} variant="secondary" className="text-xs">
                             {pattern.pattern} ({Math.round(pattern.strength)}%)
                           </Badge>
