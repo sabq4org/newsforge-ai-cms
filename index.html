@@ -10,7 +10,7 @@
     <script>
       // Emergency error detection and recovery
       let criticalErrors = 0;
-      const maxErrors = 5;
+      const maxErrors = 3; // Reduced threshold for faster response
       
       // Enhanced error handler with more specific patterns
       window.addEventListener('error', function(e) {
@@ -18,6 +18,7 @@
         console.error('HTML-level error:', e.message, e.filename, e.lineno);
         
         const errorPatterns = [
+          'forEach is not a function',
           'forEach',
           'tailwind',
           'classGroup',
@@ -25,18 +26,22 @@
           'ChartLine',
           'Trophy',
           'Award',
+          'toLowerCase is not a function',
           'toLowerCase',
+          'toLocaleDateString is not a function',
           'toLocaleDateString',
+          'toLocaleTimeString is not a function',
           'toLocaleTimeString',
           'undefined is not an object',
           'property access',
           't.forEach is not a function',
           'classGroupId',
-          'twMerge'
+          'twMerge',
+          'clsx'
         ];
         
         const shouldRedirect = errorPatterns.some(pattern => 
-          e.message && e.message.includes(pattern)
+          e.message && e.message.toLowerCase().includes(pattern.toLowerCase())
         );
         
         if (shouldRedirect || criticalErrors > maxErrors) {
@@ -53,7 +58,11 @@
         
         if (e.reason && typeof e.reason === 'object') {
           const message = e.reason.message || e.reason.toString();
-          if (message.includes('forEach') || message.includes('twMerge') || message.includes('clsx')) {
+          const criticalPatterns = [
+            'forEach', 'twMerge', 'clsx', 'toLowerCase', 'toLocaleDateString'
+          ];
+          
+          if (criticalPatterns.some(pattern => message.toLowerCase().includes(pattern))) {
             console.warn('Promise rejection with critical error, redirecting');
             if (window.location.search !== '?emergency=true') {
               window.location.search = '?emergency=true';
@@ -80,15 +89,17 @@
           try {
             if (!Array.isArray(this)) {
               console.warn('forEach called on non-array, converting');
-              return Array.from(this).forEach(callback, thisArg);
+              return Array.from(this || []).forEach(callback, thisArg);
             }
             return originalForEach.call(this, callback, thisArg);
           } catch (error) {
             console.error('forEach error in HTML safety wrapper:', error);
             // Manual iteration fallback
-            for (let i = 0; i < this.length; i++) {
+            for (let i = 0; i < (this?.length || 0); i++) {
               try {
-                callback.call(thisArg, this[i], i, this);
+                if (this[i] !== undefined) {
+                  callback.call(thisArg, this[i], i, this);
+                }
               } catch (itemError) {
                 console.error('Error in forEach iteration:', itemError);
               }
@@ -120,6 +131,10 @@
         const originalToLocaleDateString = Date.prototype.toLocaleDateString;
         Date.prototype.toLocaleDateString = function(locales, options) {
           try {
+            if (!(this instanceof Date) || isNaN(this.getTime())) {
+              console.warn('toLocaleDateString called on invalid date');
+              return new Date().toLocaleDateString(locales, options);
+            }
             return originalToLocaleDateString.call(this, locales, options);
           } catch (error) {
             console.warn('toLocaleDateString error, using fallback:', error);
@@ -134,6 +149,10 @@
         const originalToLocaleTimeString = Date.prototype.toLocaleTimeString;
         Date.prototype.toLocaleTimeString = function(locales, options) {
           try {
+            if (!(this instanceof Date) || isNaN(this.getTime())) {
+              console.warn('toLocaleTimeString called on invalid date');
+              return new Date().toLocaleTimeString(locales, options);
+            }
             return originalToLocaleTimeString.call(this, locales, options);
           } catch (error) {
             console.warn('toLocaleTimeString error, using fallback:', error);
@@ -144,7 +163,7 @@
         };
       }
       
-      console.log('Enhanced error handling initialized');
+      console.log('Enhanced critical error handling initialized for Sabq Althakiyah');
     </script>
     
     <!-- Optimized font loading with preconnect and preload -->

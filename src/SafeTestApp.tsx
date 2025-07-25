@@ -1,193 +1,186 @@
 import React from 'react';
 
-/**
- * SafeTestApp - Minimal UI test without dependencies
- */
-const SafeTestApp: React.FC = () => {
-  const [status, setStatus] = React.useState('جاري التحقق...');
-  
+// Safe minimal application with basic UI
+export default function SafeTestApp() {
+  const [currentTime, setCurrentTime] = React.useState(new Date());
+
   React.useEffect(() => {
-    // Test basic functionality
-    setTimeout(() => {
-      try {
-        setStatus('✅ React يعمل بشكل صحيح');
-      } catch (error) {
-        setStatus('❌ خطأ في React');
-      }
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
     }, 1000);
+
+    return () => clearInterval(timer);
   }, []);
-  
+
+  const handleGoToFull = () => {
+    window.location.search = '';
+  };
+
+  const handleGoToTest = () => {
+    window.location.search = '?test=true';
+  };
+
+  const handleGoToEmergency = () => {
+    window.location.search = '?emergency=true';
+  };
+
+  const formatTime = (date: Date) => {
+    try {
+      return date.toLocaleString('ar-SA');
+    } catch {
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
+    }
+  };
+
   return (
     <div style={{
-      minHeight: '100vh',
-      backgroundColor: '#ffffff',
-      padding: '20px',
-      fontFamily: 'IBM Plex Sans Arabic, system-ui, sans-serif',
+      fontFamily: 'IBM Plex Sans Arabic, Arial, sans-serif',
       direction: 'rtl',
-      textAlign: 'center'
+      backgroundColor: '#f8f9fa',
+      minHeight: '100vh',
+      padding: '2rem'
     }}>
       <div style={{
         maxWidth: '600px',
         margin: '0 auto',
-        padding: '40px'
+        backgroundColor: 'white',
+        padding: '2rem',
+        borderRadius: '8px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
       }}>
-        <h1 style={{
-          fontSize: '32px',
-          color: '#2d3748',
-          marginBottom: '30px',
-          fontWeight: 'bold'
+        <h1 style={{ 
+          color: '#2563eb', 
+          marginBottom: '1rem',
+          textAlign: 'center'
         }}>
-          سبق الذكية - الوضع الآمن
+          🛡️ الوضع الآمن - سبق الذكية
         </h1>
         
         <div style={{
-          backgroundColor: '#f7fafc',
-          border: '2px solid #e2e8f0',
-          borderRadius: '12px',
-          padding: '30px',
-          marginBottom: '30px'
+          backgroundColor: '#d1fae5',
+          border: '1px solid #10b981',
+          borderRadius: '4px',
+          padding: '1rem',
+          marginBottom: '2rem'
         }}>
-          <h2 style={{
-            fontSize: '20px',
-            color: '#4a5568',
-            marginBottom: '20px'
-          }}>
-            حالة النظام
-          </h2>
+          <h3 style={{ color: '#047857', margin: '0 0 0.5rem 0' }}>
+            النظام يعمل بشكل آمن
+          </h3>
+          <p style={{ color: '#047857', margin: 0 }}>
+            تم تحميل واجهة مبسطة بدون مكونات معقدة لضمان الاستقرار.
+          </p>
+        </div>
+
+        <div style={{ marginBottom: '2rem' }}>
+          <h3 style={{ marginBottom: '1rem' }}>معلومات النظام:</h3>
           
           <div style={{
-            fontSize: '18px',
-            color: '#2d3748',
-            padding: '15px',
-            backgroundColor: '#edf2f7',
-            borderRadius: '8px',
-            marginBottom: '20px'
+            backgroundColor: '#f9fafb',
+            border: '1px solid #e5e7eb',
+            borderRadius: '4px',
+            padding: '1rem'
           }}>
-            {status}
-          </div>
-          
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-            gap: '15px',
-            marginTop: '20px'
-          }}>
-            <div style={{
-              padding: '15px',
-              backgroundColor: '#f0fff4',
-              border: '1px solid #9ae6b4',
-              borderRadius: '8px'
-            }}>
-              <div style={{ fontSize: '24px', marginBottom: '5px' }}>⚛️</div>
-              <div style={{ fontSize: '14px', fontWeight: '500' }}>React</div>
-            </div>
-            
-            <div style={{
-              padding: '15px',
-              backgroundColor: '#f0fff4',
-              border: '1px solid #9ae6b4',
-              borderRadius: '8px'
-            }}>
-              <div style={{ fontSize: '24px', marginBottom: '5px' }}>🎨</div>
-              <div style={{ fontSize: '14px', fontWeight: '500' }}>الواجهة</div>
-            </div>
-            
-            <div style={{
-              padding: '15px',
-              backgroundColor: '#f0fff4',
-              border: '1px solid #9ae6b4',
-              borderRadius: '8px'
-            }}>
-              <div style={{ fontSize: '24px', marginBottom: '5px' }}>🔤</div>
-              <div style={{ fontSize: '14px', fontWeight: '500' }}>الخطوط</div>
-            </div>
-            
-            <div style={{
-              padding: '15px',
-              backgroundColor: '#f0fff4',
-              border: '1px solid #9ae6b4',
-              borderRadius: '8px'
-            }}>
-              <div style={{ fontSize: '24px', marginBottom: '5px' }}>🌐</div>
-              <div style={{ fontSize: '14px', fontWeight: '500' }}>RTL</div>
-            </div>
+            <p style={{ margin: '0 0 0.5rem 0' }}>
+              <strong>الوقت الحالي:</strong> {formatTime(currentTime)}
+            </p>
+            <p style={{ margin: '0 0 0.5rem 0' }}>
+              <strong>حالة النظام:</strong> الوضع الآمن نشط
+            </p>
+            <p style={{ margin: '0 0 0.5rem 0' }}>
+              <strong>المتصفح:</strong> {navigator.userAgent.split(' ')[0]}
+            </p>
+            <p style={{ margin: 0 }}>
+              <strong>اللغة:</strong> {navigator.language}
+            </p>
           </div>
         </div>
-        
-        <div style={{
-          display: 'flex',
-          gap: '15px',
-          justifyContent: 'center',
-          flexWrap: 'wrap'
-        }}>
-          <button
-            onClick={() => window.location.search = ''}
-            style={{
-              backgroundColor: '#4299e1',
-              color: 'white',
-              border: 'none',
-              padding: '15px 30px',
-              borderRadius: '8px',
-              fontSize: '16px',
-              cursor: 'pointer',
-              fontWeight: '600',
-              fontFamily: 'inherit'
-            }}
-          >
-            🚀 تشغيل التطبيق
-          </button>
+
+        <div style={{ marginBottom: '2rem' }}>
+          <h3 style={{ marginBottom: '1rem' }}>الخيارات المتاحة:</h3>
           
-          <button
-            onClick={() => window.location.search = '?test=true'}
-            style={{
-              backgroundColor: '#48bb78',
-              color: 'white',
-              border: 'none',
-              padding: '15px 30px',
-              borderRadius: '8px',
-              fontSize: '16px',
-              cursor: 'pointer',
-              fontWeight: '600',
-              fontFamily: 'inherit'
-            }}
-          >
-            🧪 اختبار متقدم
-          </button>
-          
-          <button
-            onClick={() => window.location.search = '?minimal=true'}
-            style={{
-              backgroundColor: '#ed8936',
-              color: 'white',
-              border: 'none',
-              padding: '15px 30px',
-              borderRadius: '8px',
-              fontSize: '16px',
-              cursor: 'pointer',
-              fontWeight: '600',
-              fontFamily: 'inherit'
-            }}
-          >
-            🔧 التشخيص
-          </button>
+          <div style={{ display: 'grid', gap: '1rem' }}>
+            <button
+              onClick={handleGoToFull}
+              style={{
+                backgroundColor: '#10b981',
+                color: 'white',
+                padding: '0.75rem 1.5rem',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '1rem',
+                transition: 'background-color 0.2s'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = '#059669';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = '#10b981';
+              }}
+            >
+              🚀 تجربة التطبيق الكامل
+            </button>
+            
+            <button
+              onClick={handleGoToTest}
+              style={{
+                backgroundColor: '#6366f1',
+                color: 'white',
+                padding: '0.75rem 1.5rem',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '1rem',
+                transition: 'background-color 0.2s'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = '#4f46e5';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = '#6366f1';
+              }}
+            >
+              🧪 تشغيل اختبارات النظام
+            </button>
+            
+            <button
+              onClick={handleGoToEmergency}
+              style={{
+                backgroundColor: '#ef4444',
+                color: 'white',
+                padding: '0.75rem 1.5rem',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '1rem',
+                transition: 'background-color 0.2s'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = '#dc2626';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = '#ef4444';
+              }}
+            >
+              🚨 الوضع الطارئ
+            </button>
+          </div>
         </div>
-        
+
         <div style={{
-          marginTop: '40px',
-          padding: '20px',
-          backgroundColor: '#f7fafc',
-          borderRadius: '8px',
-          fontSize: '14px',
-          color: '#718096',
-          textAlign: 'right'
+          backgroundColor: '#f3f4f6',
+          padding: '1rem',
+          borderRadius: '4px',
+          fontSize: '0.875rem',
+          color: '#6b7280',
+          textAlign: 'center'
         }}>
-          <strong>ملاحظة:</strong> هذا هو الوضع الآمن لتطبيق "سبق الذكية". 
-          يتم استخدام هذا الوضع للتأكد من أن جميع المكونات الأساسية تعمل بشكل صحيح 
-          قبل تحميل النظام الكامل.
+          <p style={{ margin: 0 }}>
+            سبق الذكية - نظام إدارة المحتوى الذكي<br/>
+            الوضع الآمن النشط | الإصدار 1.0
+          </p>
         </div>
       </div>
     </div>
   );
-};
-
-export default SafeTestApp;
+}

@@ -2,18 +2,23 @@ import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { Article, Category } from "@/types"
 import { mockCategories } from "./mockData"
+import { safeCn, safeOperation, ensureArray } from "./criticalErrorFixes"
 
 export function cn(...inputs: ClassValue[]) {
-  try {
-    // Enhanced safety checks
+  return safeOperation(() => {
+    // Use safeCn as primary implementation
+    const safeResult = safeCn(...inputs);
+    if (safeResult) {
+      return safeResult;
+    }
+    
+    // Enhanced safety checks as fallback
     if (!inputs || inputs.length === 0) {
       return '';
     }
     
     // Ensure inputs is an array and filter out null/undefined values
-    const safeInputs = Array.isArray(inputs) ? 
-      inputs.filter(input => input != null && input !== false) : 
-      [inputs].filter(input => input != null && input !== false);
+    const safeInputs = ensureArray(inputs).filter(input => input != null && input !== false);
     
     // If no valid inputs, return empty string
     if (safeInputs.length === 0) {
@@ -38,134 +43,126 @@ export function cn(...inputs: ClassValue[]) {
       console.warn('twMerge error, using clsx result:', twMergeError);
       return clsxResult;
     }
-  } catch (error) {
-    console.warn('cn utility error:', error, 'inputs:', inputs);
-    
-    // Ultimate fallback: manual string concatenation
-    try {
-      return inputs
-        .filter(input => input && typeof input === 'string' && input.length > 0)
-        .join(' ');
-    } catch (fallbackError) {
-      console.warn('cn ultimate fallback error:', fallbackError);
-      return '';
-    }
-  }
+  }, '', 'cn utility');
 }
+
+import { safeDateString, safeTimeString, safeOperation, ensureArray } from "./criticalErrorFixes"
 
 /**
  * Normalize articles to ensure they have proper structure after KV storage
  * This fixes issues with serialization/deserialization of complex objects
  */
 export function normalizeArticles(articles: Article[]): Article[] {
-  if (!Array.isArray(articles)) {
-    console.warn('normalizeArticles: Expected array, got:', typeof articles);
-    return [];
-  }
-
-  return articles.map((article, index) => {
-    if (!article || typeof article !== 'object') {
-      console.warn(`normalizeArticles: Invalid article at index ${index}:`, article);
-      return null;
+  return safeOperation(() => {
+    if (!ensureArray(articles).length) {
+      console.warn('normalizeArticles: Expected array, got:', typeof articles);
+      return [];
     }
 
-    // Ensure category exists and has proper structure
-    if (!article.category || typeof article.category !== 'object') {
-      // Find category by ID if it's a string, or use default
-      const categoryId = typeof article.category === 'string' ? article.category : article.category?.id;
-      let foundCategory = null;
-      
-      // Safe import check for mockCategories
-      try {
-        foundCategory = mockCategories.find(cat => cat.id === categoryId);
-      } catch (e) {
-        console.warn('normalizeArticles: Could not access mockCategories:', e);
+    return ensureArray(articles).map((article, index) => {
+      if (!article || typeof article !== 'object') {
+        console.warn(`normalizeArticles: Invalid article at index ${index}:`, article);
+        return null;
       }
-      
-      // If no category found, assign the first available category or create a default
-      article.category = foundCategory || {
-        id: 'default',
-        name: 'عام',
-        nameAr: 'عام',
-        nameEn: 'General',
-        slug: 'general',
-        description: 'تصنيف عام',
-        color: '#6b7280',
-        icon: '📰',
-        isActive: true,
-        sortOrder: 0,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        metadata: {
-          seoTitle: 'عام',
-          seoDescription: 'تصنيف عام للمقالات',
-          keywords: ['عام']
-        }
-      };
-    }
-    
-    // Additional check to ensure the category has required properties
-    if (!article.category.color) {
-      article.category.color = '#6b7280'; // Default color
-    }
-    if (!article.category.name) {
-      article.category.name = 'عام';
-    }
-    if (!article.category.nameAr) {
-      article.category.nameAr = 'عام';
-    }
 
-    // Ensure tags is always an array
-    if (!Array.isArray(article.tags)) {
-      article.tags = [];
-    }
-
-    // Ensure dates are Date objects
-    ['createdAt', 'updatedAt', 'publishedAt', 'scheduledAt'].forEach(dateField => {
-      const dateValue = article[dateField as keyof Article];
-      if (dateValue && typeof dateValue === 'string') {
+      // Ensure category exists and has proper structure
+      if (!article.category || typeof article.category !== 'object') {
+        // Find category by ID if it's a string, or use default
+        const categoryId = typeof article.category === 'string' ? article.category : article.category?.id;
+        let foundCategory = null;
+        
+        // Safe import check for mockCategories
         try {
-          (article as any)[dateField] = new Date(dateValue);
+          foundCategory = mockCategories.find(cat => cat.id === categoryId);
         } catch (e) {
-          console.warn(`normalizeArticles: Invalid date for ${dateField}:`, dateValue);
-          (article as any)[dateField] = new Date();
+          console.warn('normalizeArticles: Could not access mockCategories:', e);
         }
-      } else if (dateValue && typeof dateValue === 'number') {
-        (article as any)[dateField] = new Date(dateValue);
+        
+        // If no category found, assign the first available category or create a default
+        article.category = foundCategory || {
+          id: 'default',
+          name: 'عام',
+          nameAr: 'عام',
+          nameEn: 'General',
+          slug: 'general',
+          description: 'تصنيف عام',
+          color: '#6b7280',
+          icon: '📰',
+          isActive: true,
+          sortOrder: 0,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          metadata: {
+            seoTitle: 'عام',
+            seoDescription: 'تصنيف عام للمقالات',
+            keywords: ['عام']
+          }
+        };
       }
-    });
+      
+      // Additional check to ensure the category has required properties
+      if (!article.category.color) {
+        article.category.color = '#6b7280'; // Default color
+      }
+      if (!article.category.name) {
+        article.category.name = 'عام';
+      }
+      if (!article.category.nameAr) {
+        article.category.nameAr = 'عام';
+      }
 
-    // Ensure analytics exists
-    if (!article.analytics) {
-      article.analytics = {
-        views: 0,
-        uniqueViews: 0,
-        likes: 0,
-        shares: 0,
-        comments: 0,
-        readTime: 0,
-        scrollDepth: 0,
-        bounceRate: 0,
-        clickThroughRate: 0
-      };
-    }
+      // Ensure tags is always an array
+      if (!Array.isArray(article.tags)) {
+        article.tags = [];
+      }
 
-    // Ensure author exists
-    if (!article.author || typeof article.author !== 'object') {
-      article.author = {
-        id: 'unknown',
-        name: 'Unknown',
-        email: 'unknown@sabq.sa',
-        role: 'journalist',
-        permissions: [],
-        language: 'ar',
-        createdAt: new Date(),
-        lastActive: new Date()
-      };
-    }
+      // Ensure dates are Date objects
+      ['createdAt', 'updatedAt', 'publishedAt', 'scheduledAt'].forEach(dateField => {
+        const dateValue = article[dateField as keyof Article];
+        if (dateValue && typeof dateValue === 'string') {
+          try {
+            (article as any)[dateField] = new Date(dateValue);
+          } catch (e) {
+            console.warn(`normalizeArticles: Invalid date for ${dateField}:`, dateValue);
+            (article as any)[dateField] = new Date();
+          }
+        } else if (dateValue && typeof dateValue === 'number') {
+          (article as any)[dateField] = new Date(dateValue);
+        }
+      });
 
-    return article;
-  }).filter((article): article is Article => article !== null);
+      // Ensure analytics exists
+      if (!article.analytics) {
+        article.analytics = {
+          views: 0,
+          uniqueViews: 0,
+          likes: 0,
+          shares: 0,
+          comments: 0,
+          readTime: 0,
+          scrollDepth: 0,
+          bounceRate: 0,
+          clickThroughRate: 0
+        };
+      }
+
+      // Ensure author exists
+      if (!article.author || typeof article.author !== 'object') {
+        article.author = {
+          id: 'unknown',
+          name: 'Unknown',
+          email: 'unknown@sabq.sa',
+          role: 'journalist',
+          permissions: [],
+          language: 'ar',
+          createdAt: new Date(),
+          lastActive: new Date()
+        };
+      }
+
+      return article;
+    }).filter((article): article is Article => article !== null);
+  }, [], 'normalizeArticles');
 }
 
 /**
@@ -176,46 +173,7 @@ export function safeDateFormat(
   locale: string = 'ar-SA',
   options?: Intl.DateTimeFormatOptions
 ): string {
-  if (!date) {
-    return new Date().toLocaleDateString(locale, options);
-  }
-  
-  try {
-    let dateObj: Date;
-    
-    if (date instanceof Date) {
-      // Check if the Date object is valid
-      if (isNaN(date.getTime())) {
-        console.warn('safeDateFormat: Invalid Date object provided:', date);
-        return new Date().toLocaleDateString(locale, options);
-      }
-      dateObj = date;
-    } else if (typeof date === 'string') {
-      dateObj = new Date(date);
-    } else if (typeof date === 'number') {
-      dateObj = new Date(date);
-    } else {
-      console.warn('safeDateFormat: Unsupported date type:', typeof date, date);
-      dateObj = new Date();
-    }
-    
-    // Double-check if date is valid after conversion
-    if (isNaN(dateObj.getTime())) {
-      console.warn('safeDateFormat: Invalid date after conversion:', date);
-      return new Date().toLocaleDateString(locale, options);
-    }
-    
-    // Ensure toLocaleDateString method exists
-    if (typeof dateObj.toLocaleDateString !== 'function') {
-      console.warn('safeDateFormat: toLocaleDateString method not available on date object');
-      return new Date().toLocaleDateString(locale, options);
-    }
-    
-    return dateObj.toLocaleDateString(locale, options);
-  } catch (error) {
-    console.error('safeDateFormat: Error formatting date:', date, error);
-    return new Date().toLocaleDateString(locale, options);
-  }
+  return safeDateString(date, locale, options);
 }
 
 /**
@@ -226,95 +184,23 @@ export function safeTimeFormat(
   locale: string = 'ar-SA',
   options?: Intl.DateTimeFormatOptions
 ): string {
-  if (!date) {
-    return new Date().toLocaleTimeString(locale, options);
-  }
-  
-  try {
-    let dateObj: Date;
-    
-    if (date instanceof Date) {
-      // Check if the Date object is valid
-      if (isNaN(date.getTime())) {
-        console.warn('safeTimeFormat: Invalid Date object provided:', date);
-        return new Date().toLocaleTimeString(locale, options);
-      }
-      dateObj = date;
-    } else if (typeof date === 'string') {
-      dateObj = new Date(date);
-    } else if (typeof date === 'number') {
-      dateObj = new Date(date);
-    } else {
-      console.warn('safeTimeFormat: Unsupported date type:', typeof date, date);
-      dateObj = new Date();
-    }
-    
-    // Double-check if date is valid after conversion
-    if (isNaN(dateObj.getTime())) {
-      console.warn('safeTimeFormat: Invalid date after conversion:', date);
-      return new Date().toLocaleTimeString(locale, options);
-    }
-    
-    // Ensure toLocaleTimeString method exists
-    if (typeof dateObj.toLocaleTimeString !== 'function') {
-      console.warn('safeTimeFormat: toLocaleTimeString method not available on date object');
-      return new Date().toLocaleTimeString(locale, options);
-    }
-    
-    return dateObj.toLocaleTimeString(locale, options);
-  } catch (error) {
-    console.error('safeTimeFormat: Error formatting time:', date, error);
-    return new Date().toLocaleTimeString(locale, options);
-  }
+  return safeTimeString(date, locale, options);
 }
+
+import { safeString, safeStringLower } from "./criticalErrorFixes"
 
 /**
  * Safely call toLowerCase on a string with fallback
  */
 export function safeToLowerCase(value: any): string {
-  const str = safeToString(value);
-  try {
-    // Ensure we have a string and it has toLowerCase method
-    if (typeof str === 'string' && typeof str.toLowerCase === 'function') {
-      return str.toLowerCase();
-    }
-    return String(str).toLowerCase();
-  } catch (error) {
-    console.warn('safeToLowerCase: Error converting to lowercase:', value, error);
-    return '';
-  }
+  return safeStringLower(value);
 }
 
 /**
  * Safely call toString on any value
  */
 export function safeToString(value: any): string {
-  if (value === null || value === undefined) {
-    return '';
-  }
-  
-  if (typeof value === 'string') {
-    return value;
-  }
-  
-  if (typeof value === 'number' || typeof value === 'boolean') {
-    return String(value);
-  }
-  
-  if (typeof value === 'object') {
-    try {
-      return JSON.stringify(value);
-    } catch {
-      return '[Object]';
-    }
-  }
-  
-  try {
-    return String(value);
-  } catch (error) {
-    console.warn('safeToString: Error converting value to string:', value, error);
-    return '';
-  }
+  return safeString(value);
 }
 
 export function normalizeActivityTimestamps(activities: any[]): any[] {
