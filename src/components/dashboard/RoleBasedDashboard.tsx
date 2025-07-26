@@ -22,7 +22,13 @@ import {
   AlertTriangle,
   CheckCircle,
   Star,
-  MapPin
+  MapPin,
+  Microphone,
+  Drop,
+  Sparkles,
+  Palette,
+  Bell,
+  Cpu
 } from '@phosphor-icons/react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useOptimizedTypography } from '@/hooks/useOptimizedTypography';
@@ -309,15 +315,194 @@ export function RoleBasedDashboard({ onNavigate }: RoleBasedDashboardProps) {
         </Alert>
       ))}
 
-      {/* Quick Actions */}
+      {/* System Status Alert */}
+      <Alert className="border-green-200 bg-green-50 font-arabic">
+        <CheckCircle className="w-4 h-4 text-green-600" />
+        <AlertDescription className="flex items-center justify-between font-arabic text-green-800">
+          <div>
+            <span className="font-semibold">
+              {isArabic ? '✅ جميع الخدمات المتقدمة نشطة!' : '✅ All Advanced Services Active!'}
+            </span>
+            <div className="text-sm mt-1">
+              {isArabic ? '78+ وحدة ذكية متاحة | الذكاء الاصطناعي | التحليل العميق | البودكاست | التخصيص' : '78+ Smart Modules Available | AI | Deep Analysis | Podcast | Personalization'}
+            </div>
+          </div>
+          <Button variant="outline" size="sm" onClick={() => onNavigate('service-map')} className="font-arabic">
+            {isArabic ? 'استكشف الخدمات' : 'Explore Services'}
+          </Button>
+        </AlertDescription>
+      </Alert>
+
+      {/* Featured Services Showcase */}
+      <Card className="border-2 border-accent/20 font-arabic">
+        <CardHeader className="bg-gradient-to-r from-accent/5 to-primary/5">
+          <CardTitle className="flex items-center gap-2 font-arabic">
+            <Star className="w-5 h-5 text-accent" />
+            {isArabic ? 'الخدمات المتقدمة المتاحة' : 'Available Advanced Services'}
+          </CardTitle>
+          <CardDescription className="font-arabic">
+            {isArabic ? 'اكتشف جميع الأدوات الذكية المطورة في النظام' : 'Discover all the smart tools developed in the system'}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {/* AI & ML Section */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3 font-arabic flex items-center gap-2">
+              <Zap className="w-5 h-5 text-blue-600" />
+              {isArabic ? 'الذكاء الاصطناعي والتعلم الآلي' : 'AI & Machine Learning'}
+            </h3>
+            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+              <Button
+                variant="outline"
+                className="h-auto p-4 flex flex-col items-center gap-2 font-arabic hover:bg-blue-50"
+                onClick={() => onNavigate('deep-analysis')}
+              >
+                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <Zap className="w-4 h-4 text-blue-600" />
+                </div>
+                <span className="text-sm font-medium font-arabic">{isArabic ? 'التحليل العميق' : 'Deep Analysis'}</span>
+                <Badge variant="secondary" className="text-xs">{isArabic ? 'ذكي' : 'AI'}</Badge>
+              </Button>
+              
+              <Button
+                variant="outline"
+                className="h-auto p-4 flex flex-col items-center gap-2 font-arabic hover:bg-purple-50"
+                onClick={() => onNavigate('machine-learning-engine')}
+              >
+                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                  <Cpu className="w-4 h-4 text-purple-600" />
+                </div>
+                <span className="text-sm font-medium font-arabic">{isArabic ? 'محرك التعلم الآلي' : 'ML Engine'}</span>
+                <Badge variant="secondary" className="text-xs">{isArabic ? 'متطور' : 'Advanced'}</Badge>
+              </Button>
+              
+              <Button
+                variant="outline"
+                className="h-auto p-4 flex flex-col items-center gap-2 font-arabic hover:bg-green-50"
+                onClick={() => onNavigate('generative-recommendations')}
+              >
+                <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                  <Star className="w-4 h-4 text-green-600" />
+                </div>
+                <span className="text-sm font-medium font-arabic">{isArabic ? 'التوصيات التوليدية' : 'Generative AI'}</span>
+                <Badge variant="secondary" className="text-xs">{isArabic ? 'GPT' : 'GPT'}</Badge>
+              </Button>
+            </div>
+          </div>
+
+          {/* Content & Media Section */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3 font-arabic flex items-center gap-2">
+              <FileText className="w-5 h-5 text-green-600" />
+              {isArabic ? 'إدارة المحتوى والوسائط' : 'Content & Media Management'}
+            </h3>
+            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+              <Button
+                variant="outline"
+                className="h-auto p-4 flex flex-col items-center gap-2 font-arabic hover:bg-amber-50"
+                onClick={() => onNavigate('daily-doses')}
+              >
+                <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
+                  <Drop className="w-4 h-4 text-amber-600" />
+                </div>
+                <span className="text-sm font-medium font-arabic">{isArabic ? 'الجرعات الذكية' : 'Smart Doses'}</span>
+                <Badge variant="secondary" className="text-xs">{isArabic ? 'يومي' : 'Daily'}</Badge>
+              </Button>
+              
+              <Button
+                variant="outline"
+                className="h-auto p-4 flex flex-col items-center gap-2 font-arabic hover:bg-pink-50"
+                onClick={() => onNavigate('audio-editor')}
+              >
+                <div className="w-8 h-8 bg-pink-100 rounded-lg flex items-center justify-center">
+                  <Microphone className="w-4 h-4 text-pink-600" />
+                </div>
+                <span className="text-sm font-medium font-arabic">{isArabic ? 'محرر البودكاست' : 'Audio Editor'}</span>
+                <Badge variant="secondary" className="text-xs">{isArabic ? 'بودكاست' : 'Podcast'}</Badge>
+              </Button>
+              
+              <Button
+                variant="outline"
+                className="h-auto p-4 flex flex-col items-center gap-2 font-arabic hover:bg-cyan-50"
+                onClick={() => onNavigate('media-generator')}
+              >
+                <div className="w-8 h-8 bg-cyan-100 rounded-lg flex items-center justify-center">
+                  <Sparkles className="w-4 h-4 text-cyan-600" />
+                </div>
+                <span className="text-sm font-medium font-arabic">{isArabic ? 'مولد الوسائط' : 'Media Generator'}</span>
+                <Badge variant="secondary" className="text-xs">{isArabic ? 'ذكي' : 'Smart'}</Badge>
+              </Button>
+              
+              <Button
+                variant="outline"
+                className="h-auto p-4 flex flex-col items-center gap-2 font-arabic hover:bg-orange-50"
+                onClick={() => onNavigate('external-data')}
+              >
+                <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                  <Globe className="w-4 h-4 text-orange-600" />
+                </div>
+                <span className="text-sm font-medium font-arabic">{isArabic ? 'المصادر الخارجية' : 'External Data'}</span>
+                <Badge variant="secondary" className="text-xs">{isArabic ? 'جديد' : 'New'}</Badge>
+              </Button>
+            </div>
+          </div>
+
+          {/* User Experience Section */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3 font-arabic flex items-center gap-2">
+              <Users className="w-5 h-5 text-purple-600" />
+              {isArabic ? 'تجربة المستخدم والتخصيص' : 'User Experience & Personalization'}
+            </h3>
+            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+              <Button
+                variant="outline"
+                className="h-auto p-4 flex flex-col items-center gap-2 font-arabic hover:bg-indigo-50"
+                onClick={() => onNavigate('personalized-themes')}
+              >
+                <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
+                  <Palette className="w-4 h-4 text-indigo-600" />
+                </div>
+                <span className="text-sm font-medium font-arabic">{isArabic ? 'الثيمات الشخصية' : 'Personal Themes'}</span>
+                <Badge variant="secondary" className="text-xs">{isArabic ? 'شخصي' : 'Personal'}</Badge>
+              </Button>
+              
+              <Button
+                variant="outline"
+                className="h-auto p-4 flex flex-col items-center gap-2 font-arabic hover:bg-red-50"
+                onClick={() => onNavigate('adaptive-color-learning')}
+              >
+                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                  <Eye className="w-4 h-4 text-red-600" />
+                </div>
+                <span className="text-sm font-medium font-arabic">{isArabic ? 'التكييف اللوني' : 'Color Adaptation'}</span>
+                <Badge variant="secondary" className="text-xs">{isArabic ? 'ذكي' : 'Smart'}</Badge>
+              </Button>
+              
+              <Button
+                variant="outline"
+                className="h-auto p-4 flex flex-col items-center gap-2 font-arabic hover:bg-teal-50"
+                onClick={() => onNavigate('smart-notifications')}
+              >
+                <div className="w-8 h-8 bg-teal-100 rounded-lg flex items-center justify-center">
+                  <Bell className="w-4 h-4 text-teal-600" />
+                </div>
+                <span className="text-sm font-medium font-arabic">{isArabic ? 'الإشعارات الذكية' : 'Smart Notifications'}</span>
+                <Badge variant="secondary" className="text-xs">{isArabic ? 'ذكي' : 'AI'}</Badge>
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Quick Actions for Current Role */}
       <Card className="font-arabic">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 font-arabic">
-            <Zap className="w-5 h-5 text-accent" />
-            {isArabic ? 'الإجراءات السريعة' : 'Quick Actions'}
+            <Target className="w-5 h-5 text-accent" />
+            {isArabic ? 'الإجراءات السريعة لدورك' : 'Quick Actions for Your Role'}
           </CardTitle>
           <CardDescription className="font-arabic">
-            {isArabic ? 'الوصول السريع للمهام الأساسية' : 'Quick access to essential tasks'}
+            {isArabic ? 'مهام مخصصة حسب صلاحياتك' : 'Tasks tailored to your permissions'}
           </CardDescription>
         </CardHeader>
         <CardContent>
