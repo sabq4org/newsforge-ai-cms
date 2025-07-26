@@ -1,0 +1,126 @@
+{
+  "name": "sabq-hosting-config",
+  "version": "1.0.0",
+  "description": "Hosting configuration for Sabq Althakiyah on GitHub Spark",
+  
+  "spark": {
+    "domains": {
+      "primary": "www.sabq.ai",
+      "staging": "staging.sabq.ai",
+      "redirects": [
+        {
+          "source": "sabq.ai",
+          "destination": "www.sabq.ai",
+          "permanent": true
+        }
+      ]
+    },
+    
+    "build": {
+      "framework": "vite",
+      "outputDirectory": "dist",
+      "buildCommand": "npm run build",
+      "nodeVersion": "18.x"
+    },
+    
+    "routing": {
+      "rewrites": [
+        {
+          "source": "/(.*)",
+          "destination": "/index.html"
+        }
+      ],
+      "headers": [
+        {
+          "source": "/(.*)",
+          "headers": [
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "key": "X-Frame-Options", 
+              "value": "DENY"
+            },
+            {
+              "key": "Referrer-Policy",
+              "value": "strict-origin-when-cross-origin"
+            }
+          ]
+        },
+        {
+          "source": "/assets/(.*)",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=31536000, immutable"
+            }
+          ]
+        }
+      ]
+    },
+    
+    "environment": {
+      "production": {
+        "VITE_APP_ENV": "production",
+        "VITE_APP_URL": "https://www.sabq.ai",
+        "VITE_API_BASE_URL": "https://api.sabq.ai"
+      },
+      "preview": {
+        "VITE_APP_ENV": "staging",
+        "VITE_APP_URL": "https://staging.sabq.ai", 
+        "VITE_API_BASE_URL": "https://api-staging.sabq.ai"
+      }
+    },
+    
+    "performance": {
+      "caching": true,
+      "compression": true,
+      "imageOptimization": true,
+      "minification": true
+    },
+    
+    "analytics": {
+      "enabled": true,
+      "anonymizeIp": true
+    },
+    
+    "security": {
+      "allowedOrigins": [
+        "https://www.sabq.ai",
+        "https://staging.sabq.ai"
+      ],
+      "httpsRedirect": true,
+      "hsts": {
+        "enabled": true,
+        "maxAge": 31536000,
+        "includeSubDomains": true
+      }
+    }
+  },
+  
+  "functions": {
+    "api/**": {
+      "runtime": "nodejs18.x",
+      "environment": {
+        "NODE_ENV": "production"
+      }
+    }
+  },
+  
+  "redirects": [
+    {
+      "source": "/admin",
+      "destination": "/?admin=true",
+      "statusCode": 302
+    },
+    {
+      "source": "/dashboard", 
+      "destination": "/?view=dashboard",
+      "statusCode": 302
+    }
+  ],
+  
+  "cleanUrls": true,
+  "trailingSlash": false
+}
