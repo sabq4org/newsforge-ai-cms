@@ -17,6 +17,7 @@ import "./styles/theme.css"
 import "./index.css"
 
 // Critical fixes - import these first
+import "./typeScriptFix"
 import "./lib/globalCnFix"
 import "./lib/globalIconFixes"
 import "./lib/criticalErrorFixes"

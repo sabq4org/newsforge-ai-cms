@@ -1,3 +1,7 @@
+import '@/lib/typeScriptErrorFixes'; // Must be first import
+import '@/lib/criticalErrorFixes'; // Critical error fixes
+import '@/lib/runtimeErrorFixes'; // Runtime error fixes
+import '@/lib/comprehensiveErrorFixes'; // Comprehensive error fixes
 import { useState } from 'react';
 import * as React from 'react';
 import { Toaster } from '@/components/ui/sonner';
@@ -68,25 +72,8 @@ import { useKV } from '@github/spark/hooks';
 import { mockArticles, mockCategories, mockMediaFiles } from '@/lib/mockData';
 import { normalizeArticles, normalizeDataObject } from '@/lib/utils';
 
-// Import safeCn with fallback
-let safeCn: (...classes: any[]) => string;
-try {
-  safeCn = require('@/lib/criticalErrorFixes').safeCn;
-} catch {
-  // Ultra-safe fallback if import fails
-  safeCn = (...classes: any[]): string => {
-    try {
-      return classes.filter(Boolean).join(' ');
-    } catch {
-      return '';
-    }
-  };
-}
-
 import { ZIndexManager, DirectReadingScaleController, QuantumColorAdaptationSystem, ReadingScaleIndicator, ColorAdaptationIndicator, ErrorMitigationSystem, SidebarProtector, useSidebarProtection } from '@/components/common';
-
-// Use safeCn instead of cn throughout the component
-const cn = safeCn;
+import { cn } from '@/lib/utils';
 import { initializeGlobalErrorHandler } from '@/lib/globalErrorHandler';
 import '@/lib/runtimeErrorFixes'; // Import runtime error fixes
 import '@/lib/criticalErrorFixes'; // Import critical error fixes
@@ -115,6 +102,26 @@ initializePerformanceOptimizer();
 initializeAutoResourceOptimizer();
 
 function AppContent() {
+  // Critical error prevention - ensure all dependencies are available
+  React.useEffect(() => {
+    // Verify critical functions exist
+    if (typeof cn !== 'function') {
+      console.error('Critical: cn function not available');
+    }
+    
+    // Verify Array.prototype.forEach is safe
+    if (!Array.prototype.forEach) {
+      console.error('Critical: Array.prototype.forEach not available');
+    }
+    
+    // Verify basic React hooks work
+    try {
+      useState(null);
+    } catch (error) {
+      console.error('Critical: React hooks not working:', error);
+    }
+  }, []);
+
   // Performance monitoring for this component
   usePerformanceMonitor('AppContent');
   useResourceOptimization('AppContent');
@@ -1235,4 +1242,23 @@ function App() {
     return <FullCMSRecovery />;
   } catch (error) {
     console.error('Critical App error:', error);
+    
+    // Return emergency fallback on critical error
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center p-8">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">خطأ حرج في النظام</h1>
+          <p className="text-gray-600 mb-6">حدث خطأ غير متوقع. يرجى إعادة تحميل الصفحة.</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
+          >
+            إعادة تحميل
+          </button>
+        </div>
+      </div>
+    );
+  }
+}
 
+export default App;
