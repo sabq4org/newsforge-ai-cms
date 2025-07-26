@@ -10,7 +10,7 @@
     <script>
       // Emergency error detection and recovery
       let criticalErrors = 0;
-      const maxErrors = 3; // Reduced threshold for faster response
+      const maxErrors = 5; // Increased threshold for better debugging
       
       // Enhanced error handler with more specific patterns
       window.addEventListener('error', function(e) {
@@ -37,7 +37,9 @@
           't.forEach is not a function',
           'classGroupId',
           'twMerge',
-          'clsx'
+          'TSError',
+          'SyntaxError', 
+          'ReferenceError'
         ];
         
         const shouldRedirect = errorPatterns.some(pattern => 
@@ -45,9 +47,9 @@
         );
         
         if (shouldRedirect || criticalErrors > maxErrors) {
-          console.warn('Critical error pattern detected, redirecting to emergency mode');
-          if (window.location.search !== '?emergency=true') {
-            window.location.search = '?emergency=true';
+          console.warn('Critical error pattern detected, redirecting to diagnostic mode');
+          if (window.location.search !== '?diagnostic=true') {
+            window.location.search = '?diagnostic=true';
           }
         }
       });
@@ -59,13 +61,14 @@
         if (e.reason && typeof e.reason === 'object') {
           const message = e.reason.message || e.reason.toString();
           const criticalPatterns = [
-            'forEach', 'twMerge', 'clsx', 'toLowerCase', 'toLocaleDateString'
+            'forEach', 'twMerge', 'clsx', 'toLowerCase', 'toLocaleDateString',
+            'TSError', 'SyntaxError', 'ReferenceError'
           ];
           
           if (criticalPatterns.some(pattern => message.toLowerCase().includes(pattern))) {
             console.warn('Promise rejection with critical error, redirecting');
-            if (window.location.search !== '?emergency=true') {
-              window.location.search = '?emergency=true';
+            if (window.location.search !== '?diagnostic=true') {
+              window.location.search = '?diagnostic=true';
             }
           }
         }
@@ -164,6 +167,44 @@
       }
       
       console.log('Enhanced critical error handling initialized for Sabq Althakiyah');
+      
+      // Debug mode indicator
+      const urlParams = new URLSearchParams(window.location.search);
+      const currentMode = urlParams.get('diagnostic') ? 'Diagnostic' :
+                         urlParams.get('simple') ? 'Simple Test' :
+                         urlParams.get('emergency') ? 'Emergency' :
+                         urlParams.get('minimal') ? 'Minimal' :
+                         urlParams.get('safe') ? 'Safe' :
+                         urlParams.get('test') ? 'Test' : 'Full Application';
+      
+      console.log('Current application mode:', currentMode);
+      
+      // Add mode indicator to page
+      setTimeout(() => {
+        const indicator = document.createElement('div');
+        indicator.style.cssText = `
+          position: fixed;
+          top: 10px;
+          left: 10px;
+          background: rgba(0,0,0,0.8);
+          color: white;
+          padding: 8px 12px;
+          border-radius: 4px;
+          font-family: 'IBM Plex Sans Arabic', Arial, sans-serif;
+          font-size: 12px;
+          z-index: 10000;
+          pointer-events: none;
+        `;
+        indicator.textContent = `Mode: ${currentMode}`;
+        document.body.appendChild(indicator);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+          if (indicator.parentNode) {
+            indicator.parentNode.removeChild(indicator);
+          }
+        }, 3000);
+      }, 1000);
     </script>
     
     <!-- Optimized font loading with preconnect and preload -->

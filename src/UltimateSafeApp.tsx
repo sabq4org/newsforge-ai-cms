@@ -39,15 +39,6 @@ const safeMap = <T, R>(arr: any, fn: (item: T, index: number) => R): R[] => {
   }
 };
 
-const safeFilter = <T>(arr: any, fn: (item: T, index: number) => boolean): T[] => {
-  try {
-    if (!Array.isArray(arr)) return [];
-    return arr.filter(fn);
-  } catch {
-    return [];
-  }
-};
-
 // ==========================================
 // SAFE UI COMPONENTS
 // ==========================================
@@ -261,18 +252,20 @@ const SafeInput: React.FC<SafeInputProps> = ({
 // MAIN ULTIMATE SAFE APP COMPONENT
 // ==========================================
 
+interface Article {
+  id: string;
+  title: string;
+  content: string;
+  author: string;
+  date: Date;
+}
+
 interface AppState {
   currentView: string;
   loading: boolean;
   error: string | null;
   testInput: string;
-  articles: Array<{
-    id: string;
-    title: string;
-    content: string;
-    author: string;
-    date: Date;
-  }>;
+  articles: Article[];
 }
 
 const UltimateSafeApp: React.FC = () => {
@@ -383,7 +376,7 @@ const UltimateSafeApp: React.FC = () => {
             
             <SafeCard title="مقالات حديثة">
               <div style={{ textAlign: 'right' }}>
-                {safeMap(state.articles.slice(0, 3), (article, index) => (
+                {safeMap(state.articles.slice(0, 3), (article: Article, index: number) => (
                   <div key={article.id} style={{ 
                     padding: '0.75rem', 
                     backgroundColor: '#f3f4f6', 
@@ -420,7 +413,7 @@ const UltimateSafeApp: React.FC = () => {
           <div style={contentStyles}>
             <SafeCard title="جميع المقالات">
               <div style={{ textAlign: 'right' }}>
-                {safeMap(state.articles, (article, index) => (
+                {safeMap(state.articles, (article: Article, index: number) => (
                   <div key={article.id} style={{
                     padding: '1rem',
                     backgroundColor: '#ffffff',

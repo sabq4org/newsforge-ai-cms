@@ -1082,6 +1082,8 @@ import TestAppContent from './TestAppContent';
 import MinimalStartup from './MinimalStartup';
 import EmergencyApp from './EmergencyApp';
 import EmergencyFallbackApp from './EmergencyFallbackApp';
+import SimpleTestApp from './SimpleTestApp';
+import DiagnosticCheck from './DiagnosticCheck';
 
 function App() {
   try {
@@ -1091,6 +1093,18 @@ function App() {
     const testMode = urlParams.get('test') === 'true';
     const minimalMode = urlParams.get('minimal') === 'true';
     const emergencyMode = urlParams.get('emergency') === 'true';
+    const diagnosticMode = urlParams.get('diagnostic') === 'true';
+    const simpleMode = urlParams.get('simple') === 'true';
+    
+    // Diagnostic mode - for comprehensive error checking
+    if (diagnosticMode) {
+      return <DiagnosticCheck />;
+    }
+    
+    // Simple mode - basic React test without complex dependencies
+    if (simpleMode) {
+      return <SimpleTestApp />;
+    }
     
     // Emergency mode - absolute minimum functionality for debugging
     if (emergencyMode) {
@@ -1130,12 +1144,12 @@ function App() {
         <RuntimeErrorBoundary
           onError={(error, errorInfo) => {
             console.error('App-level runtime error:', error, errorInfo);
-            // Automatically redirect to emergency mode on critical errors
+            // Automatically redirect to diagnostic mode on critical errors
             if (error.message.includes('forEach') || 
                 error.message.includes('toLowerCase') ||
                 error.message.includes('cn') ||
                 error.message.includes('undefined is not an object')) {
-              window.location.search = '?emergency=true';
+              window.location.search = '?diagnostic=true';
             }
           }}
         >
@@ -1147,7 +1161,7 @@ function App() {
                   error.message.includes('classGroup') ||
                   error.message.includes('cn') ||
                   error.message.includes('undefined is not an object')) {
-                window.location.search = '?emergency=true';
+                window.location.search = '?diagnostic=true';
               }
             }}
           >
@@ -1169,7 +1183,7 @@ function App() {
   } catch (error) {
     console.error('Critical App.tsx error:', error);
     
-    // If the error is related to forEach or string methods, go to emergency mode
+    // If the error is related to forEach or string methods, go to diagnostic mode
     if (error instanceof Error && (
       error.message.includes('forEach') || 
       error.message.includes('toLowerCase') ||
@@ -1177,11 +1191,11 @@ function App() {
       error.message.includes('cn') ||
       error.message.includes('undefined is not an object')
     )) {
-      return <EmergencyFallbackApp />;
+      return <DiagnosticCheck />;
     }
     
-    // Fallback to absolute minimum if everything else fails
-    return <EmergencyFallbackApp />;
+    // Fallback to simple test app if everything else fails
+    return <SimpleTestApp />;
   }
 }
 
