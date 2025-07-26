@@ -14,8 +14,10 @@
         "preview": "vite preview",
         "deploy:production": "npm run build:production",
         "deploy:staging": "npm run build:staging",
-        "domain:setup": "echo 'Please refer to DOMAIN_SETUP.md for domain configuration'",
-        "domain:verify": "echo 'Please check your DNS records and SSL certificate'"
+        "domain:setup": "echo '🌐 Domain Setup Guide' && echo 'See DNS_QUICK_START.md for quick setup' && echo 'See DNS_CONFIGURATION_GUIDE.md for detailed instructions'",
+        "domain:verify": "node verify-dns.js",
+        "dns:check": "node verify-dns.js",
+        "dns:help": "echo '📚 DNS Help Resources:' && echo '• DNS_QUICK_START.md - Quick setup guide' && echo '• DNS_CONFIGURATION_GUIDE.md - Detailed instructions' && echo '• DOMAIN_SETUP.md - Platform-specific guides' && echo '• npm run dns:check - Verify your DNS configuration'"
     },
     "dependencies": {
         "@github/spark": "^0.0.1",
