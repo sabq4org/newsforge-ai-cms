@@ -3,32 +3,21 @@
  * Provides safe fallbacks for missing Phosphor icons
  */
 
+import React from 'react';
+
 // Create fallback components for commonly missing icons
 const createIconFallback = (svgPath: string, viewBox: string = "0 0 256 256") => {
   return function SafeFallbackIcon({ size = 20, weight, className = '', ...props }: any) {
-    return {
-      $$typeof: Symbol.for('react.element'),
-      type: 'svg',
-      key: null,
-      ref: null,
-      props: {
-        width: size,
-        height: size,
-        viewBox: viewBox,
-        fill: 'currentColor',
-        className: className,
-        children: {
-          $$typeof: Symbol.for('react.element'),
-          type: 'path',
-          key: null,
-          ref: null,
-          props: {
-            d: svgPath
-          }
-        },
-        ...props
-      }
-    };
+    return React.createElement('svg', {
+      width: size,
+      height: size,
+      viewBox: viewBox,
+      fill: 'currentColor',
+      className: className,
+      ...props
+    }, React.createElement('path', {
+      d: svgPath
+    }));
   };
 };
 
@@ -60,24 +49,17 @@ export function getSafeIcon(iconName: string): any {
 
   // Return a generic fallback
   return function GenericIconFallback({ size = 20, className = '' }: any) {
-    return {
-      $$typeof: Symbol.for('react.element'),
-      type: 'div',
-      key: null,
-      ref: null,
-      props: {
-        className: `inline-flex items-center justify-center ${className}`,
-        style: {
-          width: size,
-          height: size,
-          fontSize: Math.max(12, size * 0.6),
-          backgroundColor: '#f3f4f6',
-          borderRadius: '2px',
-          color: '#6b7280'
-        },
-        children: '?'
+    return React.createElement('div', {
+      className: `inline-flex items-center justify-center ${className}`,
+      style: {
+        width: size,
+        height: size,
+        fontSize: Math.max(12, size * 0.6),
+        backgroundColor: '#f3f4f6',
+        borderRadius: '2px',
+        color: '#6b7280'
       }
-    };
+    }, '?');
   };
 }
 

@@ -88,6 +88,7 @@ const cn = safeCn;
 import { initializeGlobalErrorHandler } from '@/lib/globalErrorHandler';
 import '@/lib/runtimeErrorFixes'; // Import runtime error fixes
 import '@/lib/criticalErrorFixes'; // Import critical error fixes
+import '@/lib/comprehensiveErrorFixes'; // Import comprehensive error fixes
 import { 
   MemoryManager, 
   PerformanceMonitor, 

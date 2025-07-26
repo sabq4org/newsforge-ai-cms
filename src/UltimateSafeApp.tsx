@@ -59,6 +59,7 @@ interface SafeButtonProps {
   size?: 'sm' | 'md' | 'lg';
   disabled?: boolean;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 const SafeButton: React.FC<SafeButtonProps> = ({ 
@@ -67,7 +68,8 @@ const SafeButton: React.FC<SafeButtonProps> = ({
   variant = 'primary', 
   size = 'md',
   disabled = false,
-  className = ''
+  className = '',
+  style = {}
 }) => {
   const baseStyles: React.CSSProperties = {
     border: 'none',
@@ -107,7 +109,8 @@ const SafeButton: React.FC<SafeButtonProps> = ({
   const finalStyles = {
     ...baseStyles,
     ...sizeStyles[size],
-    ...variantStyles[variant]
+    ...variantStyles[variant],
+    ...style
   };
 
   const handleClick = () => {
