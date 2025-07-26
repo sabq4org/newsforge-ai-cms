@@ -87,14 +87,23 @@ const rolePermissions: Record<string, Permission[]> = {
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  // Auto-login as admin for Sabq Althakiyah CMS - Welcome!
+  // Force auto-login as admin for full CMS access
   const [user, setUser] = useKV<User | null>('sabq-user', mockUsers[0]); // Ahmed Al-Mansouri (Admin)
   const [language, setLanguage] = useKV<Language>('sabq-language', languages.ar); // Default to Arabic
   
-  // Show welcome message for auto-login
+  // Force immediate login on app start
   React.useEffect(() => {
+    // Always ensure admin is logged in for full CMS
+    if (!user || user.id !== '1') {
+      setUser(mockUsers[0]); // Force Ahmed Al-Mansouri login
+    }
+    
+    // Mark as full CMS enabled
+    localStorage.setItem('sabq-full-cms-enabled', 'true');
+    localStorage.setItem('app-mode', 'full');
+    
     if (user && user.id === '1') { // Ahmed Al-Mansouri
-      console.log(`🎉 مرحباً بك في سبق الذكية! تم تسجيل الدخول تلقائياً كـ ${user.nameAr} (${user.role})`);
+      console.log(`🎉 مرحباً بك في سبق الذكية الكامل! تم تسجيل الدخول تلقائياً كـ ${user.nameAr} (${user.role})`);
       
       // Show toast notification only once
       const hasShownWelcome = localStorage.getItem('sabq-welcome-shown');

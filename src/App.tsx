@@ -2,6 +2,7 @@ import '@/lib/typeScriptErrorFixes'; // Must be first import
 import '@/lib/criticalErrorFixes'; // Critical error fixes
 import '@/lib/runtimeErrorFixes'; // Runtime error fixes
 import '@/lib/comprehensiveErrorFixes'; // Comprehensive error fixes
+import '@/lib/fullCMSStabilizer'; // Full CMS stabilizer - ENSURES COMPLETE SYSTEM
 import { useState } from 'react';
 import * as React from 'react';
 import { Toaster } from '@/components/ui/sonner';
@@ -1115,148 +1116,83 @@ import DiagnosticCheck from './DiagnosticCheck';
 
 function App() {
   try {
-    // Check for recovery mode first
-    const urlParams = new URLSearchParams(window.location.search);
-    const mode = urlParams.get('mode');
-    const storedMode = localStorage.getItem('app-mode');
-    const fullCmsEnabled = localStorage.getItem('sabq-full-cms-enabled');
+    // FORCE FULL CMS MODE - تفعيل النظام الكامل مباشرة
+    // Set full CMS mode immediately
+    localStorage.setItem('app-mode', 'full');
+    localStorage.setItem('sabq-full-cms-enabled', 'true');
     
-    // If user has enabled full CMS, always show full app
-    if (fullCmsEnabled === 'true' || mode === 'full' || storedMode === 'full') {
-      // Clear any test mode flags
-      localStorage.removeItem('sabq-simple-mode');
-      localStorage.removeItem('sabq-test-mode');
-      
-      // Full application mode with enhanced error boundaries
-      return (
-        <SafeAppWrapper>
-          <RuntimeErrorBoundary
+    // Check for emergency testing modes only
+    const urlParams = new URLSearchParams(window.location.search);
+    const diagnosticMode = urlParams.get('diagnostic') === 'true';
+    const emergencyMode = urlParams.get('emergency') === 'true';
+    
+    // Only show testing modes if explicitly requested for debugging
+    if (diagnosticMode) {
+      return <DiagnosticCheck />;
+    }
+    
+    if (emergencyMode) {
+      return <EmergencyFallbackApp />;
+    }
+    
+    // Always show full CMS application
+    return (
+      <SafeAppWrapper>
+        <RuntimeErrorBoundary
+          onError={(error, errorInfo) => {
+            console.error('App-level runtime error:', error, errorInfo);
+            // Log errors but continue with full app
+            console.warn('Error logged, continuing with full application.');
+          }}
+        >
+          <ComponentErrorBoundary
             onError={(error, errorInfo) => {
-              console.error('App-level runtime error:', error, errorInfo);
-              // Log critical errors but don't auto-redirect to prevent loop
-              if (error.message.includes('forEach') || 
-                  error.message.includes('toLowerCase') ||
-                  error.message.includes('cn') ||
-                  error.message.includes('undefined is not an object')) {
-                console.warn('Critical error detected, but continuing with full app. To debug, add ?diagnostic=true to URL');
-              }
+              console.error('Component-level error:', error, errorInfo);
+              // Log errors but continue with full app
+              console.warn('Component error logged, continuing with full application.');
             }}
           >
-            <ComponentErrorBoundary
-              onError={(error, errorInfo) => {
-                console.error('Component-level error:', error, errorInfo);
-                // Log error but don't auto-redirect
-                if (error.message.includes('forEach') || 
-                    error.message.includes('classGroup') ||
-                    error.message.includes('cn') ||
-                    error.message.includes('undefined is not an object')) {
-                  console.warn('Component error detected, but continuing. To debug, add ?diagnostic=true to URL');
-                }
-              }}
-            >
-              <ErrorBoundary>
-                <AuthProvider>
-                  <ThemeProvider>
-                    <TypographyProvider>
-                      <CollaborativeProvider>
-                        <AppContent />
-                      </CollaborativeProvider>
-                    </TypographyProvider>
-                  </ThemeProvider>
-                </AuthProvider>
-              </ErrorBoundary>
-            </ComponentErrorBoundary>
-          </RuntimeErrorBoundary>
-        </SafeAppWrapper>
-      );
-    }
-    
-    // If no explicit mode is set, show recovery interface
-    if (!mode && !storedMode && 
-        !urlParams.get('safe') && 
-        !urlParams.get('test') && 
-        !urlParams.get('minimal') && 
-        !urlParams.get('emergency') && 
-        !urlParams.get('diagnostic') && 
-        !urlParams.get('simple')) {
-      return <FullCMSRecovery />;
-    }
-    
-    // Safety mechanism - check URL parameters for testing modes
-    const safeMode = urlParams.get('safe') === 'true';
-    const testMode = urlParams.get('test') === 'true';
-    const minimalMode = urlParams.get('minimal') === 'true';
-    const emergencyMode = urlParams.get('emergency') === 'true';
-    const diagnosticMode = urlParams.get('diagnostic') === 'true';
-    const simpleMode = urlParams.get('simple') === 'true';
-    
-    // Only activate testing modes if explicitly requested (not on error redirects)
-    const hasExplicitMode = safeMode || testMode || minimalMode || emergencyMode || diagnosticMode || simpleMode;
-    
-    // Check if user explicitly wants testing mode
-    if (hasExplicitMode) {
-      // Diagnostic mode - for comprehensive error checking
-      if (diagnosticMode) {
-        return <DiagnosticCheck />;
-      }
-      
-      // Simple mode - basic React test without complex dependencies
-      if (simpleMode) {
-        return <SimpleTestApp />;
-      }
-      
-      // Emergency mode - absolute minimum functionality for debugging
-      if (emergencyMode) {
-        return <EmergencyFallbackApp />;
-      }
-      
-      // Minimal mode - no dependencies, pure React
-      if (minimalMode) {
-        return <MinimalStartup />;
-      }
-      
-      // Safe mode - minimal UI test
-      if (safeMode) {
-        return <SafeTestApp />;
-      }
-      
-      // Test mode - test with contexts but simpler content
-      if (testMode) {
-        return (
-          <SafeAppWrapper>
-            <ComponentErrorBoundary>
+            <ErrorBoundary>
               <AuthProvider>
                 <ThemeProvider>
                   <TypographyProvider>
-                    <TestAppContent />
+                    <CollaborativeProvider>
+                      <AppContent />
+                    </CollaborativeProvider>
                   </TypographyProvider>
                 </ThemeProvider>
               </AuthProvider>
-            </ComponentErrorBoundary>
-          </SafeAppWrapper>
-        );
-      }
-    }
-
-    // Default to recovery interface if nothing is specified
-    return <FullCMSRecovery />;
+            </ErrorBoundary>
+          </ComponentErrorBoundary>
+        </RuntimeErrorBoundary>
+      </SafeAppWrapper>
+    );
   } catch (error) {
     console.error('Critical App error:', error);
     
-    // Return emergency fallback on critical error
+    // Force full app even on critical error
+    localStorage.setItem('app-mode', 'full');
+    localStorage.setItem('sabq-full-cms-enabled', 'true');
+    
+    // Return the full app with error handling instead of emergency fallback
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center p-8">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">خطأ حرج في النظام</h1>
-          <p className="text-gray-600 mb-6">حدث خطأ غير متوقع. يرجى إعادة تحميل الصفحة.</p>
-          <button 
-            onClick={() => window.location.reload()} 
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
-          >
-            إعادة تحميل
-          </button>
-        </div>
-      </div>
+      <SafeAppWrapper>
+        <RuntimeErrorBoundary>
+          <ComponentErrorBoundary>
+            <ErrorBoundary>
+              <AuthProvider>
+                <ThemeProvider>
+                  <TypographyProvider>
+                    <CollaborativeProvider>
+                      <AppContent />
+                    </CollaborativeProvider>
+                  </TypographyProvider>
+                </ThemeProvider>
+              </AuthProvider>
+            </ErrorBoundary>
+          </ComponentErrorBoundary>
+        </RuntimeErrorBoundary>
+      </SafeAppWrapper>
     );
   }
 }

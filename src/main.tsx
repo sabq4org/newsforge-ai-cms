@@ -68,43 +68,25 @@ console.log('Starting Sabq Althakiyah CMS...');
 console.log('URL params:', window.location.search);
 console.log('Stored mode:', localStorage.getItem('app-mode'));
 
-// Determine which app to load based on mode
+// Determine which app to load - SIMPLIFIED FOR FULL CMS
 const getAppComponent = () => {
   const urlParams = new URLSearchParams(window.location.search);
-  const mode = urlParams.get('mode');
-  const storedMode = localStorage.getItem('app-mode');
   
-  // Emergency mode takes highest priority
-  if (urlParams.get('emergency') === 'true' || mode === 'emergency' || criticalErrorDetected) {
+  // Only allow diagnostic and emergency for actual debugging
+  if (urlParams.get('diagnostic') === 'true') {
+    return DiagnosticApp;
+  }
+  
+  if (urlParams.get('emergency') === 'true') {
     return EmergencyApp;
   }
   
-  // URL parameters take priority
-  if (urlParams.get('minimal') === 'true' || mode === 'minimal' || storedMode === 'minimal') {
-    return MinimalApp;
-  } else if (urlParams.get('safe') === 'true' || mode === 'safe') {
-    return BasicTestApp;
-  } else if (urlParams.get('test') === 'true' || mode === 'test') {
-    return DiagnosticApp;
-  } else if (urlParams.get('simple') === 'true' || mode === 'simple' || storedMode === 'simple') {
-    return SimpleApp;
-  } else if (mode === 'safe-fallback' || storedMode === 'safe-fallback') {
-    return SafeFallbackApp;
-  } else if (mode === 'ultimate-safe' || storedMode === 'ultimate-safe') {
-    return UltimateSafeApp;
-  } else if (mode === 'basic' || storedMode === 'basic') {
-    return BasicTestApp;
-  } else if (mode === 'diagnostic' || storedMode === 'diagnostic') {
-    return DiagnosticApp;
-  } else if (mode === 'full' || storedMode === 'full') {
-    return App;
-  } else if (mode === null && !storedMode) {
-    // Default to full app - the main application
-    return App;
-  } else {
-    // Fallback to full app
-    return App;
-  }
+  // Force full CMS mode - Always return the main App
+  localStorage.setItem('app-mode', 'full');
+  localStorage.setItem('sabq-full-cms-enabled', 'true');
+  
+  console.log('🚀 Loading Full Sabq Althakiyah CMS');
+  return App;
 };
 
 const AppComponent = getAppComponent();
@@ -130,31 +112,8 @@ try {
       FallbackComponent={ErrorFallback}
       onError={(error, errorInfo) => {
         console.error('ErrorBoundary caught an error:', error, errorInfo);
-        
-        // Check for critical errors that require emergency mode
-        if (error.message && (
-          error.message.includes('forEach') ||
-          error.message.includes('tailwind') ||
-          error.message.includes('classGroup') ||
-          error.message.includes("Can't find variable: cn") ||
-          error.message.includes('ChartLine') ||
-          error.message.includes('Trophy') ||
-          error.message.includes('Award')
-        )) {
-          localStorage.setItem('app-mode', 'emergency');
-          window.location.search = '?emergency=true';
-          // Exit the callback early
-          return;
-        }
-        
-        // Auto-switch to ultimate safe mode if anything fails
-        localStorage.setItem('app-mode', 'ultimate-safe');
-        // Don't reload immediately, let user see the error first
-        setTimeout(() => {
-          if (confirm('حدث خطأ في التطبيق. هل تريد الانتقال إلى الوضع الآمن المحسن؟')) {
-            window.location.search = '?mode=ultimate-safe';
-          }
-        }, 2000);
+        console.warn('Error logged, but continuing with full CMS application');
+        // Don't auto-redirect to test modes - just log the error
       }}
     >
       <AppComponent />
