@@ -1,402 +1,128 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { Article, Category } from "@/types"
-import { mockCategories } from "./mockData"
-import { safeCn, safeOperation, ensureArray } from "./criticalErrorFixes"
 
+// Safe cn function implementation
 export function cn(...inputs: ClassValue[]) {
-  return safeOperation(() => {
-    // Use safeCn as primary implementation
-    const safeResult = safeCn(...inputs);
-    if (safeResult) {
-      return safeResult;
-    }
-    
-    // Enhanced safety checks as fallback
-    if (!inputs || inputs.length === 0) {
-      return '';
-    }
-    
-    // Ensure inputs is an array and filter out null/undefined values
-    const safeInputs = ensureArray(inputs).filter(input => input != null && input !== false);
-    
-    // If no valid inputs, return empty string
-    if (safeInputs.length === 0) {
-      return '';
-    }
-    
-    // Try clsx first with additional safety
-    let clsxResult = '';
-    try {
+  try {
+    return twMerge(clsx(inputs))
+  } catch (error) {
+    // Fallback: simple class concatenation
+    return inputs
+      .filter(input => input != null && input !== false && input !== '')
+      .map(input => {
+        if (typeof input === 'string') return input.trim();
+        if (typeof input === 'object' && input !== null) {
+          return Object.entries(input)
+            .filter(([_, condition]) => Boolean(condition))
+            .map(([className]) => String(className).trim())
+            .join(' ');
+        }
+        return String(input).trim();
+      })
+      .filter(className => className && className.length > 0)
+      .join(' ');
+  }
+}
       clsxResult = clsx(...safeInputs);
     } catch (clsxError) {
       console.warn('clsx error, using manual join:', clsxError);
-      clsxResult = safeInputs
-        .filter(input => typeof input === 'string' && input.length > 0)
-        .join(' ');
-    }
-    
-    // Try twMerge with fallback
-    try {
-      return twMerge(clsxResult);
-    } catch (twMergeError) {
-      console.warn('twMerge error, using clsx result:', twMergeError);
-      return clsxResult;
-    }
-  }, '', 'cn utility');
-}
+// Utility functions for data normalization and safe operations
 
-import { safeDateString, safeTimeString, safeOperation, ensureArray } from "./criticalErrorFixes"
+// Mock categories for fallback
+const defaultCategories = [
+  { id: 'local', name: 'محليات', color: '#3b82f6', slug: 'local' },
+  { id: 'world', name: 'العالم', color: '#10b981', slug: 'world' },
+  { id: 'sports', name: 'رياضة', color: '#f59e0b', slug: 'sports' },
+  { id: 'tech', name: 'تقنية', color: '#8b5cf6', slug: 'tech' }
+];
 
 /**
- * Normalize articles to ensure they have proper structure after KV storage
- * This fixes issues with serialization/deserialization of complex objects
+ * Normalize articles to ensure they have proper structure
  */
 export function normalizeArticles(articles: Article[]): Article[] {
-  return safeOperation(() => {
-    if (!ensureArray(articles).length) {
+  try {
+    if (!Array.isArray(articles)) {
       console.warn('normalizeArticles: Expected array, got:', typeof articles);
       return [];
     }
 
-    return ensureArray(articles).map((article, index) => {
-      if (!article || typeof article !== 'object') {
-        console.warn(`normalizeArticles: Invalid article at index ${index}:`, article);
-        return null;
-      }
+    return articles
+      .filter(article => article && typeof article === 'object')
+      .map((article) => {
+        // Ensure category exists and has proper structure
+        if (!article.category || typeof article.category !== 'object') {
+          article.category = defaultCategories[0]; // Use default category
+        }
 
-      // Ensure category exists and has proper structure
-      if (!article.category || typeof article.category !== 'object') {
-        // Find category by ID if it's a string, or use default
-        const categoryId = typeof article.category === 'string' ? article.category : article.category?.id;
-        let foundCategory = null;
-        
-        // Safe import check for mockCategories
-        try {
-          foundCategory = mockCategories.find(cat => cat.id === categoryId);
-        } catch (e) {
-          console.warn('normalizeArticles: Could not access mockCategories:', e);
+        // Ensure author exists
+        if (!article.author || typeof article.author !== 'object') {
+          article.author = {
+            id: 'system',
+            name: 'النظام',
+            role: 'admin',
+            email: 'system@sabq.org'
+          };
         }
-        
-        // If no category found, assign the first available category or create a default
-        article.category = foundCategory || {
-          id: 'default',
-          name: 'عام',
-          nameAr: 'عام',
-          nameEn: 'General',
-          slug: 'general',
-          description: 'تصنيف عام',
-          color: '#6b7280',
-          icon: '📰',
-          isActive: true,
-          sortOrder: 0,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          metadata: {
-            seoTitle: 'عام',
-            seoDescription: 'تصنيف عام للمقالات',
-            keywords: ['عام']
-          }
-        };
-      }
-      
-      // Additional check to ensure the category has required properties
-      if (article.category) {
-        if (!article.category.color) {
-          article.category.color = '#6b7280'; // Default color
-        }
-        if (!article.category.name) {
-          article.category.name = 'عام';
-        }
-        if (!article.category.nameAr) {
-          article.category.nameAr = 'عام';
-        }
-      }
 
-      // Ensure tags is always an array
-      if (!Array.isArray(article.tags)) {
-        article.tags = [];
-      }
-
-      // Ensure dates are Date objects
-      ['createdAt', 'updatedAt', 'publishedAt', 'scheduledAt'].forEach(dateField => {
-        const dateValue = article[dateField as keyof Article];
-        if (dateValue && typeof dateValue === 'string') {
-          try {
-            (article as any)[dateField] = new Date(dateValue);
-          } catch (e) {
-            console.warn(`normalizeArticles: Invalid date for ${dateField}:`, dateValue);
-            (article as any)[dateField] = new Date();
-          }
-        } else if (dateValue && typeof dateValue === 'number') {
-          (article as any)[dateField] = new Date(dateValue);
+        // Ensure dates are proper Date objects
+        if (article.createdAt && !(article.createdAt instanceof Date)) {
+          article.createdAt = new Date(article.createdAt);
         }
+        if (article.updatedAt && !(article.updatedAt instanceof Date)) {
+          article.updatedAt = new Date(article.updatedAt);
+        }
+
+        // Ensure arrays are arrays
+        if (!Array.isArray(article.tags)) {
+          article.tags = [];
+        }
+
+        return article;
       });
-
-      // Ensure analytics exists
-      if (!article.analytics) {
-        article.analytics = {
-          views: 0,
-          uniqueViews: 0,
-          likes: 0,
-          shares: 0,
-          comments: 0,
-          readTime: 0,
-          scrollDepth: 0,
-          bounceRate: 0,
-          clickThroughRate: 0
-        };
-      }
-
-      // Ensure author exists
-      if (!article.author || typeof article.author !== 'object') {
-        article.author = {
-          id: 'unknown',
-          name: 'Unknown',
-          email: 'unknown@sabq.sa',
-          role: 'journalist',
-          permissions: [],
-          language: 'ar',
-          createdAt: new Date(),
-          lastActive: new Date()
-        };
-      }
-
-      return article;
-    }).filter((article): article is Article => article !== null);
-  }, [], 'normalizeArticles');
-}
-
-/**
- * Safely format a date with fallback handling
- */
-export function safeDateFormat(
-  date: Date | string | number | undefined | null, 
-  locale: string = 'ar-SA',
-  options?: Intl.DateTimeFormatOptions
-): string {
-  return safeDateString(date, locale, options);
-}
-
-/**
- * Safely format a time with fallback handling
- */
-export function safeTimeFormat(
-  date: Date | string | number | undefined | null,
-  locale: string = 'ar-SA',
-  options?: Intl.DateTimeFormatOptions
-): string {
-  return safeTimeString(date, locale, options);
-}
-
-import { safeString, safeStringLower } from "./criticalErrorFixes"
-
-/**
- * Safely call toLowerCase on a string with fallback
- */
-export function safeToLowerCase(value: any): string {
-  return safeStringLower(value);
-}
-
-/**
- * Safely call toString on any value
- */
-export function safeToString(value: any): string {
-  return safeString(value);
-}
-
-export function normalizeActivityTimestamps(activities: any[]): any[] {
-  if (!Array.isArray(activities)) {
-    console.warn('normalizeActivityTimestamps: Expected array, got:', typeof activities);
+  } catch (error) {
+    console.error('normalizeArticles error:', error);
     return [];
   }
-  
-  return activities.map((activity, index) => {
-    if (!activity || typeof activity !== 'object') {
-      console.warn(`normalizeActivityTimestamps: Invalid activity at index ${index}:`, activity);
-      return {
-        id: `invalid-${index}`,
-        type: 'unknown',
-        article: 'Unknown',
-        user: 'Unknown',
-        timestamp: new Date()
-      };
+}
+
+/**
+ * Normalize data object to handle serialization issues
+ */
+export function normalizeDataObject<T>(data: T): T {
+  try {
+    if (data === null || data === undefined) {
+      return data;
     }
+
+    if (typeof data !== 'object') {
+      return data;
+    }
+
+    if (Array.isArray(data)) {
+      return data.map(item => normalizeDataObject(item)) as T;
+    }
+
+    const result = { ...data } as any;
     
-    // Handle different timestamp formats with extra safety checks
-    let timestamp = activity.timestamp;
-    
-    try {
-      if (typeof timestamp === 'string') {
-        timestamp = new Date(timestamp);
-      } else if (typeof timestamp === 'number') {
-        timestamp = new Date(timestamp);
-      } else if (timestamp instanceof Date) {
-        // Already a Date object, but check if it's valid
-        if (isNaN(timestamp.getTime())) {
-          timestamp = new Date();
+    // Handle Date strings
+    for (const key in result) {
+      const value = result[key];
+      if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(value)) {
+        try {
+          result[key] = new Date(value);
+        } catch {
+          // Keep original value if date parsing fails
         }
-      } else if (timestamp && typeof timestamp === 'object' && timestamp.constructor === Object) {
-        // Handle plain objects that might be serialized dates
-        console.warn(`normalizeActivityTimestamps: Converting object to date at index ${index}:`, timestamp);
-        timestamp = new Date(); // fallback to current date for objects
-      } else {
-        console.warn(`normalizeActivityTimestamps: Invalid timestamp at index ${index}:`, timestamp);
-        timestamp = new Date(); // fallback to current date
-      }
-      
-      // Triple-check the Date object is valid and has required methods
-      if (!timestamp || !(timestamp instanceof Date) || isNaN(timestamp.getTime()) || typeof timestamp.toLocaleDateString !== 'function') {
-        console.warn(`normalizeActivityTimestamps: Invalid date after processing at index ${index}, using current date`);
-        timestamp = new Date(); // fallback to current date for invalid dates
-      }
-    } catch (error) {
-      console.error(`normalizeActivityTimestamps: Error processing timestamp at index ${index}:`, error);
-      timestamp = new Date();
-    }
-    
-    return {
-      ...activity,
-      timestamp,
-      id: activity.id || `activity-${index}`,
-      type: activity.type || 'unknown',
-      article: activity.article || 'Unknown Article',
-      user: activity.user || 'Unknown User'
-    };
-  });
-}
-
-/**
- * Normalize external sources to ensure dates are properly handled
- */
-export function normalizeExternalSources(sources: any[]): any[] {
-  if (!Array.isArray(sources)) {
-    console.warn('normalizeExternalSources: Expected array, got:', typeof sources);
-    return [];
-  }
-  
-  return sources.map((source, index) => {
-    if (!source || typeof source !== 'object') {
-      console.warn(`normalizeExternalSources: Invalid source at index ${index}:`, source);
-      return null;
-    }
-    
-    // Ensure lastSync is a Date object with enhanced checking
-    let lastSync = source.lastSync;
-    
-    try {
-      if (typeof lastSync === 'string') {
-        lastSync = new Date(lastSync);
-      } else if (typeof lastSync === 'number') {
-        lastSync = new Date(lastSync);
-      } else if (!(lastSync instanceof Date)) {
-        lastSync = new Date();
-      }
-      
-      // Enhanced date validation
-      if (isNaN(lastSync.getTime()) || typeof lastSync.toLocaleDateString !== 'function') {
-        console.warn(`normalizeExternalSources: Invalid lastSync at index ${index}, using current date`);
-        lastSync = new Date();
-      }
-    } catch (error) {
-      console.error(`normalizeExternalSources: Error processing lastSync at index ${index}:`, error);
-      lastSync = new Date();
-    }
-    
-    return {
-      ...source,
-      lastSync,
-      id: source.id || `source-${index}`,
-      name: source.name || 'Unknown Source',
-      isActive: source.isActive !== undefined ? source.isActive : true,
-      status: source.status || 'connected',
-      articleCount: source.articleCount || 0
-    };
-  }).filter((source): source is any => source !== null);
-}
-
-/**
- * Universal data object normalization function that handles all timestamp fields
- */
-export function normalizeDataObject(obj: any): any {
-  if (!obj || typeof obj !== 'object') {
-    return obj;
-  }
-  
-  if (Array.isArray(obj)) {
-    return obj.map(normalizeDataObject);
-  }
-  
-  const normalized = { ...obj };
-  
-  // Common timestamp fields to normalize
-  const timestampFields = [
-    'timestamp', 'lastSync', 'createdAt', 'updatedAt', 'publishedAt', 
-    'scheduledAt', 'reviewDate', 'lastReviewedAt', 'joinedAt', 'lastLoginAt',
-    'lastChecked', 'detectedAt', 'unlockedAt', 'scheduledFor', 'startTime',
-    'reviewedAt', 'resolvedAt'
-  ];
-  
-  for (const field of timestampFields) {
-    if (normalized[field] !== undefined && normalized[field] !== null) {
-      try {
-        let dateValue = normalized[field];
-        
-        if (typeof dateValue === 'string') {
-          dateValue = new Date(dateValue);
-        } else if (typeof dateValue === 'number') {
-          dateValue = new Date(dateValue);
-        } else if (!(dateValue instanceof Date)) {
-          // If it's not a valid date type, set to current date
-          dateValue = new Date();
-        }
-        
-        // Enhanced validation to check both validity and required methods
-        if (isNaN(dateValue.getTime()) || 
-            typeof dateValue.toLocaleDateString !== 'function' || 
-            typeof dateValue.toLocaleTimeString !== 'function') {
-          console.warn(`normalizeDataObject: Invalid ${field} date, using current date`);
-          dateValue = new Date();
-        }
-        
-        normalized[field] = dateValue;
-      } catch (error) {
-        console.error(`normalizeDataObject: Error processing ${field}:`, error);
-        normalized[field] = new Date();
+      } else if (value && typeof value === 'object') {
+        result[key] = normalizeDataObject(value);
       }
     }
+
+    return result;
+  } catch (error) {
+    console.error('normalizeDataObject error:', error);
+    return data;
   }
-  
-  // Recursively normalize nested objects
-  for (const key in normalized) {
-    if (normalized[key] && typeof normalized[key] === 'object' && !Array.isArray(normalized[key]) && !(normalized[key] instanceof Date)) {
-      normalized[key] = normalizeDataObject(normalized[key]);
-    }
-  }
-  
-  return normalized;
 }
 
-
-
-/**
- * Enhanced date formatting with proper error handling
- */
-export function formatDate(
-  date: Date | string | number | undefined | null,
-  locale: string = 'ar-SA',
-  options: Intl.DateTimeFormatOptions = {}
-): string {
-  return safeDateFormat(date, locale, options);
-}
-
-/**
- * Enhanced time formatting with proper error handling
- */
-export function formatTime(
-  date: Date | string | number | undefined | null,
-  locale: string = 'ar-SA',
-  options: Intl.DateTimeFormatOptions = {}
-): string {
-  return safeTimeFormat(date, locale, options);
-}
