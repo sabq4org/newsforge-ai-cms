@@ -3,49 +3,120 @@
  * Comprehensive error prevention for quantum color adaptation system
  */
 
-// Critical: Initialize quantum globals immediately
+// Critical: Initialize quantum globals immediately with bulletproof protection
 if (typeof window !== 'undefined') {
-  // Quantum context initialization
-  window.q = window.q || {};
-  window.q.context = window.q.context || {};
-  window.q.context.ambientLight = typeof window.q.context.ambientLight === 'number' ? window.q.context.ambientLight : 0.5;
-  window.q.context.timeOfDay = window.q.context.timeOfDay || 'morning';
-  window.q.context.userActivity = window.q.context.userActivity || 'browsing';
-  window.q.context.eyeStrain = window.q.context.eyeStrain || 'low';
-  window.q.context.sessionLength = typeof window.q.context.sessionLength === 'number' ? window.q.context.sessionLength : 0;
-  
-  // Reasoning array
-  if (!Array.isArray(window.q.reasoning)) {
-    window.q.reasoning = ['Default quantum color adaptation'];
+  // First, ensure window.q exists as a proper object
+  try {
+    if (!window.q || typeof window.q !== 'object') {
+      window.q = {};
+    }
+    
+    // Initialize context with type checking
+    if (!window.q.context || typeof window.q.context !== 'object') {
+      window.q.context = {};
+    }
+    
+    // Safe property assignment with type validation
+    if (typeof window.q.context.ambientLight !== 'number' || isNaN(window.q.context.ambientLight)) {
+      window.q.context.ambientLight = 0.5;
+    }
+    
+    if (typeof window.q.context.timeOfDay !== 'string') {
+      window.q.context.timeOfDay = 'morning';
+    }
+    
+    if (typeof window.q.context.userActivity !== 'string') {
+      window.q.context.userActivity = 'browsing';
+    }
+    
+    if (typeof window.q.context.eyeStrain !== 'string') {
+      window.q.context.eyeStrain = 'low';
+    }
+    
+    if (typeof window.q.context.sessionLength !== 'number' || isNaN(window.q.context.sessionLength)) {
+      window.q.context.sessionLength = 0;
+    }
+    
+    // Reasoning array with validation
+    if (!Array.isArray(window.q.reasoning)) {
+      window.q.reasoning = ['Default quantum color adaptation'];
+    }
+    
+    // Colors object with validation
+    if (!window.q.colors || typeof window.q.colors !== 'object') {
+      window.q.colors = {};
+    }
+    
+    if (typeof window.q.colors.accent !== 'string') {
+      window.q.colors.accent = '#007acc';
+    }
+    
+    if (typeof window.q.colors.primary !== 'string') {
+      window.q.colors.primary = '#0066cc';
+    }
+    
+    if (typeof window.q.colors.secondary !== 'string') {
+      window.q.colors.secondary = '#6c757d';
+    }
+    
+    // Create immutable backup
+    window.quantumBackup = Object.freeze({
+      context: Object.freeze({
+        ambientLight: 0.5,
+        timeOfDay: 'morning',
+        userActivity: 'browsing',
+        eyeStrain: 'low',
+        sessionLength: 0
+      }),
+      reasoning: Object.freeze(['Default quantum color adaptation']),
+      colors: Object.freeze({
+        accent: '#007acc',
+        primary: '#0066cc',
+        secondary: '#6c757d'
+      })
+    });
+    
+    // Environmental context safety
+    window.environmentalContext = window.environmentalContext || {
+      timeOfDay: 'morning',
+      activity: 'browsing',
+      eyeStrain: 'low',
+      sessionLength: 0,
+      ambientLight: 0.5
+    };
+    
+    // Color profile safety
+    window.colorProfile = window.colorProfile || {
+      red: 0,
+      green: 0,
+      blue: 0,
+      warmth: 0,
+      contrast: 1,
+      intensity: 1,
+      timestamp: Date.now()
+    };
+    
+    console.log('Critical quantum error fixes applied successfully');
+  } catch (quantumInitError) {
+    console.error('Quantum initialization failed, applying emergency fallback:', quantumInitError);
+    
+    // Emergency fallback
+    window.q = {
+      context: {
+        ambientLight: 0.5,
+        timeOfDay: 'morning',
+        userActivity: 'browsing',
+        eyeStrain: 'low',
+        sessionLength: 0
+      },
+      reasoning: ['Emergency quantum fallback'],
+      colors: {
+        accent: '#007acc',
+        primary: '#0066cc',
+        secondary: '#6c757d'
+      }
+    };
   }
-  
-  // Colors object
-  window.q.colors = window.q.colors || {};
-  window.q.colors.accent = window.q.colors.accent || '#007acc';
-  window.q.colors.primary = window.q.colors.primary || '#0066cc';
-  window.q.colors.secondary = window.q.colors.secondary || '#6c757d';
-  
-  // Environmental context safety
-  window.environmentalContext = window.environmentalContext || {
-    timeOfDay: 'morning',
-    activity: 'browsing',
-    eyeStrain: 'low',
-    sessionLength: 0,
-    ambientLight: 0.5
-  };
-  
-  // Color profile safety
-  window.colorProfile = window.colorProfile || {
-    red: 0,
-    green: 0,
-    blue: 0,
-    warmth: 0,
-    contrast: 1,
-    intensity: 1,
-    timestamp: Date.now()
-  };
-  
-  console.log('Critical quantum error fixes applied');
 }
 
 // Override potential problematic object access
@@ -120,31 +191,12 @@ if (typeof Proxy !== 'undefined') {
 
 // Error prevention for specific quantum color operations
 if (typeof window !== 'undefined') {
-  // Periodic safety check
+  // Periodic safety check with enhanced protection
   const quantumSafetyCheck = () => {
     try {
-      // Ensure q.context.ambientLight always exists
-      if (window.q && window.q.context && typeof window.q.context.ambientLight !== 'number') {
-        window.q.context.ambientLight = 0.5;
-      }
-      
-      // Ensure reasoning array exists
-      if (window.q && !Array.isArray(window.q.reasoning)) {
-        window.q.reasoning = ['Safe quantum adaptation'];
-      }
-      
-      // Ensure colors object exists
-      if (window.q && (!window.q.colors || typeof window.q.colors !== 'object')) {
-        window.q.colors = {
-          accent: '#007acc',
-          primary: '#0066cc',
-          secondary: '#6c757d'
-        };
-      }
-    } catch (error) {
-      console.warn('Quantum safety check error:', error);
-      // Reinitialize on error
-      try {
+      // Verify window.q exists and is an object
+      if (!window.q || typeof window.q !== 'object') {
+        console.warn('Quantum object missing or corrupted, reinitializing...');
         window.q = {
           context: {
             ambientLight: 0.5,
@@ -160,8 +212,108 @@ if (typeof window !== 'undefined') {
             secondary: '#6c757d'
           }
         };
-      } catch (reinitError) {
-        console.error('Critical quantum reinitialization failed:', reinitError);
+      }
+      
+      // Verify context object
+      if (!window.q.context || typeof window.q.context !== 'object') {
+        console.warn('Quantum context missing, reinitializing...');
+        window.q.context = {
+          ambientLight: 0.5,
+          timeOfDay: 'morning',
+          userActivity: 'browsing',
+          eyeStrain: 'low',
+          sessionLength: 0
+        };
+      }
+      
+      // Ensure specific problematic property exists and is valid
+      if (typeof window.q.context.ambientLight !== 'number' || isNaN(window.q.context.ambientLight)) {
+        console.warn('Quantum ambientLight invalid, fixing...');
+        window.q.context.ambientLight = 0.5;
+      }
+      
+      // Ensure other context properties are valid
+      if (typeof window.q.context.timeOfDay !== 'string') {
+        window.q.context.timeOfDay = 'morning';
+      }
+      
+      if (typeof window.q.context.userActivity !== 'string') {
+        window.q.context.userActivity = 'browsing';
+      }
+      
+      if (typeof window.q.context.eyeStrain !== 'string') {
+        window.q.context.eyeStrain = 'low';
+      }
+      
+      if (typeof window.q.context.sessionLength !== 'number' || isNaN(window.q.context.sessionLength)) {
+        window.q.context.sessionLength = 0;
+      }
+      
+      // Ensure reasoning array exists and is valid
+      if (!Array.isArray(window.q.reasoning) || window.q.reasoning.length === 0) {
+        console.warn('Quantum reasoning array invalid, fixing...');
+        window.q.reasoning = ['Safe quantum adaptation'];
+      }
+      
+      // Ensure colors object exists and is valid
+      if (!window.q.colors || typeof window.q.colors !== 'object') {
+        console.warn('Quantum colors object invalid, fixing...');
+        window.q.colors = {
+          accent: '#007acc',
+          primary: '#0066cc',
+          secondary: '#6c757d'
+        };
+      } else {
+        // Validate individual color properties
+        if (typeof window.q.colors.accent !== 'string') {
+          window.q.colors.accent = '#007acc';
+        }
+        if (typeof window.q.colors.primary !== 'string') {
+          window.q.colors.primary = '#0066cc';
+        }
+        if (typeof window.q.colors.secondary !== 'string') {
+          window.q.colors.secondary = '#6c757d';
+        }
+      }
+      
+      // Validate object integrity
+      try {
+        const test = window.q.context.ambientLight + 0; // Should not throw
+        const testArray = window.q.reasoning[0]; // Should not throw
+        const testColor = window.q.colors.accent.length; // Should not throw
+      } catch (validationError) {
+        console.error('Quantum object validation failed, full reset:', validationError);
+        throw validationError;
+      }
+      
+    } catch (error) {
+      console.warn('Quantum safety check error, performing full reset:', error);
+      // Full reset on any error
+      try {
+        window.q = Object.assign({}, window.quantumBackup || {
+          context: {
+            ambientLight: 0.5,
+            timeOfDay: 'morning',
+            userActivity: 'browsing',
+            eyeStrain: 'low',
+            sessionLength: 0
+          },
+          reasoning: ['Safe quantum adaptation'],
+          colors: {
+            accent: '#007acc',
+            primary: '#0066cc',
+            secondary: '#6c757d'
+          }
+        });
+        console.log('Quantum object fully reset successfully');
+      } catch (resetError) {
+        console.error('Critical quantum reset failed:', resetError);
+        // Last resort: set on window directly
+        window.q = {
+          context: { ambientLight: 0.5, timeOfDay: 'morning', userActivity: 'browsing', eyeStrain: 'low', sessionLength: 0 },
+          reasoning: ['Emergency quantum adaptation'],
+          colors: { accent: '#007acc', primary: '#0066cc', secondary: '#6c757d' }
+        };
       }
     }
   };

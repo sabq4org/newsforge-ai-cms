@@ -99,36 +99,36 @@ export function ensureQuantumObjectSafety() {
     
     // Override any existing problematic quantum objects
     if ((window as any).q && typeof (window as any).q === 'object') {
-      const q = (window as any).q;
+      const quantumObject = (window as any).q;
       
       // Ensure context exists and is safe
-      if (!q.context || typeof q.context !== 'object') {
-        q.context = quantum.getContext();
+      if (!quantumObject.context || typeof quantumObject.context !== 'object') {
+        quantumObject.context = quantum.getContext();
       } else {
         // Safely merge existing context with safe defaults
-        q.context = {
+        quantumObject.context = {
           ...quantum.getContext(),
-          ...(q.context || {})
+          ...(quantumObject.context || {})
         };
         
         // Ensure specific problematic properties exist
-        if (typeof q.context.ambientLight !== 'number') {
-          q.context.ambientLight = 0.5;
+        if (typeof quantumObject.context.ambientLight !== 'number') {
+          quantumObject.context.ambientLight = 0.5;
         }
       }
       
       // Ensure reasoning is an array
-      if (!Array.isArray(q.reasoning)) {
-        q.reasoning = quantum.getReasoning();
+      if (!Array.isArray(quantumObject.reasoning)) {
+        quantumObject.reasoning = quantum.getReasoning();
       }
       
       // Ensure colors object exists
-      if (!q.colors || typeof q.colors !== 'object') {
-        q.colors = quantum.getColors();
+      if (!quantumObject.colors || typeof quantumObject.colors !== 'object') {
+        quantumObject.colors = quantum.getColors();
       } else {
-        q.colors = {
+        quantumObject.colors = {
           ...quantum.getColors(),
-          ...(q.colors || {})
+          ...(quantumObject.colors || {})
         };
       }
     }

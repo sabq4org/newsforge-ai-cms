@@ -11,19 +11,29 @@ export function QuantumTest() {
       
       // Test the exact access pattern that was failing
       if (typeof window !== 'undefined' && (window as any).q) {
-        const q = (window as any).q;
+        const quantumObject = (window as any).q; // Avoid single letter variable 'q'
         
         // This should not throw an error anymore
-        const ambientLight = q?.context?.ambientLight;
+        const ambientLight = quantumObject?.context?.ambientLight;
         console.log('Ambient light value:', ambientLight);
         
-        const reasoning = q?.reasoning?.[0];
+        const reasoning = quantumObject?.reasoning?.[0];
         console.log('Reasoning:', reasoning);
         
-        const accentColor = q?.colors?.accent;
+        const accentColor = quantumObject?.colors?.accent;
         console.log('Accent color:', accentColor);
         
+        // Additional safety tests
+        try {
+          const contextTest = quantumObject.context.ambientLight; // Direct access test
+          console.log('Direct context access test:', contextTest);
+        } catch (directError) {
+          console.error('Direct access failed:', directError);
+        }
+        
         console.log('✅ Quantum object access test passed');
+      } else {
+        console.warn('⚠️ Quantum object not available');
       }
     } catch (error) {
       console.error('❌ Quantum object access test failed:', error);

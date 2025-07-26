@@ -5,6 +5,7 @@ import '@/lib/comprehensiveErrorFixes'; // Comprehensive error fixes
 import '@/lib/fullCMSStabilizer'; // Full CMS stabilizer - ENSURES COMPLETE SYSTEM
 import '@/lib/quantumErrorPrevention'; // Quantum color error prevention - PREVENTS AMBIENT LIGHT ERRORS
 import '@/lib/criticalQuantumFixes'; // Critical quantum object fixes
+import '@/lib/ultimateQuantumProtection'; // Ultimate quantum protection - FINAL SOLUTION
 import { useState } from 'react';
 import * as React from 'react';
 import { Toaster } from '@/components/ui/sonner';

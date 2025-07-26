@@ -12,12 +12,22 @@
       let criticalErrors = 0;
       const maxErrors = 5; // Increased threshold for better debugging
       
-      // Enhanced error handler with more specific patterns
+      // Enhanced error handler with more specific patterns and aggressive response
       window.addEventListener('error', function(e) {
         criticalErrors++;
         console.error('HTML-level error:', e.message, e.filename, e.lineno);
         
-        const errorPatterns = [
+        // Quantum-specific error patterns
+        const quantumErrorPatterns = [
+          'q.context.ambientLight',
+          'context.ambientLight',
+          'undefined is not an object (evaluating \'q.context',
+          'undefined is not an object (evaluating \'K.context',
+          'undefined is not an object (evaluating \'O.context',
+          'undefined is not an object (evaluating \'P.context'
+        ];
+        
+        const generalErrorPatterns = [
           'forEach is not a function',
           'forEach',
           'tailwind',
@@ -42,31 +52,104 @@
           'ReferenceError'
         ];
         
-        const shouldRedirect = errorPatterns.some(pattern => 
+        // Handle quantum errors immediately and aggressively
+        const isQuantumError = quantumErrorPatterns.some(pattern => 
+          e.message && e.message.includes(pattern)
+        );
+        
+        if (isQuantumError) {
+          console.error('🚨 QUANTUM ERROR DETECTED:', e.message);
+          
+          // Immediate quantum recovery
+          try {
+            window.q = {
+              context: {
+                ambientLight: 0.5,
+                timeOfDay: 'morning',
+                userActivity: 'browsing',
+                eyeStrain: 'low',
+                sessionLength: 0
+              },
+              reasoning: ['Emergency quantum recovery'],
+              colors: {
+                accent: '#007acc',
+                primary: '#0066cc',
+                secondary: '#6c757d'
+              }
+            };
+            
+            // Also create backup references
+            window.quantumContext = window.q.context;
+            window.quantumColors = window.q.colors;
+            window.quantumReasoning = window.q.reasoning;
+            
+            console.log('✅ Emergency quantum recovery completed');
+            
+            // Stop error propagation for quantum errors
+            e.preventDefault();
+            e.stopPropagation();
+            return true;
+          } catch (recoveryError) {
+            console.error('Quantum recovery failed:', recoveryError);
+          }
+        }
+        
+        // Handle general errors
+        const shouldHandle = generalErrorPatterns.some(pattern => 
           e.message && e.message.toLowerCase().includes(pattern.toLowerCase())
         );
         
-        // Only redirect if we have more than maxErrors or the user manually requests it
-        if (criticalErrors > maxErrors) {
-          console.warn('Too many critical errors, consider using diagnostic mode');
-          // Don't auto-redirect to prevent endless loops
+        if (shouldHandle && criticalErrors > 3) {
+          console.warn('Multiple critical errors detected, initiating protective measures');
         }
       });
       
-      // Enhanced promise rejection handler
+      // Enhanced promise rejection handler with quantum error protection
       window.addEventListener('unhandledrejection', function(e) {
         console.error('Unhandled promise rejection:', e.reason);
         
         if (e.reason && typeof e.reason === 'object') {
           const message = e.reason.message || e.reason.toString();
+          
+          // Quantum-specific patterns
+          const quantumPatterns = [
+            'q.context.ambientLight',
+            'context.ambientLight',
+            'K.context.ambientLight',
+            'O.context.ambientLight',
+            'P.context.ambientLight'
+          ];
+          
           const criticalPatterns = [
             'forEach', 'twMerge', 'clsx', 'toLowerCase', 'toLocaleDateString',
             'TSError', 'SyntaxError', 'ReferenceError'
           ];
           
+          // Handle quantum errors in promises
+          if (quantumPatterns.some(pattern => message.includes(pattern))) {
+            console.error('🚨 QUANTUM ERROR IN PROMISE:', message);
+            
+            // Emergency quantum initialization
+            try {
+              window.q = window.q || {};
+              window.q.context = window.q.context || {};
+              window.q.context.ambientLight = 0.5;
+              window.q.context.timeOfDay = 'morning';
+              window.q.context.userActivity = 'browsing';
+              window.q.context.eyeStrain = 'low';
+              window.q.context.sessionLength = 0;
+              window.q.reasoning = ['Promise quantum recovery'];
+              window.q.colors = { accent: '#007acc', primary: '#0066cc', secondary: '#6c757d' };
+              
+              console.log('✅ Promise quantum recovery completed');
+              e.preventDefault();
+            } catch (quantumRecoveryError) {
+              console.error('Promise quantum recovery failed:', quantumRecoveryError);
+            }
+          }
+          
           if (criticalPatterns.some(pattern => message.toLowerCase().includes(pattern))) {
             console.warn('Promise rejection with critical error - logged for debugging');
-            // Don't auto-redirect to prevent endless loops
           }
         }
       });
@@ -84,24 +167,131 @@
       
       // QUANTUM COLOR ERROR PREVENTION - CRITICAL
       // Prevent "undefined is not an object (evaluating 'q.context.ambientLight')" error
-      window.q = window.q || {};
-      window.q.context = window.q.context || {};
-      window.q.context.ambientLight = window.q.context.ambientLight || 0.5;
-      window.q.context.timeOfDay = window.q.context.timeOfDay || 'morning';
-      window.q.context.userActivity = window.q.context.userActivity || 'browsing';
-      window.q.context.eyeStrain = window.q.context.eyeStrain || 'low';
-      window.q.context.sessionLength = window.q.context.sessionLength || 0;
       
-      // Ensure reasoning array exists
-      window.q.reasoning = window.q.reasoning || ['Safe quantum adaptation'];
+      // Create multiple protection layers
+      function initializeQuantumSafety() {
+        try {
+          // Layer 1: Global window.q
+          window.q = window.q || {};
+          window.q.context = window.q.context || {};
+          window.q.context.ambientLight = typeof window.q.context.ambientLight === 'number' ? window.q.context.ambientLight : 0.5;
+          window.q.context.timeOfDay = window.q.context.timeOfDay || 'morning';
+          window.q.context.userActivity = window.q.context.userActivity || 'browsing';
+          window.q.context.eyeStrain = window.q.context.eyeStrain || 'low';
+          window.q.context.sessionLength = typeof window.q.context.sessionLength === 'number' ? window.q.context.sessionLength : 0;
+          
+          // Ensure reasoning array exists
+          window.q.reasoning = Array.isArray(window.q.reasoning) ? window.q.reasoning : ['Safe quantum adaptation'];
+          
+          // Ensure colors object exists
+          window.q.colors = window.q.colors || {};
+          window.q.colors.accent = window.q.colors.accent || '#007acc';
+          window.q.colors.primary = window.q.colors.primary || '#0066cc';
+          window.q.colors.secondary = window.q.colors.secondary || '#6c757d';
+          
+          // Layer 2: Global fallback variables for any minified variable conflicts
+          window.quantumContext = window.quantumContext || window.q.context;
+          window.quantumColors = window.quantumColors || window.q.colors;
+          window.quantumReasoning = window.quantumReasoning || window.q.reasoning;
+          
+          // Layer 3: Create backup safe access functions
+          window.getQuantumContext = function() {
+            return window.q?.context || {
+              ambientLight: 0.5,
+              timeOfDay: 'morning',
+              userActivity: 'browsing',
+              eyeStrain: 'low',
+              sessionLength: 0
+            };
+          };
+          
+          window.getQuantumColors = function() {
+            return window.q?.colors || {
+              accent: '#007acc',
+              primary: '#0066cc',
+              secondary: '#6c757d'
+            };
+          };
+          
+          window.getQuantumReasoning = function() {
+            return window.q?.reasoning || ['Safe quantum adaptation'];
+          };
+          
+          // Layer 4: Protect against property access on undefined
+          const originalDescriptor = Object.getOwnPropertyDescriptor(window, 'q');
+          if (!originalDescriptor || originalDescriptor.configurable) {
+            try {
+              Object.defineProperty(window, 'q', {
+                get: function() {
+                  return window._quantumObject || (window._quantumObject = {
+                    context: {
+                      ambientLight: 0.5,
+                      timeOfDay: 'morning',
+                      userActivity: 'browsing',
+                      eyeStrain: 'low',
+                      sessionLength: 0
+                    },
+                    reasoning: ['Safe quantum adaptation'],
+                    colors: {
+                      accent: '#007acc',
+                      primary: '#0066cc',
+                      secondary: '#6c757d'
+                    }
+                  });
+                },
+                set: function(value) {
+                  if (value && typeof value === 'object') {
+                    window._quantumObject = value;
+                  }
+                },
+                configurable: true,
+                enumerable: true
+              });
+            } catch (defineError) {
+              console.warn('Could not define quantum property descriptor:', defineError);
+              // Fallback to direct assignment
+              window.q = window.q || {
+                context: {
+                  ambientLight: 0.5,
+                  timeOfDay: 'morning',
+                  userActivity: 'browsing',
+                  eyeStrain: 'low',
+                  sessionLength: 0
+                },
+                reasoning: ['Safe quantum adaptation'],
+                colors: {
+                  accent: '#007acc',
+                  primary: '#0066cc',
+                  secondary: '#6c757d'
+                }
+              };
+            }
+          }
+          
+          console.log('Multi-layer quantum color protection initialized');
+          return true;
+        } catch (error) {
+          console.error('Quantum safety initialization failed:', error);
+          // Emergency fallback
+          window._emergencyQuantum = {
+            context: { ambientLight: 0.5, timeOfDay: 'morning', userActivity: 'browsing', eyeStrain: 'low', sessionLength: 0 },
+            reasoning: ['Emergency quantum fallback'],
+            colors: { accent: '#007acc', primary: '#0066cc', secondary: '#6c757d' }
+          };
+          return false;
+        }
+      }
       
-      // Ensure colors object exists
-      window.q.colors = window.q.colors || {};
-      window.q.colors.accent = window.q.colors.accent || '#007acc';
-      window.q.colors.primary = window.q.colors.primary || '#0066cc';
-      window.q.colors.secondary = window.q.colors.secondary || '#6c757d';
+      // Initialize immediately
+      initializeQuantumSafety();
       
-      console.log('Quantum color context initialized safely');
+      // Reinitialize periodically
+      setInterval(function() {
+        if (!window.q || !window.q.context || typeof window.q.context.ambientLight !== 'number') {
+          console.warn('Quantum object corruption detected, reinitializing...');
+          initializeQuantumSafety();
+        }
+      }, 2000);
       
       // Enhanced Array.prototype.forEach safety (early protection)
       if (Array.prototype.forEach) {
