@@ -3,6 +3,8 @@ import '@/lib/criticalErrorFixes'; // Critical error fixes
 import '@/lib/runtimeErrorFixes'; // Runtime error fixes
 import '@/lib/comprehensiveErrorFixes'; // Comprehensive error fixes
 import '@/lib/fullCMSStabilizer'; // Full CMS stabilizer - ENSURES COMPLETE SYSTEM
+import '@/lib/quantumErrorPrevention'; // Quantum color error prevention - PREVENTS AMBIENT LIGHT ERRORS
+import '@/lib/criticalQuantumFixes'; // Critical quantum object fixes
 import { useState } from 'react';
 import * as React from 'react';
 import { Toaster } from '@/components/ui/sonner';
@@ -61,6 +63,8 @@ import { RuntimeErrorBoundary } from '@/components/debug/RuntimeErrorBoundary';
 import { RuntimeChecker } from '@/components/debug/RuntimeChecker';
 import ComponentErrorBoundary from '@/components/debug/ComponentErrorBoundary';
 import SafeAppWrapper from '@/components/debug/SafeAppWrapper';
+import { QuantumColorErrorBoundary } from '@/components/debug/QuantumColorErrorBoundary';
+import { QuantumTest } from '@/components/debug/QuantumTest';
 import { ReadingPreferencePrediction, AdvancedMLModelTraining, PredictiveBehaviorEngine, NeuralNetworkTrainer, TransformerTrainingStudio, DeepLearningPipelineManager, ArabicContentClassifier } from '@/components/ml';
 import { ExternalDataManager, NewsAggregator } from '@/components/external';
 import { BreakingNewsNotifications, NotificationCenter, LiveNotificationBanner, NotificationPreferences, NotificationAnalytics, SmartNotificationSystem } from '@/components/notifications';
@@ -1002,11 +1006,13 @@ function AppContent() {
       />
       
       {/* Quantum Color Adaptation System */}
-      <QuantumColorAdaptationSystem 
-        userId={memberUser?.id || user?.id || 'guest'}
-        enableLearning={true}
-        adaptationSpeed={0.5}
-      />
+      <QuantumColorErrorBoundary>
+        <QuantumColorAdaptationSystem 
+          userId={memberUser?.id || user?.id || 'guest'}
+          enableLearning={true}
+          adaptationSpeed={0.5}
+        />
+      </QuantumColorErrorBoundary>
       
       {/* Smart Theme Applicator - runs in background */}
       <SmartThemeApplicator 
@@ -1068,7 +1074,12 @@ function AppContent() {
       <ReadingScaleIndicator userId={memberUser?.id || user?.id || 'guest'} />
       
       {/* Color Adaptation Indicator */}
-      <ColorAdaptationIndicator userId={memberUser?.id || user?.id || 'guest'} />
+      <QuantumColorErrorBoundary>
+        <ColorAdaptationIndicator userId={memberUser?.id || user?.id || 'guest'} />
+      </QuantumColorErrorBoundary>
+      
+      {/* Quantum Test Component */}
+      <QuantumTest />
       
       {/* Membership Authentication Modal */}
       {showAuthModal && (

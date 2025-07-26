@@ -82,6 +82,27 @@
         }
       };
       
+      // QUANTUM COLOR ERROR PREVENTION - CRITICAL
+      // Prevent "undefined is not an object (evaluating 'q.context.ambientLight')" error
+      window.q = window.q || {};
+      window.q.context = window.q.context || {};
+      window.q.context.ambientLight = window.q.context.ambientLight || 0.5;
+      window.q.context.timeOfDay = window.q.context.timeOfDay || 'morning';
+      window.q.context.userActivity = window.q.context.userActivity || 'browsing';
+      window.q.context.eyeStrain = window.q.context.eyeStrain || 'low';
+      window.q.context.sessionLength = window.q.context.sessionLength || 0;
+      
+      // Ensure reasoning array exists
+      window.q.reasoning = window.q.reasoning || ['Safe quantum adaptation'];
+      
+      // Ensure colors object exists
+      window.q.colors = window.q.colors || {};
+      window.q.colors.accent = window.q.colors.accent || '#007acc';
+      window.q.colors.primary = window.q.colors.primary || '#0066cc';
+      window.q.colors.secondary = window.q.colors.secondary || '#6c757d';
+      
+      console.log('Quantum color context initialized safely');
+      
       // Enhanced Array.prototype.forEach safety (early protection)
       if (Array.prototype.forEach) {
         const originalForEach = Array.prototype.forEach;

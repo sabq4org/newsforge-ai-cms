@@ -1,5 +1,19 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useKV } from '@github/spark/hooks';
+import {
+  validateColorProfile,
+  validateEnvironmentalContext,
+  createDefaultColorProfile,
+  createDefaultEnvironmentalContext,
+  safelyApplyCSSVariables,
+  safelyApplyClasses,
+  safeSessionStorage,
+  safelyDetectTimeOfDay,
+  safelyDetectActivity,
+  withQuantumColorSafety,
+  type SafeColorProfile,
+  type SafeEnvironmentalContext
+} from '@/lib/quantumColorSafety';
 
 interface QuantumColorAdaptationSystemProps {
   userId?: string;
@@ -7,22 +21,9 @@ interface QuantumColorAdaptationSystemProps {
   adaptationSpeed?: number;
 }
 
-interface ColorProfile {
-  red: number;
-  green: number;
-  blue: number;
-  warmth: number;
-  contrast: number;
-  intensity: number;
-  timestamp: number;
-}
-
-interface EnvironmentalContext {
-  timeOfDay: 'morning' | 'afternoon' | 'evening' | 'night';
-  activity: 'reading' | 'writing' | 'browsing' | 'analytics';
-  eyeStrain: 'low' | 'medium' | 'high';
-  sessionLength: number; // in minutes
-}
+// Use the safe types from the safety module
+type ColorProfile = SafeColorProfile;
+type EnvironmentalContext = SafeEnvironmentalContext;
 
 /**
  * QuantumColorAdaptationSystem - Advanced AI-powered color adaptation
@@ -32,160 +33,157 @@ export function QuantumColorAdaptationSystem({
   enableLearning = true,
   adaptationSpeed = 0.3 
 }: QuantumColorAdaptationSystemProps) {
-  const [colorProfile, setColorProfile] = useKV<ColorProfile>(`color-profile-${userId}`, {
-    red: 0,
-    green: 0,
-    blue: 0,
-    warmth: 0,
-    contrast: 1,
-    intensity: 1,
-    timestamp: Date.now()
-  });
+  try {
+    const [colorProfile, setColorProfile] = useKV<ColorProfile>(`color-profile-${userId}`, createDefaultColorProfile());
 
-  const [environmentalContext, setEnvironmentalContext] = useState<EnvironmentalContext>({
-    timeOfDay: 'morning',
-    activity: 'browsing',
-    eyeStrain: 'low',
-    sessionLength: 0
-  });
+    const [environmentalContext, setEnvironmentalContext] = useState<EnvironmentalContext>(createDefaultEnvironmentalContext());
 
-  const [adaptationHistory, setAdaptationHistory] = useKV<ColorProfile[]>(
-    `adaptation-history-${userId}`, 
-    []
-  );
+    const [adaptationHistory, setAdaptationHistory] = useKV<ColorProfile[]>(
+      `adaptation-history-${userId}`, 
+      []
+    );
 
   // Detect environmental context
-  const detectEnvironmentalContext = useCallback(() => {
-    const hour = new Date().getHours();
-    let timeOfDay: EnvironmentalContext['timeOfDay'];
-    
-    if (hour >= 6 && hour < 12) timeOfDay = 'morning';
-    else if (hour >= 12 && hour < 17) timeOfDay = 'afternoon';
-    else if (hour >= 17 && hour < 21) timeOfDay = 'evening';
-    else timeOfDay = 'night';
-
-    // Detect activity
-    const url = window.location.pathname;
-    const activeElement = document.activeElement;
-    let activity: EnvironmentalContext['activity'] = 'browsing';
-    
-    if (url.includes('editor') || activeElement?.tagName === 'TEXTAREA' || 
-        activeElement?.hasAttribute('contenteditable')) {
-      activity = 'writing';
-    } else if (url.includes('analytics') || url.includes('dashboard')) {
-      activity = 'analytics';
-    } else if (document.querySelector('.article-view, .reading-mode')) {
-      activity = 'reading';
-    }
+  const detectEnvironmentalContext = useCallback(withQuantumColorSafety(() => {
+    const timeOfDay = safelyDetectTimeOfDay();
+    const activity = safelyDetectActivity();
 
     // Simple eye strain detection based on session length and activity
+    let sessionLength = 0;
+    const sessionStorage = safeSessionStorage();
     const sessionStart = sessionStorage.getItem('session-start');
-    const sessionLength = sessionStart 
-      ? (Date.now() - parseInt(sessionStart)) / (1000 * 60) 
-      : 0;
+    if (sessionStart) {
+      sessionLength = (Date.now() - parseInt(sessionStart)) / (1000 * 60);
+    }
     
     let eyeStrain: EnvironmentalContext['eyeStrain'] = 'low';
     if (sessionLength > 30) eyeStrain = 'medium';
     if (sessionLength > 60) eyeStrain = 'high';
 
-    setEnvironmentalContext({
+    const newContext: EnvironmentalContext = {
       timeOfDay,
       activity,
       eyeStrain,
       sessionLength
-    });
-  }, []);
+    };
+
+    setEnvironmentalContext(validateEnvironmentalContext(newContext));
+  }, 'Environmental context detection failed'), []);
 
   // Apply color adaptations to CSS
-  const applyColorAdaptations = useCallback((profile: ColorProfile) => {
-    const root = document.documentElement;
+  const applyColorAdaptations = useCallback(withQuantumColorSafety((profile: ColorProfile) => {
+    const validatedProfile = validateColorProfile(profile);
+    const validatedContext = validateEnvironmentalContext(environmentalContext);
     
-    root.style.setProperty('--quantum-color-red', profile.red.toString());
-    root.style.setProperty('--quantum-color-green', profile.green.toString());
-    root.style.setProperty('--quantum-color-blue', profile.blue.toString());
-    root.style.setProperty('--adaptive-color-warmth', profile.warmth.toString());
-    root.style.setProperty('--adaptive-color-contrast', profile.contrast.toString());
-    root.style.setProperty('--adaptive-color-intensity', profile.intensity.toString());
-    root.style.setProperty('--quantum-adaptation-speed', `${adaptationSpeed}s`);
-
-    // Apply context-specific classes
-    document.body.classList.remove('context-morning', 'context-afternoon', 'context-evening', 'context-night');
-    document.body.classList.add(`context-${environmentalContext.timeOfDay}`);
-
-    // Apply adaptive colors to main content areas
-    const contentAreas = document.querySelectorAll(
-      '.main-content, .article-content, .editor-content, .dashboard, .analytics-content'
-    );
-    
-    contentAreas.forEach(area => {
-      (area as HTMLElement).classList.add('adaptive-colors');
+    // Apply CSS variables safely
+    safelyApplyCSSVariables({
+      '--quantum-color-red': validatedProfile.red,
+      '--quantum-color-green': validatedProfile.green,
+      '--quantum-color-blue': validatedProfile.blue,
+      '--adaptive-color-warmth': validatedProfile.warmth,
+      '--adaptive-color-contrast': validatedProfile.contrast,
+      '--adaptive-color-intensity': validatedProfile.intensity,
+      '--quantum-adaptation-speed': `${adaptationSpeed}s`
     });
-  }, [adaptationSpeed, environmentalContext.timeOfDay]);
+
+    // Apply context-specific classes safely
+    const timeOfDayClasses = ['context-morning', 'context-afternoon', 'context-evening', 'context-night'];
+    safelyApplyClasses('body', [`context-${validatedContext.timeOfDay}`], timeOfDayClasses);
+
+    // Apply adaptive colors to main content areas safely
+    const contentSelectors = [
+      '.main-content',
+      '.article-content', 
+      '.editor-content',
+      '.dashboard',
+      '.analytics-content'
+    ];
+    
+    contentSelectors.forEach(selector => {
+      safelyApplyClasses(selector, ['adaptive-colors']);
+    });
+  }, 'Color adaptation application failed'), [adaptationSpeed, environmentalContext]);
 
   // Quantum learning algorithm - learns from user behavior patterns
-  const quantumColorLearning = useCallback(async () => {
+  const quantumColorLearning = useCallback(withQuantumColorSafety(async () => {
     if (!enableLearning) return;
 
+    // Safety check and validation
+    const safeContext = validateEnvironmentalContext(environmentalContext);
+    const safeProfile = validateColorProfile(colorProfile);
+
+    const prompt = spark.llmPrompt`
+      Analyze user's reading context and optimize colors for comfort:
+      
+      Time: ${safeContext.timeOfDay}
+      Activity: ${safeContext.activity}
+      Eye Strain Level: ${safeContext.eyeStrain}
+      Session Length: ${safeContext.sessionLength} minutes
+      
+      Current Color Profile:
+      - Red offset: ${safeProfile.red}
+      - Green offset: ${safeProfile.green}  
+      - Blue offset: ${safeProfile.blue}
+      - Warmth: ${safeProfile.warmth}
+      - Contrast: ${safeProfile.contrast}
+      - Intensity: ${safeProfile.intensity}
+      
+      Provide optimized color adjustments as JSON:
+      {
+        "red": number (-10 to 10),
+        "green": number (-10 to 10),
+        "blue": number (-10 to 10),
+        "warmth": number (-0.3 to 0.3),
+        "contrast": number (0.7 to 1.3),
+        "intensity": number (0.5 to 1.2),
+        "reasoning": "brief explanation"
+      }
+    `;
+
+    const response = await spark.llm(prompt, 'gpt-4o-mini', true);
+    
+    if (!response) {
+      console.warn('Empty response from quantum learning AI');
+      return;
+    }
+
+    let optimization;
     try {
-      // Create AI prompt for color optimization
-      const prompt = spark.llmPrompt`
-        Analyze user's reading context and optimize colors for comfort:
-        
-        Time: ${environmentalContext.timeOfDay}
-        Activity: ${environmentalContext.activity}
-        Eye Strain Level: ${environmentalContext.eyeStrain}
-        Session Length: ${environmentalContext.sessionLength} minutes
-        
-        Current Color Profile:
-        - Red offset: ${colorProfile.red}
-        - Green offset: ${colorProfile.green}  
-        - Blue offset: ${colorProfile.blue}
-        - Warmth: ${colorProfile.warmth}
-        - Contrast: ${colorProfile.contrast}
-        - Intensity: ${colorProfile.intensity}
-        
-        Provide optimized color adjustments as JSON:
-        {
-          "red": number (-10 to 10),
-          "green": number (-10 to 10),
-          "blue": number (-10 to 10),
-          "warmth": number (-0.3 to 0.3),
-          "contrast": number (0.7 to 1.3),
-          "intensity": number (0.5 to 1.2),
-          "reasoning": "brief explanation"
-        }
-      `;
+      optimization = JSON.parse(response);
+    } catch (parseError) {
+      console.warn('Failed to parse quantum learning response:', parseError);
+      return;
+    }
 
-      const response = await spark.llm(prompt, 'gpt-4o-mini', true);
-      const optimization = JSON.parse(response);
-      
-      // Apply gradual adaptation (not instant change)
-      const newProfile: ColorProfile = {
-        red: Math.max(-10, Math.min(10, colorProfile.red + (optimization.red - colorProfile.red) * 0.3)),
-        green: Math.max(-10, Math.min(10, colorProfile.green + (optimization.green - colorProfile.green) * 0.3)),
-        blue: Math.max(-10, Math.min(10, colorProfile.blue + (optimization.blue - colorProfile.blue) * 0.3)),
-        warmth: Math.max(-0.3, Math.min(0.3, colorProfile.warmth + (optimization.warmth - colorProfile.warmth) * 0.3)),
-        contrast: Math.max(0.7, Math.min(1.3, colorProfile.contrast + (optimization.contrast - colorProfile.contrast) * 0.3)),
-        intensity: Math.max(0.5, Math.min(1.2, colorProfile.intensity + (optimization.intensity - colorProfile.intensity) * 0.3)),
-        timestamp: Date.now()
-      };
+    // Validate optimization response and apply gradual adaptation
+    const newProfile: ColorProfile = {
+      red: Math.max(-10, Math.min(10, safeProfile.red + ((optimization.red || 0) - safeProfile.red) * 0.3)),
+      green: Math.max(-10, Math.min(10, safeProfile.green + ((optimization.green || 0) - safeProfile.green) * 0.3)),
+      blue: Math.max(-10, Math.min(10, safeProfile.blue + ((optimization.blue || 0) - safeProfile.blue) * 0.3)),
+      warmth: Math.max(-0.3, Math.min(0.3, safeProfile.warmth + ((optimization.warmth || 0) - safeProfile.warmth) * 0.3)),
+      contrast: Math.max(0.7, Math.min(1.3, safeProfile.contrast + ((optimization.contrast || 1) - safeProfile.contrast) * 0.3)),
+      intensity: Math.max(0.5, Math.min(1.2, safeProfile.intensity + ((optimization.intensity || 1) - safeProfile.intensity) * 0.3)),
+      timestamp: Date.now()
+    };
 
-      setColorProfile(newProfile);
-      
-      // Store in adaptation history
+    const validatedNewProfile = validateColorProfile(newProfile);
+    setColorProfile(validatedNewProfile);
+    
+    // Store in adaptation history safely
+    if (typeof setAdaptationHistory === 'function') {
       setAdaptationHistory(prev => {
-        const newHistory = [...prev, newProfile].slice(-50); // Keep last 50 adaptations
+        const safePrev = Array.isArray(prev) ? prev : [];
+        const newHistory = [...safePrev, validatedNewProfile].slice(-50);
         return newHistory;
       });
-
-      console.log('Quantum color adaptation applied:', optimization.reasoning);
-    } catch (error) {
-      console.warn('Quantum color learning failed:', error);
     }
-  }, [enableLearning, environmentalContext, colorProfile, setColorProfile, setAdaptationHistory]);
+
+    console.log('Quantum color adaptation applied:', optimization.reasoning || 'Applied successfully');
+  }, 'Quantum color learning failed'), [enableLearning, environmentalContext, colorProfile, setColorProfile, setAdaptationHistory]);
 
   // Initialize session tracking
   useEffect(() => {
+    const sessionStorage = safeSessionStorage();
     if (!sessionStorage.getItem('session-start')) {
       sessionStorage.setItem('session-start', Date.now().toString());
     }
@@ -193,71 +191,133 @@ export function QuantumColorAdaptationSystem({
 
   // Monitor environmental changes
   useEffect(() => {
-    detectEnvironmentalContext();
-    
-    const interval = setInterval(detectEnvironmentalContext, 60000); // Check every minute
-    const focusHandler = () => detectEnvironmentalContext();
-    
-    window.addEventListener('focus', focusHandler);
-    document.addEventListener('visibilitychange', focusHandler);
-    
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener('focus', focusHandler);
-      document.removeEventListener('visibilitychange', focusHandler);
-    };
+    try {
+      detectEnvironmentalContext();
+      
+      const interval = setInterval(() => {
+        try {
+          detectEnvironmentalContext();
+        } catch (contextError) {
+          console.warn('Error in periodic context detection:', contextError);
+        }
+      }, 60000); // Check every minute
+      
+      const focusHandler = () => {
+        try {
+          detectEnvironmentalContext();
+        } catch (focusError) {
+          console.warn('Error in focus context detection:', focusError);
+        }
+      };
+      
+      if (typeof window !== 'undefined' && window.addEventListener) {
+        window.addEventListener('focus', focusHandler);
+      }
+      
+      if (typeof document !== 'undefined' && document.addEventListener) {
+        document.addEventListener('visibilitychange', focusHandler);
+      }
+      
+      return () => {
+        try {
+          clearInterval(interval);
+          if (typeof window !== 'undefined' && window.removeEventListener) {
+            window.removeEventListener('focus', focusHandler);
+          }
+          if (typeof document !== 'undefined' && document.removeEventListener) {
+            document.removeEventListener('visibilitychange', focusHandler);
+          }
+        } catch (cleanupError) {
+          console.warn('Error in cleanup:', cleanupError);
+        }
+      };
+    } catch (error) {
+      console.warn('Error in environmental monitoring setup:', error);
+    }
   }, [detectEnvironmentalContext]);
 
   // Apply color adaptations
   useEffect(() => {
-    applyColorAdaptations(colorProfile);
+    const safeProfile = validateColorProfile(colorProfile);
+    if (applyColorAdaptations) {
+      applyColorAdaptations(safeProfile);
+    }
   }, [colorProfile, applyColorAdaptations]);
 
   // Run quantum learning periodically
   useEffect(() => {
     if (!enableLearning) return;
 
-    // Initial learning after 30 seconds
-    const initialTimeout = setTimeout(quantumColorLearning, 30000);
-    
-    // Then every 10 minutes
-    const interval = setInterval(quantumColorLearning, 10 * 60 * 1000);
-    
-    return () => {
-      clearTimeout(initialTimeout);
-      clearInterval(interval);
-    };
+    try {
+      // Initial learning after 30 seconds
+      const initialTimeout = setTimeout(() => {
+        try {
+          quantumColorLearning();
+        } catch (learningError) {
+          console.warn('Error in initial quantum learning:', learningError);
+        }
+      }, 30000);
+      
+      // Then every 10 minutes
+      const interval = setInterval(() => {
+        try {
+          quantumColorLearning();
+        } catch (intervalError) {
+          console.warn('Error in periodic quantum learning:', intervalError);
+        }
+      }, 10 * 60 * 1000);
+      
+      return () => {
+        try {
+          clearTimeout(initialTimeout);
+          clearInterval(interval);
+        } catch (cleanupError) {
+          console.warn('Error in quantum learning cleanup:', cleanupError);
+        }
+      };
+    } catch (error) {
+      console.warn('Error in quantum learning setup:', error);
+    }
   }, [enableLearning, quantumColorLearning]);
 
   return null; // This component doesn't render anything visual
+  } catch (error) {
+    console.error('Critical error in QuantumColorAdaptationSystem:', error);
+    return null; // Fail gracefully without crashing the app
+  }
 }
 
 /**
  * ColorAdaptationIndicator - Shows current color adaptation status
  */
 export function ColorAdaptationIndicator({ userId = 'guest' }: { userId?: string }) {
-  const [colorProfile] = useKV<ColorProfile>(`color-profile-${userId}`, {
-    red: 0, green: 0, blue: 0, warmth: 0, contrast: 1, intensity: 1, timestamp: Date.now()
-  });
+  try {
+    const [colorProfile] = useKV<ColorProfile>(`color-profile-${userId}`, createDefaultColorProfile());
 
-  const hasAdaptations = colorProfile.red !== 0 || 
-                        colorProfile.green !== 0 || 
-                        colorProfile.blue !== 0 || 
-                        colorProfile.warmth !== 0 ||
-                        colorProfile.contrast !== 1 ||
-                        colorProfile.intensity !== 1;
+    const safeProfile = validateColorProfile(colorProfile);
 
-  if (!hasAdaptations) return null;
+    const hasAdaptations = safeProfile.red !== 0 || 
+                          safeProfile.green !== 0 || 
+                          safeProfile.blue !== 0 || 
+                          safeProfile.warmth !== 0 ||
+                          safeProfile.contrast !== 1 ||
+                          safeProfile.intensity !== 1;
 
-  return (
-    <div className="fixed bottom-4 right-4 z-40 bg-card border border-border rounded-md px-3 py-2 text-sm shadow-md">
-      <div className="flex items-center gap-2">
-        <div className="w-3 h-3 rounded-full bg-gradient-to-r from-accent to-primary animate-pulse"></div>
-        <span className="text-muted-foreground">تكيف ألوان ذكي</span>
-        <span className="text-xs text-accent">نشط</span>
+    if (!hasAdaptations) return null;
+
+    return (
+      <div className="fixed bottom-4 right-4 z-40 bg-card border border-border rounded-md px-3 py-2 text-sm shadow-md">
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-full bg-gradient-to-r from-accent to-primary animate-pulse"></div>
+          <span className="text-muted-foreground">تكيف ألوان ذكي</span>
+          <span className="text-xs text-accent">نشط</span>
+        </div>
       </div>
-    </div>
-  );
+    );
+  } catch (error) {
+    console.warn('Error in ColorAdaptationIndicator:', error);
+    return null;
+  }
 }
 
 export default QuantumColorAdaptationSystem;
