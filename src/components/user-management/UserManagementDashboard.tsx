@@ -23,9 +23,9 @@ import {
   Download,
   Upload,
   Mail,
-  Globe,
+  Globe2 as Globe,
   Calendar,
-  ChartBarHorizontal,
+  ChartBar,
   Settings,
   Shield,
   Eye,
@@ -34,7 +34,6 @@ import {
   Ban,
   CheckCircle,
   Clock,
-  Medal,
   Medal,
   Activity
 } from '@phosphor-icons/react';

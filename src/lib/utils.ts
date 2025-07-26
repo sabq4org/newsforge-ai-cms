@@ -303,3 +303,23 @@ export function safeDateTimeFormat(date: Date | string | number | null | undefin
     return locale === 'ar-SA' ? 'خطأ في التنسيق' : 'Format error';
   }
 }
+
+/**
+ * Safe toLowerCase function with error handling
+ */
+export function safeToLowerCase(str: any): string {
+  try {
+    if (typeof str !== 'string') {
+      if (str === null || str === undefined) {
+        return '';
+      }
+      str = String(str);
+    }
+    return str.toLowerCase();
+  } catch (error) {
+    console.error('safeToLowerCase error:', error, 'for input:', str);
+    return String(str || '').replace(/[A-Z]/g, char => 
+      String.fromCharCode(char.charCodeAt(0) + 32)
+    );
+  }
+}
