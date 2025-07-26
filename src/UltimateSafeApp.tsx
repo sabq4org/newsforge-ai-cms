@@ -69,7 +69,7 @@ const SafeButton: React.FC<SafeButtonProps> = ({
   disabled = false,
   className = ''
 }) => {
-  const baseStyles = {
+  const baseStyles: React.CSSProperties = {
     border: 'none',
     borderRadius: '0.5rem',
     cursor: disabled ? 'not-allowed' : 'pointer',
@@ -81,7 +81,7 @@ const SafeButton: React.FC<SafeButtonProps> = ({
     alignItems: 'center',
     justifyContent: 'center',
     gap: '0.5rem'
-  } as const;
+  };
 
   const sizeStyles = {
     sm: { padding: '0.5rem 1rem', fontSize: '0.875rem' },
@@ -110,7 +110,7 @@ const SafeButton: React.FC<SafeButtonProps> = ({
 
   const [isHovered, setIsHovered] = React.useState(false);
 
-  const currentStyle = {
+  const currentStyle: React.CSSProperties = {
     ...baseStyles,
     ...sizeStyles[size],
     ...variantStyles[variant],
@@ -145,7 +145,7 @@ const SafeCard: React.FC<SafeCardProps> = ({ children, title, className = '', pa
     lg: '2rem'
   };
 
-  const cardStyle = {
+  const cardStyle: React.CSSProperties = {
     backgroundColor: 'white',
     borderRadius: '0.75rem',
     boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
@@ -154,7 +154,7 @@ const SafeCard: React.FC<SafeCardProps> = ({ children, title, className = '', pa
     marginBottom: '1rem'
   };
 
-  const titleStyle = {
+  const titleStyle: React.CSSProperties = {
     marginTop: 0,
     marginBottom: title ? '1rem' : 0,
     fontSize: '1.125rem',
@@ -188,7 +188,7 @@ const SafeInput: React.FC<SafeInputProps> = ({
   disabled = false,
   className = ''
 }) => {
-  const inputStyle = {
+  const inputStyle: React.CSSProperties = {
     width: '100%',
     padding: '0.75rem',
     borderRadius: '0.5rem',
@@ -199,8 +199,8 @@ const SafeInput: React.FC<SafeInputProps> = ({
     color: '#111827',
     outline: 'none',
     transition: 'border-color 0.2s ease',
-    direction: 'rtl' as const,
-    textAlign: 'right' as const
+    direction: 'rtl',
+    textAlign: 'right'
   };
 
   const [isFocused, setIsFocused] = React.useState(false);
@@ -224,17 +224,31 @@ const SafeInput: React.FC<SafeInputProps> = ({
 };
 
 // ==========================================
+// TYPES AND INTERFACES
+// ==========================================
+
+interface Article {
+  id: string;
+  title: string;
+  excerpt: string;
+  author: string;
+  date: Date;
+  category: string;
+  views: number;
+}
+
+// ==========================================
 // MAIN APPLICATION COMPONENT
 // ==========================================
 
-export default function UltimateSafeApp() {
-  const [currentView, setCurrentView] = React.useState('dashboard');
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [searchTerm, setSearchTerm] = React.useState('');
+export default function UltimateSafeApp(): JSX.Element {
+  const [currentView, setCurrentView] = React.useState<string>('dashboard');
+  const [isLoading, setIsLoading] = React.useState<boolean>(true);
+  const [searchTerm, setSearchTerm] = React.useState<string>('');
   const [error, setError] = React.useState<string | null>(null);
 
   // Sample data - completely safe
-  const sampleArticles = [
+  const sampleArticles: Article[] = [
     {
       id: '1',
       title: 'أخبار التكنولوجيا اليوم',
@@ -304,7 +318,7 @@ export default function UltimateSafeApp() {
   }, []);
 
   // Safe mode switching
-  const handleModeSwitch = (mode: string) => {
+  const handleModeSwitch = (mode: string): void => {
     try {
       const url = new URL(window.location.href);
       url.searchParams.set('mode', mode);
@@ -316,7 +330,7 @@ export default function UltimateSafeApp() {
   };
 
   // Safe reset function
-  const handleReset = () => {
+  const handleReset = (): void => {
     try {
       if (confirm('هل أنت متأكد من إعادة تعيين التطبيق؟')) {
         localStorage.clear();
@@ -399,7 +413,7 @@ export default function UltimateSafeApp() {
   }
 
   // Render dashboard
-  const renderDashboard = () => (
+  const renderDashboard = (): JSX.Element => (
     <div style={{ padding: '2rem' }}>
       <div style={{ marginBottom: '2rem' }}>
         <SafeCard title="📊 لوحة التحكم الرئيسية" padding="lg">
@@ -495,7 +509,7 @@ export default function UltimateSafeApp() {
   );
 
   // Render articles view
-  const renderArticles = () => (
+  const renderArticles = (): JSX.Element => (
     <div style={{ padding: '2rem' }}>
       <SafeCard title="📰 إدارة المقالات" padding="lg">
         <div style={{ marginBottom: '1.5rem' }}>
@@ -514,9 +528,9 @@ export default function UltimateSafeApp() {
         </div>
 
         <div style={{ display: 'grid', gap: '1rem' }}>
-          {safeFilter(sampleArticles, (article) => 
+          {safeFilter(sampleArticles, (article: Article) => 
             !searchTerm || article.title.includes(searchTerm) || article.excerpt.includes(searchTerm)
-          ).map((article) => (
+          ).map((article: Article) => (
             <div
               key={article.id}
               style={{
@@ -562,7 +576,7 @@ export default function UltimateSafeApp() {
   );
 
   // Render settings view
-  const renderSettings = () => (
+  const renderSettings = (): JSX.Element => (
     <div style={{ padding: '2rem' }}>
       <SafeCard title="⚙️ إعدادات النظام" padding="lg">
         <div style={{ display: 'grid', gap: '1.5rem' }}>
@@ -604,7 +618,7 @@ export default function UltimateSafeApp() {
   );
 
   // Render help view
-  const renderHelp = () => (
+  const renderHelp = (): JSX.Element => (
     <div style={{ padding: '2rem' }}>
       <SafeCard title="❓ مركز المساعدة" padding="lg">
         <div style={{ lineHeight: '1.8' }}>
@@ -642,7 +656,7 @@ export default function UltimateSafeApp() {
   );
 
   // Render analytics view
-  const renderAnalytics = () => (
+  const renderAnalytics = (): JSX.Element => (
     <div style={{ padding: '2rem' }}>
       <SafeCard title="📊 التحليلات والإحصائيات" padding="lg">
         <div style={{ display: 'grid', gap: '2rem' }}>
@@ -686,7 +700,7 @@ export default function UltimateSafeApp() {
           <div>
             <h4>أداء المقالات</h4>
             <div style={{ marginTop: '1rem' }}>
-              {safeMap(sampleArticles, (article, index) => (
+              {safeMap(sampleArticles, (article: Article, index: number) => (
                 <div
                   key={article.id}
                   style={{
@@ -725,7 +739,7 @@ export default function UltimateSafeApp() {
   );
 
   // Main render logic
-  const renderContent = () => {
+  const renderContent = (): JSX.Element => {
     switch (currentView) {
       case 'articles': 
         return renderArticles();
