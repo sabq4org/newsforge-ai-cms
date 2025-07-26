@@ -98,11 +98,11 @@ const getAppComponent = () => {
   } else if (mode === 'full' || storedMode === 'full') {
     return App;
   } else if (mode === null && !storedMode) {
-    // Default to ultimate safe app for maximum stability
-    return UltimateSafeApp;
+    // Default to full app - the main application
+    return App;
   } else {
-    // Fallback to ultimate safe app for safety
-    return UltimateSafeApp;
+    // Fallback to full app
+    return App;
   }
 };
 

@@ -87,14 +87,28 @@ const rolePermissions: Record<string, Permission[]> = {
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  // Auto-login as admin for testing purposes - Welcome to Sabq Althakiyah!
+  // Auto-login as admin for Sabq Althakiyah CMS - Welcome!
   const [user, setUser] = useKV<User | null>('sabq-user', mockUsers[0]); // Ahmed Al-Mansouri (Admin)
   const [language, setLanguage] = useKV<Language>('sabq-language', languages.ar); // Default to Arabic
   
-  // Show welcome message once for auto-login
+  // Show welcome message for auto-login
   React.useEffect(() => {
     if (user && user.id === '1') { // Ahmed Al-Mansouri
       console.log(`🎉 مرحباً بك في سبق الذكية! تم تسجيل الدخول تلقائياً كـ ${user.nameAr} (${user.role})`);
+      
+      // Show toast notification only once
+      const hasShownWelcome = localStorage.getItem('sabq-welcome-shown');
+      if (!hasShownWelcome) {
+        setTimeout(() => {
+          if (typeof window !== 'undefined' && (window as any).toast) {
+            (window as any).toast.success(`مرحباً ${user.nameAr}! 🎉`, {
+              description: 'تم تسجيل دخولك تلقائياً في سبق الذكية',
+              duration: 4000
+            });
+          }
+          localStorage.setItem('sabq-welcome-shown', 'true');
+        }, 1000);
+      }
     }
   }, [user]);
 

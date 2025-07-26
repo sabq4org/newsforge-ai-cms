@@ -16,6 +16,7 @@ import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { RoleBasedDashboard } from '@/components/dashboard/RoleBasedDashboard';
 import { ComprehensiveServiceMap } from '@/components/dashboard/ComprehensiveServiceMap';
+import FullCMSRecovery from './FullCMSRecovery';
 import { PublicInterface } from '@/components/public';
 import { AdvancedAnalytics, AnalyticsDashboard, InteractiveAnalytics, RealTimeAnalytics, PerformanceInsights, CategoryAnalytics, UserBehaviorAnalytics, ReadingPatternAnalyzer, PredictiveUserAnalytics } from '@/components/analytics';
 import { ComprehensiveArticleModule } from '@/components/articles';
@@ -1107,8 +1108,74 @@ import DiagnosticCheck from './DiagnosticCheck';
 
 function App() {
   try {
-    // Safety mechanism - check URL parameters for testing modes
+    // Check for recovery mode first
     const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode');
+    const storedMode = localStorage.getItem('app-mode');
+    const fullCmsEnabled = localStorage.getItem('sabq-full-cms-enabled');
+    
+    // If user has enabled full CMS, always show full app
+    if (fullCmsEnabled === 'true' || mode === 'full' || storedMode === 'full') {
+      // Clear any test mode flags
+      localStorage.removeItem('sabq-simple-mode');
+      localStorage.removeItem('sabq-test-mode');
+      
+      // Full application mode with enhanced error boundaries
+      return (
+        <SafeAppWrapper>
+          <RuntimeErrorBoundary
+            onError={(error, errorInfo) => {
+              console.error('App-level runtime error:', error, errorInfo);
+              // Log critical errors but don't auto-redirect to prevent loop
+              if (error.message.includes('forEach') || 
+                  error.message.includes('toLowerCase') ||
+                  error.message.includes('cn') ||
+                  error.message.includes('undefined is not an object')) {
+                console.warn('Critical error detected, but continuing with full app. To debug, add ?diagnostic=true to URL');
+              }
+            }}
+          >
+            <ComponentErrorBoundary
+              onError={(error, errorInfo) => {
+                console.error('Component-level error:', error, errorInfo);
+                // Log error but don't auto-redirect
+                if (error.message.includes('forEach') || 
+                    error.message.includes('classGroup') ||
+                    error.message.includes('cn') ||
+                    error.message.includes('undefined is not an object')) {
+                  console.warn('Component error detected, but continuing. To debug, add ?diagnostic=true to URL');
+                }
+              }}
+            >
+              <ErrorBoundary>
+                <AuthProvider>
+                  <ThemeProvider>
+                    <TypographyProvider>
+                      <CollaborativeProvider>
+                        <AppContent />
+                      </CollaborativeProvider>
+                    </TypographyProvider>
+                  </ThemeProvider>
+                </AuthProvider>
+              </ErrorBoundary>
+            </ComponentErrorBoundary>
+          </RuntimeErrorBoundary>
+        </SafeAppWrapper>
+      );
+    }
+    
+    // If no explicit mode is set, show recovery interface
+    if (!mode && !storedMode && 
+        !urlParams.get('safe') && 
+        !urlParams.get('test') && 
+        !urlParams.get('minimal') && 
+        !urlParams.get('emergency') && 
+        !urlParams.get('diagnostic') && 
+        !urlParams.get('simple')) {
+      return <FullCMSRecovery />;
+    }
+    
+    // Safety mechanism - check URL parameters for testing modes
     const safeMode = urlParams.get('safe') === 'true';
     const testMode = urlParams.get('test') === 'true';
     const minimalMode = urlParams.get('minimal') === 'true';
@@ -1164,48 +1231,8 @@ function App() {
       }
     }
 
-    // Full application mode with enhanced error boundaries
-    return (
-      <SafeAppWrapper>
-        <RuntimeErrorBoundary
-          onError={(error, errorInfo) => {
-            console.error('App-level runtime error:', error, errorInfo);
-            // Log critical errors but don't auto-redirect to prevent loop
-            if (error.message.includes('forEach') || 
-                error.message.includes('toLowerCase') ||
-                error.message.includes('cn') ||
-                error.message.includes('undefined is not an object')) {
-              console.warn('Critical error detected, but continuing with full app. To debug, add ?diagnostic=true to URL');
-            }
-          }}
-        >
-          <ComponentErrorBoundary
-            onError={(error, errorInfo) => {
-              console.error('Component-level error:', error, errorInfo);
-              // Log error but don't auto-redirect
-              if (error.message.includes('forEach') || 
-                  error.message.includes('classGroup') ||
-                  error.message.includes('cn') ||
-                  error.message.includes('undefined is not an object')) {
-                console.warn('Component error detected, but continuing. To debug, add ?diagnostic=true to URL');
-              }
-            }}
-          >
-            <ErrorBoundary>
-              <AuthProvider>
-                <ThemeProvider>
-                  <TypographyProvider>
-                    <CollaborativeProvider>
-                      <AppContent />
-                    </CollaborativeProvider>
-                  </TypographyProvider>
-                </ThemeProvider>
-              </AuthProvider>
-            </ErrorBoundary>
-          </ComponentErrorBoundary>
-        </RuntimeErrorBoundary>
-      </SafeAppWrapper>
-    );
+    // Default to recovery interface if nothing is specified
+    return <FullCMSRecovery />;
   } catch (error) {
     console.error('Critical App.tsx error:', error);
     
@@ -1220,8 +1247,8 @@ function App() {
       return <DiagnosticCheck />;
     }
     
-    // Fallback to simple test app if everything else fails
-    return <SimpleTestApp />;
+    // Show recovery interface for unhandled errors
+    return <FullCMSRecovery />;
   }
 }
 
