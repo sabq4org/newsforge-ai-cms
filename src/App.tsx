@@ -14,7 +14,7 @@ import { CollaborativeManager } from '@/components/collaborative';
 import { TypographyProvider } from '@/contexts/TypographyContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { LoginForm } from '@/components/auth/LoginForm';
-import { RegisterForm, UserProfilePage, SmartRecommendationDashboard } from '@/components/membership';
+import { LoginForm as MemberLoginForm, RegisterForm, UserProfilePage, SmartRecommendationDashboard } from '@/components/membership';
 import { UserManagementDashboard } from '@/components/user-management';
 import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
@@ -1074,7 +1074,7 @@ function AppContent() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="max-w-2xl w-full max-h-[90vh] overflow-auto">
             {authMode === 'login' ? (
-              <LoginForm
+              <MemberLoginForm
                 onLogin={handleMemberLogin}
                 onSwitchToRegister={() => setAuthMode('register')}
                 onForgotPassword={() => {
