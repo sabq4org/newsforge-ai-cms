@@ -24,9 +24,7 @@ export function cn(...inputs: ClassValue[]) {
       .join(' ');
   }
 }
-      clsxResult = clsx(...safeInputs);
-    } catch (clsxError) {
-      console.warn('clsx error, using manual join:', clsxError);
+
 // Utility functions for data normalization and safe operations
 
 // Mock categories for fallback
@@ -126,3 +124,81 @@ export function normalizeDataObject<T>(data: T): T {
   }
 }
 
+/**
+ * Format Arabic date with error handling
+ */
+export function formatArabicDate(date: Date | string): string {
+  try {
+    const dateObj = date instanceof Date ? date : new Date(date);
+    if (isNaN(dateObj.getTime())) {
+      return 'تاريخ غير صحيح';
+    }
+    return dateObj.toLocaleDateString('ar-SA');
+  } catch (error) {
+    console.error('formatArabicDate error:', error);
+    return 'تاريخ غير صحيح';
+  }
+}
+
+/**
+ * Format Arabic time with error handling
+ */
+export function formatArabicTime(date: Date | string): string {
+  try {
+    const dateObj = date instanceof Date ? date : new Date(date);
+    if (isNaN(dateObj.getTime())) {
+      return 'وقت غير صحيح';
+    }
+    return dateObj.toLocaleTimeString('ar-SA');
+  } catch (error) {
+    console.error('formatArabicTime error:', error);
+    return 'وقت غير صحيح';
+  }
+}
+
+/**
+ * Safe array iteration
+ */
+export function safeForEach<T>(array: T[], callback: (item: T, index: number) => void): void {
+  try {
+    if (!Array.isArray(array)) {
+      console.warn('safeForEach: Expected array, got:', typeof array);
+      return;
+    }
+    
+    for (let i = 0; i < array.length; i++) {
+      try {
+        callback(array[i], i);
+      } catch (itemError) {
+        console.error('safeForEach item error:', itemError);
+      }
+    }
+  } catch (error) {
+    console.error('safeForEach error:', error);
+  }
+}
+
+/**
+ * Safe array map
+ */
+export function safeMap<T, R>(array: T[], callback: (item: T, index: number) => R): R[] {
+  try {
+    if (!Array.isArray(array)) {
+      console.warn('safeMap: Expected array, got:', typeof array);
+      return [];
+    }
+    
+    const result: R[] = [];
+    for (let i = 0; i < array.length; i++) {
+      try {
+        result.push(callback(array[i], i));
+      } catch (itemError) {
+        console.error('safeMap item error:', itemError);
+      }
+    }
+    return result;
+  } catch (error) {
+    console.error('safeMap error:', error);
+    return [];
+  }
+}
