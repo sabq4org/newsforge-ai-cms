@@ -68,12 +68,10 @@ import { useKV } from '@github/spark/hooks';
 import { mockArticles, mockCategories, mockMediaFiles } from '@/lib/mockData';
 import { normalizeArticles, normalizeDataObject } from '@/lib/utils';
 
-import { safeCn as importedSafeCn } from '@/lib/criticalErrorFixes';
-
-// Safe class name utility with fallback
+// Import safeCn with fallback
 let safeCn: (...classes: any[]) => string;
 try {
-  safeCn = importedSafeCn;
+  safeCn = require('@/lib/criticalErrorFixes').safeCn;
 } catch {
   // Ultra-safe fallback if import fails
   safeCn = (...classes: any[]): string => {
@@ -1237,8 +1235,4 @@ function App() {
     return <FullCMSRecovery />;
   } catch (error) {
     console.error('Critical App error:', error);
-    return <FullCMSRecovery />;
-  }
-}
 
-export default App;
