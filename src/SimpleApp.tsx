@@ -146,7 +146,13 @@ function SimpleApp() {
                 <div>
                   <h3 className="font-medium">{article.title}</h3>
                   <p className="text-sm text-muted-foreground">
-                    {article.createdAt.toLocaleDateString('ar-SA')}
+                    {(() => {
+                      try {
+                        return article.createdAt.toLocaleDateString('ar-SA');
+                      } catch {
+                        return new Date().toLocaleDateString('ar-SA');
+                      }
+                    })()}
                   </p>
                 </div>
                 <Badge variant={article.status === 'published' ? 'default' : 'secondary'}>
@@ -189,7 +195,13 @@ function SimpleApp() {
                 <div>
                   <CardTitle className="text-lg">{article.title}</CardTitle>
                   <CardDescription>
-                    تم الإنشاء في {article.createdAt.toLocaleDateString('ar-SA')}
+                    تم الإنشاء في {(() => {
+                      try {
+                        return article.createdAt.toLocaleDateString('ar-SA');
+                      } catch {
+                        return new Date().toLocaleDateString('ar-SA');
+                      }
+                    })()}
                   </CardDescription>
                 </div>
                 <Badge variant={article.status === 'published' ? 'default' : 'secondary'}>
