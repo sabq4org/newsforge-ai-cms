@@ -1,6 +1,7 @@
 import React from 'react';
 
 // Minimal startup component - no dependencies, pure React
+function MinimalStartup() {
   const [status, setStatus] = React.useState('initializing');
   const [errors, setErrors] = React.useState<string[]>([]);
 

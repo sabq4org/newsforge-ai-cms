@@ -52,6 +52,7 @@ function ServiceRecoveryProgress({ progress }: { progress: number }) {
   );
 }
 
+function FullCMSRecovery() {
   const [isRecovering, setIsRecovering] = useState(false);
   const [recoveryProgress, setRecoveryProgress] = useState(0);
   const [completedServices, setCompletedServices] = useState<string[]>([]);

@@ -1,6 +1,7 @@
 import React from 'react';
 
 // Simple test application for debugging purposes
+function TestAppContent() {
   const [testResults, setTestResults] = React.useState<string[]>([]);
   const [isTestingComplete, setIsTestingComplete] = React.useState(false);
 

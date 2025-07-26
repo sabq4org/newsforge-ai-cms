@@ -1,6 +1,7 @@
 import React from 'react';
 
 // Absolute minimal emergency app for critical errors
+function EmergencyApp() {
   const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {

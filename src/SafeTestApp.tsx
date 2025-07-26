@@ -1,6 +1,7 @@
 import React from 'react';
 
 // Safe minimal application with basic UI
+function SafeTestApp() {
   const [currentTime, setCurrentTime] = React.useState(new Date());
 
   React.useEffect(() => {

@@ -1,6 +1,7 @@
 import React from 'react';
 
 // Simple, bulletproof fallback app
+function EmergencyFallbackApp() {
   return (
     <div style={{
       minHeight: '100vh',
