@@ -1,295 +1,230 @@
-# 🌐 DNS Configuration Guide for Sabq Althakiyah
+# DNS Configuration Guide for Sabq Althakiyah CMS
 
-This guide provides detailed instructions for configuring DNS records with your domain registrar to connect your custom domain to your GitHub Spark application.
+## 🚀 Quick Start
 
-## 📋 Quick Setup Summary
+To set up DNS for your Sabq Althakiyah CMS deployment, follow these steps:
 
-| Record Type | Name | Value | TTL | Priority |
-|------------|------|--------|-----|----------|
-| A | @ | 185.199.108.153 | 300 | - |
-| A | @ | 185.199.109.153 | 300 | - |
-| A | @ | 185.199.110.153 | 300 | - |
-| A | @ | 185.199.111.153 | 300 | - |
-| CNAME | www | [your-spark-app].github.app | 300 | - |
-| CNAME | staging | [your-staging-app].github.app | 300 | - |
+### 1. Run DNS Verification Scripts
 
-## 🏗️ Detailed Configuration Steps
-
-### Step 1: Gather Your Spark URLs
-
-Before configuring DNS, you need your actual Spark application URLs:
-
-1. **Access GitHub Spark Dashboard**
-2. **Find Your Application URLs**:
-   - Production app: `your-production-app.github.app`
-   - Staging app: `your-staging-app.github.app`
-
-**Note**: Replace `[your-spark-app]` and `[your-staging-app]` in the DNS records below with your actual Spark URLs.
-
-### Step 2: Configure DNS Records with Your Registrar
-
-#### For the Root Domain (sabq.ai)
-
-Add these **A records** to point your root domain to GitHub's servers:
-
-```dns
-Type: A
-Name: @ (or leave blank for root domain)
-Value: 185.199.108.153
-TTL: 300 (5 minutes)
-
-Type: A  
-Name: @ (or leave blank for root domain)
-Value: 185.199.109.153
-TTL: 300
-
-Type: A
-Name: @ (or leave blank for root domain) 
-Value: 185.199.110.153
-TTL: 300
-
-Type: A
-Name: @ (or leave blank for root domain)
-Value: 185.199.111.153  
-TTL: 300
-```
-
-#### For the WWW Subdomain (www.sabq.ai)
-
-Add this **CNAME record** to point www to your Spark app:
-
-```dns
-Type: CNAME
-Name: www
-Value: [your-production-spark-app].github.app
-TTL: 300
-```
-
-#### For the Staging Subdomain (staging.sabq.ai)
-
-Add this **CNAME record** for your staging environment:
-
-```dns
-Type: CNAME
-Name: staging  
-Value: [your-staging-spark-app].github.app
-TTL: 300
-```
-
-### Step 3: Platform-Specific Instructions
-
-#### For Cloudflare
-1. Log into Cloudflare Dashboard
-2. Select your domain (sabq.ai)
-3. Go to **DNS** tab
-4. Click **Add record**
-5. Add each record from the table above
-6. **Important**: Set Proxy status to "DNS only" (gray cloud) for CNAME records pointing to GitHub
-
-#### For GoDaddy
-1. Log into GoDaddy Account Manager
-2. Go to **My Products** > **DNS**
-3. Select your domain
-4. Click **Add** for each DNS record
-5. Enter the Type, Name, and Value as specified above
-
-#### For Namecheap
-1. Log into Namecheap account
-2. Go to **Domain List** > **Manage**
-3. Click **Advanced DNS**
-4. Add each record using the **Add New Record** button
-
-#### For Google Domains
-1. Sign in to Google Domains
-2. Select your domain
-3. Click **DNS** in the left sidebar
-4. Scroll down to **Custom resource records**
-5. Add each record as specified
-
-#### For Route 53 (AWS)
-1. Open AWS Route 53 Console
-2. Select your hosted zone
-3. Click **Create Record Set**
-4. Add each record with the specified values
-
-## 🔧 Advanced Configuration Options
-
-### API Subdomain (Optional)
-If you plan to use a separate API endpoint:
-
-```dns
-Type: CNAME
-Name: api
-Value: [your-api-spark-app].github.app
-TTL: 300
-```
-
-### Media/Assets Subdomain (Optional)
-For serving media files from a separate subdomain:
-
-```dns  
-Type: CNAME
-Name: media
-Value: [your-media-spark-app].github.app
-TTL: 300
-```
-
-### Admin Subdomain (Optional)
-For a separate admin interface:
-
-```dns
-Type: CNAME
-Name: admin
-Value: [your-admin-spark-app].github.app  
-TTL: 300
-```
-
-## ⚙️ GitHub Spark Custom Domain Setup
-
-After configuring DNS records, you need to add the custom domain in GitHub Spark:
-
-### Step 1: Access Spark Settings
-1. Go to your GitHub Spark dashboard
-2. Select your Sabq Althakiyah application
-3. Navigate to **Settings** > **Custom Domains**
-
-### Step 2: Add Custom Domain
-1. Click **Add Custom Domain**
-2. Enter: `www.sabq.ai`
-3. Click **Verify** (may take a few minutes for DNS to propagate)
-4. Once verified, click **Add**
-
-### Step 3: Configure HTTPS
-1. Enable **Force HTTPS redirect**
-2. Spark will automatically provision SSL certificates
-3. This process may take 10-20 minutes
-
-### Step 4: Add Staging Domain
-1. Repeat the above steps for `staging.sabq.ai`
-2. Connect it to your staging Spark application
-
-## 📊 Verification and Testing
-
-### DNS Propagation Check
-Use these tools to verify your DNS configuration:
-
-1. **Online Tools**:
-   - https://dnschecker.org
-   - https://www.whatsmydns.net
-   - https://dns.google (Google DNS checker)
-
-2. **Command Line Tools**:
-   ```bash
-   # Check A records
-   dig sabq.ai
-   
-   # Check CNAME records  
-   dig www.sabq.ai
-   dig staging.sabq.ai
-   
-   # Check from specific DNS server
-   dig @8.8.8.8 www.sabq.ai
-   ```
-
-### Test Domain Access
-1. **Root domain**: http://sabq.ai (should redirect to https://www.sabq.ai)
-2. **WWW domain**: https://www.sabq.ai (your main application)
-3. **Staging**: https://staging.sabq.ai (staging environment)
-
-### SSL Certificate Verification
 ```bash
-# Check SSL certificate
-openssl s_client -connect www.sabq.ai:443 -servername www.sabq.ai
+# Quick DNS check
+npm run dns:quick
 
-# Check certificate expiration
-curl -vI https://www.sabq.ai 2>&1 | grep -i expire
+# Full DNS verification
+npm run dns:check
+
+# Interactive domain setup
+npm run dns:setup
+
+# Bash-based verification (if available)
+npm run dns:verify-bash
 ```
 
-## 🚨 Troubleshooting Common Issues
+### 2. GitHub Pages Setup (Recommended)
 
-### 1. DNS Not Propagating
-**Problem**: DNS changes not visible after 24 hours
-**Solutions**:
-- Check TTL values (should be 300 for faster propagation)
-- Verify exact record values with your registrar
-- Clear local DNS cache: `sudo systemctl flush-dns` (Linux) or `ipconfig /flushdns` (Windows)
+If you're using GitHub Pages for hosting:
 
-### 2. SSL Certificate Issues
-**Problem**: HTTPS not working or certificate errors
-**Solutions**:
-- Ensure CNAME records point exactly to `[your-app].github.app` 
-- Wait for Spark to provision certificates (can take 20 minutes)
-- Check Spark dashboard for certificate status
+1. **Create CNAME file:**
+```bash
+echo "sabq.org" > public/CNAME
+```
 
-### 3. Redirect Loops
-**Problem**: Infinite redirect between domains
-**Solutions**:
-- Verify only one primary domain is configured in Spark
-- Check that A records point to GitHub IPs, not other redirects
-- Ensure redirect configuration in `spark.config.js` is correct
+2. **Configure DNS records at your domain registrar:**
 
-### 4. Site Not Loading
-**Problem**: Domain resolves but site doesn't load
-**Solutions**:
-- Verify Spark application is deployed and running
-- Check Spark application logs for errors
-- Ensure domain is properly configured in Spark dashboard
+| Type | Name | Value | TTL |
+|------|------|-------|-----|
+| A | @ | 185.199.108.153 | 3600 |
+| A | @ | 185.199.109.153 | 3600 |
+| A | @ | 185.199.110.153 | 3600 |
+| A | @ | 185.199.111.153 | 3600 |
+| CNAME | www | sabq.org | 3600 |
 
-## 📋 Pre-Deployment Checklist
+3. **Enable GitHub Pages:**
+   - Go to repository Settings → Pages
+   - Set source to "Deploy from a branch"
+   - Select your main branch
+   - Enter your custom domain
 
-- [ ] All DNS records configured correctly
-- [ ] DNS propagation verified (use dnschecker.org)
-- [ ] Custom domain added in Spark dashboard
-- [ ] SSL certificate provisioned and active
-- [ ] HTTP to HTTPS redirect working
-- [ ] www.sabq.ai loads your application
-- [ ] staging.sabq.ai loads staging version
-- [ ] No SSL certificate warnings
-- [ ] All links and assets loading correctly
-- [ ] Arabic fonts rendering properly
-- [ ] RTL layout displaying correctly
+### 3. Alternative Hosting Providers
 
-## 🔄 Ongoing Maintenance
+#### Vercel
+```
+A record: @ → 76.76.19.61
+CNAME: www → cname.vercel-dns.com
+```
 
-### Regular Checks
-1. **Monthly**: Verify SSL certificate auto-renewal
-2. **Quarterly**: Check DNS record integrity  
-3. **Annually**: Review domain registration renewal
+#### Netlify
+```
+A record: @ → 75.2.60.5
+CNAME: www → yourdomain.com
+```
 
-### Monitoring Setup
-Consider setting up monitoring for:
-- Domain uptime
-- SSL certificate expiration
-- DNS resolution times
-- Page load performance
+#### Cloudflare Pages
+- Add domain in Cloudflare dashboard
+- DNS records are configured automatically
 
-## 📞 Support Resources
+## 🔧 DNS Scripts Usage
 
-### DNS-Related Issues
-- **Domain Registrar Support**: Contact your domain provider's support team
-- **DNS Troubleshooting**: Use online DNS diagnostic tools
+### DNS Verification Script (Node.js)
+```bash
+# Basic verification
+node scripts/dns-verification.js
 
-### Spark-Related Issues  
-- **GitHub Spark Documentation**: Check official Spark hosting docs
-- **Spark Dashboard**: Monitor application status and logs
-- **Community Support**: GitHub Spark community forums
+# Save results to file
+node scripts/dns-verification.js --save
 
-### Application Issues
-- **Error Logs**: Check browser console and Spark application logs
-- **Performance**: Use Google PageSpeed Insights for optimization tips
+# Check specific domain
+node scripts/dns-verification.js yourdomain.com
+```
 
----
+### Quick DNS Check
+```bash
+# Quick check for default domain
+node scripts/quick-dns-check.js
 
-## 💡 Pro Tips
+# Quick check for specific domain
+node scripts/quick-dns-check.js yourdomain.com
+```
 
-1. **Use Short TTL Initially**: Set TTL to 300 (5 minutes) during setup for faster changes
-2. **Test Staging First**: Always test domain configuration on staging before production
-3. **Monitor Propagation**: DNS changes can take 24-48 hours to propagate globally
-4. **Keep Records Simple**: Avoid complex chained CNAME records
-5. **Document Changes**: Keep a record of all DNS modifications for future reference
+### Domain Setup Helper
+```bash
+# Interactive setup wizard
+node scripts/domain-setup-helper.js
 
----
+# Generate CNAME file only
+node scripts/domain-setup-helper.js --generate-cname yourdomain.com
+```
 
-**Your DNS configuration for Sabq Althakiyah is now ready!** 🎉
+### Bash DNS Verification
+```bash
+# Default domain check
+bash scripts/dns-verification.sh
 
-Follow this guide step-by-step, and your Arabic news CMS will be accessible via your custom domain with proper SSL encryption and optimal performance.
+# Specific domain
+bash scripts/dns-verification.sh yourdomain.com
+
+# With options
+CHECK_SSL=true CHECK_GITHUB_PAGES=true bash scripts/dns-verification.sh yourdomain.com
+```
+
+## 📋 Verification Checklist
+
+The scripts will verify:
+
+- ✅ **A Records**: IPv4 addresses pointing to hosting provider
+- ✅ **AAAA Records**: IPv6 addresses (optional but recommended)
+- ✅ **CNAME Records**: www subdomain configuration
+- ✅ **MX Records**: Email routing (if configured)
+- ✅ **TXT Records**: SPF, DKIM, domain verification
+- ✅ **SSL Certificate**: Validity, expiration, issuer
+- ✅ **HTTP/HTTPS**: Connectivity and response codes
+- ✅ **DNS Propagation**: Consistency across DNS servers
+
+## 🔍 Troubleshooting
+
+### Common Issues
+
+1. **"Domain not found" error**
+   - Verify domain spelling
+   - Check if domain is registered
+   - Ensure DNS records are configured
+
+2. **"SSL certificate not found"**
+   - DNS must be configured first
+   - Wait 24-48 hours for propagation
+   - Check hosting provider SSL settings
+
+3. **"GitHub Pages not detected"**
+   - Verify A records point to GitHub IPs
+   - Ensure CNAME file exists in repository
+   - Check GitHub Pages settings
+
+4. **"DNS propagation incomplete"**
+   - Wait additional time (up to 48 hours)
+   - Check with multiple DNS servers
+   - Clear local DNS cache
+
+### Manual Verification Commands
+
+```bash
+# Check A records
+dig A yourdomain.com
+
+# Check CNAME records
+dig CNAME www.yourdomain.com
+
+# Check DNS from specific server
+dig @8.8.8.8 A yourdomain.com
+
+# Test SSL certificate
+openssl s_client -servername yourdomain.com -connect yourdomain.com:443
+
+# Check HTTP/HTTPS response
+curl -I http://yourdomain.com
+curl -I https://yourdomain.com
+```
+
+## 📝 Configuration Files
+
+### Required Files for GitHub Pages
+
+1. **CNAME file** (in repository root or public directory):
+```
+sabq.org
+```
+
+2. **GitHub Pages settings** (in repository settings):
+   - Source: Deploy from a branch
+   - Branch: main (or your deployment branch)
+   - Custom domain: sabq.org
+
+### Optional Configuration
+
+#### Email Records (if using email)
+```
+Type: MX
+Name: @
+Value: 10 mail.google.com
+
+Type: TXT
+Name: @  
+Value: v=spf1 include:_spf.google.com ~all
+```
+
+#### CDN Configuration (if using Cloudflare)
+- Enable "Always Use HTTPS"
+- Set SSL/TLS mode to "Full" or "Full (strict)"
+- Enable "Automatic HTTPS Rewrites"
+
+## 🎯 Production Deployment Checklist
+
+Before going live:
+
+1. ✅ Run all verification scripts
+2. ✅ Test from multiple devices/locations
+3. ✅ Verify SSL certificate is valid
+4. ✅ Check redirects (www → apex or vice versa)
+5. ✅ Test mobile responsiveness
+6. ✅ Verify search engine accessibility
+7. ✅ Configure analytics and monitoring
+8. ✅ Set up error pages (404, 500)
+9. ✅ Test contact forms and user interactions
+10. ✅ Implement security headers
+
+## 🔗 Additional Resources
+
+- [GitHub Pages Documentation](https://docs.github.com/en/pages)
+- [DNS Records Explained](https://www.cloudflare.com/learning/dns/dns-records/)
+- [SSL Certificate Guide](https://letsencrypt.org/getting-started/)
+- [Domain Registrar Guides](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site)
+
+## 📞 Support
+
+For issues specific to Sabq Althakiyah CMS:
+
+1. Run the interactive setup: `npm run dns:setup`
+2. Check the verification results: `npm run dns:check --save`
+3. Review the scripts/README.md for detailed troubleshooting
+4. Ensure all required dependencies are installed
+
+The DNS verification scripts will help identify and resolve most common configuration issues automatically.

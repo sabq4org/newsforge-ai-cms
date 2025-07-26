@@ -14,10 +14,14 @@
         "preview": "vite preview",
         "deploy:production": "npm run build:production",
         "deploy:staging": "npm run build:staging",
-        "domain:setup": "echo '🌐 Domain Setup Guide' && echo 'See DNS_QUICK_START.md for quick setup' && echo 'See DNS_CONFIGURATION_GUIDE.md for detailed instructions'",
-        "domain:verify": "node verify-dns.js",
-        "dns:check": "node verify-dns.js",
-        "dns:help": "echo '📚 DNS Help Resources:' && echo '• DNS_QUICK_START.md - Quick setup guide' && echo '• DNS_CONFIGURATION_GUIDE.md - Detailed instructions' && echo '• DOMAIN_SETUP.md - Platform-specific guides' && echo '• npm run dns:check - Verify your DNS configuration'"
+        "domain:setup": "node scripts/domain-setup-helper.js",
+        "domain:verify": "node scripts/dns-verification.js",
+        "dns:check": "node scripts/dns-verification.js",
+        "dns:quick": "node scripts/quick-dns-check.js",
+        "dns:setup": "node scripts/domain-setup-helper.js",
+        "dns:verify-bash": "bash scripts/dns-verification.sh",
+        "dns:test": "node scripts/dns-test-runner.js",
+        "dns:help": "echo '📚 DNS Help Resources:' && echo '• scripts/README.md - DNS verification guide' && echo '• npm run dns:check - Full DNS verification' && echo '• npm run dns:quick - Quick DNS check' && echo '• npm run dns:setup - Interactive domain setup' && echo '• npm run dns:test - Run DNS configuration tests'"
     },
     "dependencies": {
         "@github/spark": "^0.0.1",

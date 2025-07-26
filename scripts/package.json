@@ -1,0 +1,24 @@
+{
+  "name": "sabq-dns-verification",
+  "version": "1.0.0",
+  "description": "DNS verification tools for Sabq Althakiyah CMS domain configuration",
+  "scripts": {
+    "dns-check": "node scripts/dns-verification.js",
+    "dns-check-save": "node scripts/dns-verification.js --save",
+    "dns-verify": "bash scripts/dns-verification.sh",
+    "domain-setup": "node scripts/domain-setup-helper.js"
+  },
+  "keywords": [
+    "dns",
+    "domain",
+    "verification",
+    "sabq",
+    "cms"
+  ],
+  "dependencies": {
+    "dns": "^0.2.2"
+  },
+  "bin": {
+    "sabq-dns-verify": "./scripts/dns-verification.js"
+  }
+}
