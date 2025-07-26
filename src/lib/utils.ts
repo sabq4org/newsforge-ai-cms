@@ -1,11 +1,11 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
-import { Article, Category } from "@/types"
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+import { Article } from "@/types";
 
 // Safe cn function implementation
 export function cn(...inputs: ClassValue[]) {
   try {
-    return twMerge(clsx(inputs))
+    return twMerge(clsx(inputs));
   } catch (error) {
     // Fallback: simple class concatenation
     return inputs
@@ -24,8 +24,6 @@ export function cn(...inputs: ClassValue[]) {
       .join(' ');
   }
 }
-
-// Utility functions for data normalization and safe operations
 
 // Mock categories for fallback
 const defaultCategories = [
