@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import * as React from 'react';
 import { User, Language, Permission } from '@/types';
 import { mockUsers } from '@/lib/mockData';
 import { useKV } from '@github/spark/hooks';
@@ -86,8 +87,16 @@ const rolePermissions: Record<string, Permission[]> = {
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useKV<User | null>('sabq-user', null);
+  // Auto-login as admin for testing purposes - Welcome to Sabq Althakiyah!
+  const [user, setUser] = useKV<User | null>('sabq-user', mockUsers[0]); // Ahmed Al-Mansouri (Admin)
   const [language, setLanguage] = useKV<Language>('sabq-language', languages.ar); // Default to Arabic
+  
+  // Show welcome message once for auto-login
+  React.useEffect(() => {
+    if (user && user.id === '1') { // Ahmed Al-Mansouri
+      console.log(`🎉 مرحباً بك في سبق الذكية! تم تسجيل الدخول تلقائياً كـ ${user.nameAr} (${user.role})`);
+    }
+  }, [user]);
 
   // Ensure language object is always valid
   useEffect(() => {
