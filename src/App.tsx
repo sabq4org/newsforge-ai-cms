@@ -68,10 +68,12 @@ import { useKV } from '@github/spark/hooks';
 import { mockArticles, mockCategories, mockMediaFiles } from '@/lib/mockData';
 import { normalizeArticles, normalizeDataObject } from '@/lib/utils';
 
-// Import safeCn with fallback
+import { safeCn as importedSafeCn } from '@/lib/criticalErrorFixes';
+
+// Safe class name utility with fallback
 let safeCn: (...classes: any[]) => string;
 try {
-  safeCn = require('@/lib/criticalErrorFixes').safeCn;
+  safeCn = importedSafeCn;
 } catch {
   // Ultra-safe fallback if import fails
   safeCn = (...classes: any[]): string => {
@@ -1234,20 +1236,7 @@ function App() {
     // Default to recovery interface if nothing is specified
     return <FullCMSRecovery />;
   } catch (error) {
-    console.error('Critical App.tsx error:', error);
-    
-    // If the error is related to forEach or string methods, go to diagnostic mode
-    if (error instanceof Error && (
-      error.message.includes('forEach') || 
-      error.message.includes('toLowerCase') ||
-      error.message.includes('classGroup') ||
-      error.message.includes('cn') ||
-      error.message.includes('undefined is not an object')
-    )) {
-      return <DiagnosticCheck />;
-    }
-    
-    // Show recovery interface for unhandled errors
+    console.error('Critical App error:', error);
     return <FullCMSRecovery />;
   }
 }

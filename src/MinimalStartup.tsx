@@ -1,7 +1,6 @@
 import React from 'react';
 
 // Minimal startup component - no dependencies, pure React
-export default function MinimalStartup() {
   const [status, setStatus] = React.useState('initializing');
   const [errors, setErrors] = React.useState<string[]>([]);
 
@@ -251,3 +250,5 @@ export default function MinimalStartup() {
     </div>
   );
 }
+
+export default MinimalStartup;

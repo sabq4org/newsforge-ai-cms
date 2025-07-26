@@ -1,7 +1,6 @@
 import React from 'react';
 
 // Safe minimal application with basic UI
-export default function SafeTestApp() {
   const [currentTime, setCurrentTime] = React.useState(new Date());
 
   React.useEffect(() => {
@@ -184,3 +183,5 @@ export default function SafeTestApp() {
     </div>
   );
 }
+
+export default SafeTestApp;

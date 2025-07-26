@@ -1,7 +1,6 @@
 import React from 'react';
 
 // Simple, bulletproof fallback app
-export default function EmergencyFallbackApp() {
   return (
     <div style={{
       minHeight: '100vh',
@@ -101,3 +100,5 @@ export default function EmergencyFallbackApp() {
     </div>
   );
 }
+
+export default EmergencyFallbackApp;

@@ -1,7 +1,6 @@
 import React from 'react';
 
 // Absolute minimal emergency app for critical errors
-export default function EmergencyApp() {
   const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
@@ -156,3 +155,5 @@ export default function EmergencyApp() {
     </div>
   );
 }
+
+export default EmergencyApp;

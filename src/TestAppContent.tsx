@@ -1,7 +1,6 @@
 import React from 'react';
 
 // Simple test application for debugging purposes
-export default function TestAppContent() {
   const [testResults, setTestResults] = React.useState<string[]>([]);
   const [isTestingComplete, setIsTestingComplete] = React.useState(false);
 
@@ -211,3 +210,5 @@ export default function TestAppContent() {
     </div>
   );
 }
+
+export default TestAppContent;

@@ -52,7 +52,6 @@ function ServiceRecoveryProgress({ progress }: { progress: number }) {
   );
 }
 
-export default function FullCMSRecovery() {
   const [isRecovering, setIsRecovering] = useState(false);
   const [recoveryProgress, setRecoveryProgress] = useState(0);
   const [completedServices, setCompletedServices] = useState<string[]>([]);
@@ -254,3 +253,5 @@ export default function FullCMSRecovery() {
     </div>
   );
 }
+
+export default FullCMSRecovery;
