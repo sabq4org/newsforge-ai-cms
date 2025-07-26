@@ -200,3 +200,106 @@ export function safeMap<T, R>(array: T[], callback: (item: T, index: number) => 
     return [];
   }
 }
+
+/**
+ * Safe time format function with comprehensive error handling
+ */
+export function safeTimeFormat(date: Date | string | number | null | undefined, locale: string = 'ar-SA'): string {
+  try {
+    if (!date) {
+      return locale === 'ar-SA' ? 'غير محدد' : 'Not specified';
+    }
+
+    let dateObj: Date;
+    
+    if (date instanceof Date) {
+      dateObj = date;
+    } else if (typeof date === 'string') {
+      dateObj = new Date(date);
+    } else if (typeof date === 'number') {
+      dateObj = new Date(date);
+    } else {
+      return locale === 'ar-SA' ? 'تاريخ غير صحيح' : 'Invalid date';
+    }
+
+    // Check if date is valid
+    if (isNaN(dateObj.getTime())) {
+      return locale === 'ar-SA' ? 'تاريخ غير صحيح' : 'Invalid date';
+    }
+
+    // Format the time based on locale
+    if (locale === 'ar-SA') {
+      return dateObj.toLocaleTimeString('ar-SA', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
+    } else {
+      return dateObj.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
+    }
+  } catch (error) {
+    console.error('safeTimeFormat error:', error, 'for date:', date);
+    return locale === 'ar-SA' ? 'خطأ في التنسيق' : 'Format error';
+  }
+}
+
+/**
+ * Safe date format function with comprehensive error handling
+ */
+export function safeDateFormat(date: Date | string | number | null | undefined, locale: string = 'ar-SA'): string {
+  try {
+    if (!date) {
+      return locale === 'ar-SA' ? 'غير محدد' : 'Not specified';
+    }
+
+    let dateObj: Date;
+    
+    if (date instanceof Date) {
+      dateObj = date;
+    } else if (typeof date === 'string') {
+      dateObj = new Date(date);
+    } else if (typeof date === 'number') {
+      dateObj = new Date(date);
+    } else {
+      return locale === 'ar-SA' ? 'تاريخ غير صحيح' : 'Invalid date';
+    }
+
+    // Check if date is valid
+    if (isNaN(dateObj.getTime())) {
+      return locale === 'ar-SA' ? 'تاريخ غير صحيح' : 'Invalid date';
+    }
+
+    // Format the date based on locale
+    if (locale === 'ar-SA') {
+      return dateObj.toLocaleDateString('ar-SA');
+    } else {
+      return dateObj.toLocaleDateString('en-US');
+    }
+  } catch (error) {
+    console.error('safeDateFormat error:', error, 'for date:', date);
+    return locale === 'ar-SA' ? 'خطأ في التنسيق' : 'Format error';
+  }
+}
+
+/**
+ * Safe date-time format function
+ */
+export function safeDateTimeFormat(date: Date | string | number | null | undefined, locale: string = 'ar-SA'): string {
+  try {
+    const dateStr = safeDateFormat(date, locale);
+    const timeStr = safeTimeFormat(date, locale);
+    
+    if (dateStr.includes('خطأ') || dateStr.includes('غير') || timeStr.includes('خطأ') || timeStr.includes('غير')) {
+      return locale === 'ar-SA' ? 'تاريخ غير صحيح' : 'Invalid date';
+    }
+    
+    return `${dateStr} ${timeStr}`;
+  } catch (error) {
+    console.error('safeDateTimeFormat error:', error);
+    return locale === 'ar-SA' ? 'خطأ في التنسيق' : 'Format error';
+  }
+}

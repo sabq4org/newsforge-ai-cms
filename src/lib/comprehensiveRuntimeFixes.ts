@@ -68,8 +68,8 @@ export function safeTimestampFormat(timestamp: any, locale: string = 'ar-SA'): s
   }
 }
 
-// Safe time formatting
-export function safeTimeFormat(time: any, locale: string = 'ar-SA'): string {
+// Safe time formatting (runtime fallback version)
+export function safeTimeFormatRuntime(time: any, locale: string = 'ar-SA'): string {
   try {
     if (!time) {
       return new Date().toLocaleTimeString(locale);
@@ -89,19 +89,19 @@ export function safeTimeFormat(time: any, locale: string = 'ar-SA'): string {
       date = time;
     } else {
       // Fallback to current time
-      console.warn('safeTimeFormat: Invalid time, using current time');
+      console.warn('safeTimeFormatRuntime: Invalid time, using current time');
       date = new Date();
     }
     
     // Validate the date
     if (isNaN(date.getTime())) {
-      console.warn('safeTimeFormat: Invalid date created, using current time');
+      console.warn('safeTimeFormatRuntime: Invalid date created, using current time');
       date = new Date();
     }
     
     return date.toLocaleTimeString(locale);
   } catch (error) {
-    console.error('safeTimeFormat error:', error);
+    console.error('safeTimeFormatRuntime error:', error);
     return new Date().toLocaleTimeString(locale);
   }
 }
@@ -259,7 +259,7 @@ if (typeof window !== 'undefined') {
   // Add global utilities
   (window as any).safeGet = safeGet;
   (window as any).safeTimestampFormat = safeTimestampFormat;
-  (window as any).safeTimeFormat = safeTimeFormat;
+  (window as any).safeTimeFormatRuntime = safeTimeFormatRuntime;
   (window as any).safeForEach = safeForEach;
   (window as any).safeObjectAccess = safeObjectAccess;
   (window as any).safeStringOperation = safeStringOperation;
@@ -271,7 +271,7 @@ if (typeof window !== 'undefined') {
 export default {
   safeGet,
   safeTimestampFormat,
-  safeTimeFormat,
+  safeTimeFormatRuntime,
   safeForEach,
   safeObjectAccess,
   safeStringOperation,
