@@ -16,6 +16,14 @@ import "./main.css"
 import "./styles/theme.css"
 import "./index.css"
 
+// Critical fixes - import these first
+import "./lib/globalCnFix"
+import "./lib/globalIconFixes"
+import "./lib/comprehensiveRuntimeFixes"
+import "./lib/criticalErrorFixes"
+import "./lib/runtimeErrorFixes"
+import "./lib/startupValidation"
+
 // Critical error detection
 let criticalErrorDetected = false;
 

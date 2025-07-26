@@ -101,14 +101,16 @@ export function normalizeArticles(articles: Article[]): Article[] {
       }
       
       // Additional check to ensure the category has required properties
-      if (!article.category.color) {
-        article.category.color = '#6b7280'; // Default color
-      }
-      if (!article.category.name) {
-        article.category.name = 'عام';
-      }
-      if (!article.category.nameAr) {
-        article.category.nameAr = 'عام';
+      if (article.category) {
+        if (!article.category.color) {
+          article.category.color = '#6b7280'; // Default color
+        }
+        if (!article.category.name) {
+          article.category.name = 'عام';
+        }
+        if (!article.category.nameAr) {
+          article.category.nameAr = 'عام';
+        }
       }
 
       // Ensure tags is always an array
