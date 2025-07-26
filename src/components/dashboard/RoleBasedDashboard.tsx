@@ -21,7 +21,8 @@ import {
   Calendar,
   AlertTriangle,
   CheckCircle,
-  Star
+  Star,
+  MapPin
 } from '@phosphor-icons/react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useOptimizedTypography } from '@/hooks/useOptimizedTypography';
@@ -30,6 +31,7 @@ import { safeDateFormat, safeTimeFormat } from '@/lib/utils';
 import { mockAnalytics, mockArticles } from '@/lib/mockData';
 import { normalizeActivityTimestamps } from '@/lib/utils';
 import { Analytics, Article } from '@/types';
+import { ComprehensiveServiceMap } from './ComprehensiveServiceMap';
 
 interface RoleBasedDashboardProps {
   onNavigate: (view: string) => void;
@@ -268,15 +270,28 @@ export function RoleBasedDashboard({ onNavigate }: RoleBasedDashboardProps) {
             }
           </p>
         </div>
-        <Badge variant="outline" className={`flex items-center gap-1 ${typography.caption}`}>
-          <Crown className="w-3 h-3" />
-          {user?.role === 'admin' ? (isArabic ? 'مدير' : 'Administrator') :
-           user?.role === 'editor-in-chief' ? (isArabic ? 'رئيس تحرير' : 'Editor-in-Chief') :
-           user?.role === 'section-editor' ? (isArabic ? 'محرر قسم' : 'Section Editor') :
-           user?.role === 'journalist' ? (isArabic ? 'صحفي' : 'Journalist') :
-           user?.role === 'opinion-writer' ? (isArabic ? 'كاتب رأي' : 'Opinion Writer') :
-           user?.role === 'analyst' ? (isArabic ? 'محلل' : 'Analyst') : ''}
-        </Badge>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            onClick={() => onNavigate('service-map')}
+            className="flex items-center gap-2 font-arabic"
+          >
+            <MapPin className="w-4 h-4" />
+            {isArabic ? 'خريطة الخدمات' : 'Services Map'}
+            <Badge variant="secondary" className="text-xs">
+              50+
+            </Badge>
+          </Button>
+          <Badge variant="outline" className={`flex items-center gap-1 ${typography.caption}`}>
+            <Crown className="w-3 h-3" />
+            {user?.role === 'admin' ? (isArabic ? 'مدير' : 'Administrator') :
+             user?.role === 'editor-in-chief' ? (isArabic ? 'رئيس تحرير' : 'Editor-in-Chief') :
+             user?.role === 'section-editor' ? (isArabic ? 'محرر قسم' : 'Section Editor') :
+             user?.role === 'journalist' ? (isArabic ? 'صحفي' : 'Journalist') :
+             user?.role === 'opinion-writer' ? (isArabic ? 'كاتب رأي' : 'Opinion Writer') :
+             user?.role === 'analyst' ? (isArabic ? 'محلل' : 'Analyst') : ''}
+          </Badge>
+        </div>
       </div>
 
       {/* Priority Alerts */}

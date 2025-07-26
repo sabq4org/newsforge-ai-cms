@@ -15,6 +15,7 @@ import { UserManagementDashboard } from '@/components/user-management';
 import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { RoleBasedDashboard } from '@/components/dashboard/RoleBasedDashboard';
+import { ComprehensiveServiceMap } from '@/components/dashboard/ComprehensiveServiceMap';
 import { PublicInterface } from '@/components/public';
 import { AdvancedAnalytics, AnalyticsDashboard, InteractiveAnalytics, RealTimeAnalytics, PerformanceInsights, CategoryAnalytics, UserBehaviorAnalytics, ReadingPatternAnalyzer, PredictiveUserAnalytics } from '@/components/analytics';
 import { ComprehensiveArticleModule } from '@/components/articles';
@@ -323,6 +324,25 @@ function AppContent() {
     switch (activeView) {
       case 'dashboard':
         return <RoleBasedDashboard onNavigate={handleViewChange} />;
+      
+      case 'service-map':
+        return (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h1 className="text-2xl font-bold font-arabic">
+                {language.code === 'ar' ? 'خريطة خدمات سبق الذكية' : 'Sabq AI Services Map'}
+              </h1>
+              <Button 
+                variant="outline" 
+                onClick={() => setActiveView('dashboard')}
+                className="font-arabic"
+              >
+                {language.code === 'ar' ? 'العودة للوحة التحكم' : 'Back to Dashboard'}
+              </Button>
+            </div>
+            <ComprehensiveServiceMap onNavigate={handleViewChange} />
+          </div>
+        );
       
       case 'articles':
         return (
@@ -1096,46 +1116,52 @@ function App() {
     const diagnosticMode = urlParams.get('diagnostic') === 'true';
     const simpleMode = urlParams.get('simple') === 'true';
     
-    // Diagnostic mode - for comprehensive error checking
-    if (diagnosticMode) {
-      return <DiagnosticCheck />;
-    }
+    // Only activate testing modes if explicitly requested (not on error redirects)
+    const hasExplicitMode = safeMode || testMode || minimalMode || emergencyMode || diagnosticMode || simpleMode;
     
-    // Simple mode - basic React test without complex dependencies
-    if (simpleMode) {
-      return <SimpleTestApp />;
-    }
-    
-    // Emergency mode - absolute minimum functionality for debugging
-    if (emergencyMode) {
-      return <EmergencyFallbackApp />;
-    }
-    
-    // Minimal mode - no dependencies, pure React
-    if (minimalMode) {
-      return <MinimalStartup />;
-    }
-    
-    // Safe mode - minimal UI test
-    if (safeMode) {
-      return <SafeTestApp />;
-    }
-    
-    // Test mode - test with contexts but simpler content
-    if (testMode) {
-      return (
-        <SafeAppWrapper>
-          <ComponentErrorBoundary>
-            <AuthProvider>
-              <ThemeProvider>
-                <TypographyProvider>
-                  <TestAppContent />
-                </TypographyProvider>
-              </ThemeProvider>
-            </AuthProvider>
-          </ComponentErrorBoundary>
-        </SafeAppWrapper>
-      );
+    // Check if user explicitly wants testing mode
+    if (hasExplicitMode) {
+      // Diagnostic mode - for comprehensive error checking
+      if (diagnosticMode) {
+        return <DiagnosticCheck />;
+      }
+      
+      // Simple mode - basic React test without complex dependencies
+      if (simpleMode) {
+        return <SimpleTestApp />;
+      }
+      
+      // Emergency mode - absolute minimum functionality for debugging
+      if (emergencyMode) {
+        return <EmergencyFallbackApp />;
+      }
+      
+      // Minimal mode - no dependencies, pure React
+      if (minimalMode) {
+        return <MinimalStartup />;
+      }
+      
+      // Safe mode - minimal UI test
+      if (safeMode) {
+        return <SafeTestApp />;
+      }
+      
+      // Test mode - test with contexts but simpler content
+      if (testMode) {
+        return (
+          <SafeAppWrapper>
+            <ComponentErrorBoundary>
+              <AuthProvider>
+                <ThemeProvider>
+                  <TypographyProvider>
+                    <TestAppContent />
+                  </TypographyProvider>
+                </ThemeProvider>
+              </AuthProvider>
+            </ComponentErrorBoundary>
+          </SafeAppWrapper>
+        );
+      }
     }
 
     // Full application mode with enhanced error boundaries
@@ -1144,24 +1170,24 @@ function App() {
         <RuntimeErrorBoundary
           onError={(error, errorInfo) => {
             console.error('App-level runtime error:', error, errorInfo);
-            // Automatically redirect to diagnostic mode on critical errors
+            // Log critical errors but don't auto-redirect to prevent loop
             if (error.message.includes('forEach') || 
                 error.message.includes('toLowerCase') ||
                 error.message.includes('cn') ||
                 error.message.includes('undefined is not an object')) {
-              window.location.search = '?diagnostic=true';
+              console.warn('Critical error detected, but continuing with full app. To debug, add ?diagnostic=true to URL');
             }
           }}
         >
           <ComponentErrorBoundary
             onError={(error, errorInfo) => {
               console.error('Component-level error:', error, errorInfo);
-              // Check for specific tailwind-merge or class utility errors
+              // Log error but don't auto-redirect
               if (error.message.includes('forEach') || 
                   error.message.includes('classGroup') ||
                   error.message.includes('cn') ||
                   error.message.includes('undefined is not an object')) {
-                window.location.search = '?diagnostic=true';
+                console.warn('Component error detected, but continuing. To debug, add ?diagnostic=true to URL');
               }
             }}
           >

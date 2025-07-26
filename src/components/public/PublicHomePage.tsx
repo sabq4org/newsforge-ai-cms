@@ -164,6 +164,35 @@ export function PublicHomePage({
 
   return (
     <div className={cn("min-h-screen bg-background", className)}>
+      {/* System Features Alert */}
+      <div className="bg-gradient-to-r from-accent/20 to-primary/20 border-b border-border">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-center gap-4 text-sm">
+            <div className="flex items-center gap-2">
+              <Sparkle className="w-4 h-4 text-accent animate-pulse" />
+              <span className="font-medium">
+                {isRTL 
+                  ? '🚀 منصة سبق الذكية مجهزة بأكثر من 50 خدمة متطورة!' 
+                  : '🚀 Sabq AI Platform features 50+ advanced services!'}
+              </span>
+            </div>
+            <Badge variant="secondary" className="animate-bounce">
+              {isRTL ? 'ذكاء اصطناعي' : 'AI Powered'}
+            </Badge>
+            <div className="hidden md:flex items-center gap-1 text-xs text-muted-foreground">
+              <ChartBarHorizontal className="w-3 h-3" />
+              <span>{isRTL ? 'تحليلات متقدمة' : 'Advanced Analytics'}</span>
+              <span>•</span>
+              <Microphone className="w-3 h-3" />
+              <span>{isRTL ? 'بودكاست ذكي' : 'Smart Podcast'}</span>
+              <span>•</span>
+              <BookmarkSimple className="w-3 h-3" />
+              <span>{isRTL ? 'توصيات ذكية' : 'Smart Recommendations'}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Hero Section with Featured Article */}
       {featuredArticle && (
         <section className="relative bg-gradient-to-br from-primary/10 to-accent/10 border-b border-border">

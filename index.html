@@ -46,11 +46,10 @@
           e.message && e.message.toLowerCase().includes(pattern.toLowerCase())
         );
         
-        if (shouldRedirect || criticalErrors > maxErrors) {
-          console.warn('Critical error pattern detected, redirecting to diagnostic mode');
-          if (window.location.search !== '?diagnostic=true') {
-            window.location.search = '?diagnostic=true';
-          }
+        // Only redirect if we have more than maxErrors or the user manually requests it
+        if (criticalErrors > maxErrors) {
+          console.warn('Too many critical errors, consider using diagnostic mode');
+          // Don't auto-redirect to prevent endless loops
         }
       });
       
@@ -66,10 +65,8 @@
           ];
           
           if (criticalPatterns.some(pattern => message.toLowerCase().includes(pattern))) {
-            console.warn('Promise rejection with critical error, redirecting');
-            if (window.location.search !== '?diagnostic=true') {
-              window.location.search = '?diagnostic=true';
-            }
+            console.warn('Promise rejection with critical error - logged for debugging');
+            // Don't auto-redirect to prevent endless loops
           }
         }
       });
