@@ -2,7 +2,7 @@ import { createRoot } from 'react-dom/client'
 import { ErrorBoundary } from "react-error-boundary";
 import "@github/spark/spark"
 
-import SafeStableApp from './SafeStableApp.tsx'
+import App from './App.tsx'
 
 import "./main.css"
 import "./index.css"
@@ -86,7 +86,7 @@ try {
         console.error('ErrorBoundary caught an error:', error, errorInfo);
       }}
     >
-      <SafeStableApp />
+      <App />
     </ErrorBoundary>
   );
   
